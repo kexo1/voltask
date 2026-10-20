@@ -5,16 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voltask</title>
+    <link rel="icon" type="image/png" href="/frontend/web/favicon-16x16.png">
     <link rel="stylesheet" href="styles/style.css">
+
 </head>
 
 <body>
     <header>
         <nav>
             <a class="nav-logo" href="#"><img src="logo.png" alt="Voltask - logo"></a>
-            <a href="#zapisnica">Zápisnica</a>
-            <a href="#motivacny-list">Motivačný list</a>
             <a href="#projekt">Projekt</a>
+            <a href="#dokumenty">Dokumenty</a>
             <a href="#tim">Tím</a>
         </nav>
     </header>
@@ -22,79 +23,113 @@
     <main>
         <h1 class="sr-only">Voltask</h1>
 
-        <section id="zapisnica">
-            <h2>Zápisnica</h2>
-            <a class="tlacidlo" href="doc/2026-10-19-zapisnica.pdf" download>Stiahnuť zápisnicu (PDF)</a>
-        </section>
-
-        <section id="motivacny-list">
-            <h2>Motivačný list</h2>
-            <a class="tlacidlo" href="doc/motivacny-list-skupina-3.pdf" download>Stiahnuť motivačný list (PDF)</a>
-        </section>
-
         <section id="projekt">
             <h2>Projekt</h2>
             <article>
-                <h3>STUDDIT</h3>
-                <p>Popis apky....</p>
+                <h3>Voltask</h3>
+                <p>
+                    Voltask je platforma na evidenciu tímov a úloh, ktorá vzniká ako alternatíva k nástrojom
+                    ako Jira alebo Trello. Je optimalizovaná priamo pre potreby predmetu Tímový projekt,
+                    aby študenti aj učitelia mali prehľad o práci tímov na jednom mieste.
+                </p>
+
+                <p>Hlavné funkcie:</p>
                 <ul>
-                    <li>Frontend: TypeScript + React (Vite) + dnd-kit</li>
+                    <li>vytváranie tímov a pridávanie členov</li>
+                    <li>Kanban nástenka s úlohami v stĺpcoch To Do, In Progress a Done</li>
+                    <li>prideľovanie úloh členom tímu a sledovanie aktivity</li>
+                    <li>real-time aktualizácia úloh vďaka WebSocketom</li>
+                    <li>notifikácie cez webhooky do fakultného Discordu alebo Slacku, napríklad „Jozef dokončil úlohu X“</li>
+                    <li>prehľad všetkých tímov a ich progresu pre učiteľa</li>
+                </ul>
+
+                <p>Použité technológie:</p>
+                <ul>
+                    <li>Frontend: TypeScript + React</li>
                     <li>Backend: TypeScript + Node.js + NestJS + Socket.IO</li>
                     <li>Databáza: PostgreSQL + Prisma</li>
                     <li>Ostatné: JWT autentifikácia, Discord webhook, Docker Compose, GitHub Actions</li>
                 </ul>
             </article>
         </section>
+
+        <section id="dokumenty">
+            <h2>Dokumenty</h2>
+            <ul class="dokumenty">
+                <li>
+                    <article>
+                        <h3>Motivačný list</h3>
+                        <a class="tlacidlo" href="doc/motivacny-list-skupina-3.pdf" download>Stiahnuť PDF</a>
+                    </article>
+                </li>
+                <li>
+                    <article>
+                        <h3>Zápisnica</h3>
+                        <a class="tlacidlo" href="doc/2026-10-19-zapisnica.pdf" download>Stiahnuť PDF</a>
+                    </article>
+                </li>
+                <li>
+                    <article>
+                        <h3>Prezentácia</h3>
+                        <a class="tlacidlo" href="doc/voltask-project.pdf" download>Stiahnuť PDF</a>
+                    </article>
+                </li>
+            </ul>
+        </section>
+
         <section id="tim">
             <h2>Tím</h2>
             <p class="uvod">Zloženie tímu a ich hlavné úlohy:</p>
+
+            <figure class="tim-foto">
+                <img src="/frontend/web/images/tim.jpg" alt="Celý tím Voltask" loading="lazy">
+            </figure>
+
             <ul class="tim">
                 <li>
                     <article>
-                        <img src="images/tim/zuzana.jpg" alt="Zuzana Butašová" loading="lazy">
-                        <h3>Zuzana Butašová</h3>
-                        <p class="rola">Projektový manažér</p>
-                        <p>V rámci projektu zastávam rolu projektového manažéra a product ownera – zodpovedám za
-                            koordináciu tímu, definovanie priorít, priebežnú kontrolu plnenia cieľov a komunikáciu medzi
-                            členmi tímu.</p>
+                        <img src="images/juraj_vozarik.jpg" alt="Juraj Vozárik" loading="lazy">
+                        <h3>Juraj Vozárik</h3>
+                        <p class="rola">Researcher, Documentation Specialist, Proofreader</p>
+                        <p>Zodpovedá za vyhľadávanie a spracovanie informácií, tvorbu projektovej dokumentácie a jazykovú korektúru textov.
+                            Dbá na prehľadnosť a kvalitu dokumentácie.</p>
                     </article>
                 </li>
                 <li>
                     <article>
-                        <img src="images/tim/michal.jpg" alt="Michal Caban" loading="lazy">
-                        <h3>Michal Caban</h3>
-                        <p class="rola">Backend vývojár, integrátor</p>
-                        <p>Programujem v jazykoch Java a Python. Skúsenosti s vývojom webových aplikácií by som chcel
-                            uplatniť a rozšíriť v projekte PAYMY na pozícii backend vývojár a integrátor.</p>
+                        <img src="images/martin_polansky.jpg" alt="Martin Polanský" loading="lazy">
+                        <h3>Martin Polanský</h3>
+                        <p class="rola">Team Leader, Developer, QA Engineer</p>
+                        <p>V projekte VoltAsk pôsobím ako vedúci tímu a hlavný backend programátor.
+                            Zodpovedám za návrh architektúry aplikácie, databázy a API, vývoj backendu a jeho prepojenie s frontendom.
+                            Zároveň koordinujem tím, rozdeľujem úlohy a dohliadam na kvalitu kódu.</p>
                     </article>
                 </li>
                 <li>
                     <article>
-                        <img src="images/tim/christian.jpg" alt="Christián Kička" loading="lazy">
-                        <h3>Christián Kička</h3>
-                        <p class="rola">Frontend vývojár (UI/UX)</p>
-                        <p>Mám skúsenosti z vývoja frontend riešení, zmysel pre detail a snahu vytvárať funkčné,
-                            používateľsky prívetivé rozhrania. Mojím cieľom je pomôcť vytvoriť moderný systém, ktorý
-                            bude pre športový klub praktickým a intuitívnym nástrojom.</p>
+                        <img src="images/matus_toth.jpg" alt="Matúš Tóth" loading="lazy">
+                        <h3>Matúš Tóth</h3>
+                        <p class="rola">Developer, Data Engineer, DevOps Engineer</p>
+                        <p>Podieľa sa na vývoji aplikácie, spracovaní dát a technickom zabezpečení projektu.
+                            Zameriava sa na praktické riešenia a rozvoj technických znalostí.</p>
                     </article>
                 </li>
                 <li>
                     <article>
-                        <img src="images/tim/adam.jpg" alt="Adam Panák" loading="lazy">
-                        <h3>Adam Panák</h3>
-                        <p class="rola">Tester</p>
-                        <p>Projektu som sa rozhodol zúčastniť preto, lebo je vhodný na reálne nasadenie a na rozšírenie
-                            mojich vedomostí. Mám zmysel pre detail, dodržiavanie pravidiel a verím, že tieto moje
-                            vlastnosti prispejú k tomu, že systém bude spoľahlivý a bez chýb.</p>
+                        <img src="images/peter_luzak.jpeg" alt="Peter Lužák" loading="lazy">
+                        <h3>Peter Lužák</h3>
+                        <p class="rola">Frontend Developer, Team Motivator, Time Manager</p>
+                        <p>Zodpovedá za vývoj frontendu a používateľské rozhranie.
+                            Pomáha s organizáciou tímovej práce, plánovaním času a koordináciou spoločných úloh.</p>
                     </article>
                 </li>
                 <li>
                     <article>
-                        <img src="images/tim/jan.jpg" alt="Ján Plachý" loading="lazy">
-                        <h3>Ján Plachý</h3>
-                        <p class="rola">Dokumentarista, web developer</p>
-                        <p>Mojím zámerom je zhmotniť plány a nápady tímu prostredníctvom projektovej webovej stránky,
-                            ktorá svojím obsahom bude poukazovať na to kto sme, čo robíme a kam smerujeme.</p>
+                        <img src="images/michal_trebichalsky.png" alt="Michal Trebichalský" loading="lazy">
+                        <h3>Michal Trebichalský</h3>
+                        <p class="rola">Frontend Developer, UI/UX Designer, Content Writer</p>
+                        <p>Navrhuje a vyvíja frontend projektovej webovej stránky a zodpovedá za jej funkčnosť. 
+                            Spracúva obsah a dbá na to, aby bol tím a jeho práca predstavené jasne a prehľadne.</p>
                     </article>
                 </li>
             </ul>
@@ -103,14 +138,14 @@
 
     <footer>
         <section class="footer-brand">
-            <h2>STUDDIT</h2>
-            <p>© 2026 STUDDIT. Všetky práva vyhradené.</p>
+            <h2>VoltAsk</h2>
+            <p>© 2026 VoltAsk. Všetky práva vyhradené.</p>
         </section>
 
         <section class="footer-contact">
             <h3>Kontakt</h3>
             <address>
-                <a href="mailto:kontakt@studdit.sk">kontakt@studdit.sk</a>
+                <a href="mailto:kontakt@voltask.sk">kontakt@voltask.sk</a>
                 <a href="tel:+421900123456">+421 900 123 456</a>
             </address>
         </section>
