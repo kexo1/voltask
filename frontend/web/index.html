@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voltask</title>
-    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/png" href="favicon.ico">
     <link rel="stylesheet" href="styles/style.css">
     <meta name="description" content="Voltask - platforma na evidenciu tímov.">
 </head>
@@ -15,6 +15,7 @@
         <nav>
             <a class="nav-logo" href="#"><img src="logo.png" alt="Voltask - logo"></a>
             <a href="#projekt">Projekt</a>
+            <a href="#harmonogram">Harmonogram</a>
             <a href="#dokumenty">Dokumenty</a>
             <a href="#tim">Tím</a>
         </nav>
@@ -52,32 +53,118 @@
                     <li>Ostatné: JWT autentifikácia, Discord webhook, Docker Compose, GitHub Actions</li>
                 </ul>
             </article>
+            <hr>            
         </section>
-
+        
+         <section id="harmonogram">
+            <h2>Harmonogram</h2>
+            <article>
+                <h3>Prehľad fáz</h3>
+                <p>Trvanie projektu: <strong>11 týždňov</strong> (aktívny vývoj 9 týždňov, rezerva 2 týždne)</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fáza</th>
+                            <th>Trvanie</th>
+                            <th>Týždeň</th>
+                            <th>Hlavný výstup</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1. Iniciácia projektu</td>
+                            <td>1 týždeň</td>
+                            <td>1</td>
+                            <td>Zadanie, rozdelenie rolí, nastavenie komunikácie</td>
+                        </tr>
+                        <tr>
+                            <td>2. Analýza požiadaviek</td>
+                            <td>1 týždeň</td>
+                            <td>2</td>
+                            <td>SRS dokument, ERD model databázy</td>
+                        </tr>
+                        <tr>
+                            <td>3. Návrh riešenia</td>
+                            <td>1 týždeň</td>
+                            <td>3</td>
+                            <td>Architektúra systému, návrh databázy a API, návrhy obrazoviek</td>
+                        </tr>
+                        <tr>
+                            <td>4. Implementácia – backend (I.)</td>
+                            <td>2 týždne</td>
+                            <td>4–5</td>
+                            <td>Databáza (Prisma), JWT autentifikácia, tímy a úlohy (REST API)</td>
+                        </tr>
+                        <tr>
+                            <td>5. Implementácia – frontend (I.)</td>
+                            <td>2 týždne</td>
+                            <td>4–5</td>
+                            <td>Základné UI (prihlásenie, prehľad tímov), Kanban nástenka</td>
+                        </tr>
+                        <tr>
+                            <td>6. Implementácia – backend + frontend (II.)</td>
+                            <td>2 týždne</td>
+                            <td>6–7</td>
+                            <td>Real-time aktualizácie (WebSockety), Discord webhook notifikácie, pohľad učiteľa</td>
+                        </tr>
+                        <tr>
+                            <td>7. Testovanie a ladenie</td>
+                            <td>1 týždeň</td>
+                            <td>8</td>
+                            <td>Testovací plán, opravy chýb</td>
+                        </tr>
+                        <tr>
+                            <td>8. Nasadenie a dokumentácia</td>
+                            <td>1 týždeň</td>
+                            <td>9</td>
+                            <td>Nasadenie (Docker Compose), používateľská dokumentácia</td>
+                        </tr>
+                        <tr>
+                            <td>9. Rezerva</td>
+                            <td>2 týždne</td>
+                            <td>10–11</td>
+                            <td>Finálne úpravy, prezentácia projektu</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+ 
+            <article>
+                <h3>Milníky</h3>
+                <ul>
+                    <li>M1 – schválenie analýzy (koniec 2. týždňa)</li>
+                    <li>M2 – hotový návrh UI a databázy (koniec 3. týždňa)</li>
+                    <li>M3 – hotový backend a základný frontend (koniec 7. týždňa)</li>
+                    <li>M4 – testovanie a opravy chýb (koniec 8. týždňa)</li>
+                    <li>M5 – nasadenie, dokumentácia a prezentácia (9.–11. týždeň)</li>
+                </ul>
+            </article>
+            <hr>
+        </section>
         <section id="dokumenty">
             <h2>Dokumenty</h2>
             <ul class="dokumenty">
                 <li>
                     <article>
                         <h3>Motivačný list</h3>
-                        <a class="tlacidlo" href="doc/motivacny-list-skupina-3.pdf" download>Stiahnuť PDF</a>
+                        <a class="tlacidlo" href="doc/motivacny-list-skupina-3.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
                     </article>
                 </li>
                 <li>
                     <article>
                         <h3>Zápisnica</h3>
-                        <a class="tlacidlo" href="doc/2026-10-19-zapisnica.pdf" download>Stiahnuť PDF</a>
+                        <a class="tlacidlo" href="doc/2026-10-19-zapisnica.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
                     </article>
                 </li>
                 <li>
                     <article>
                         <h3>Prezentácia</h3>
-                        <a class="tlacidlo" href="doc/voltask-project.pdf" download>Stiahnuť PDF</a>
+                        <a class="tlacidlo" href="doc/voltask-project.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
                     </article>
                 </li>
             </ul>
+            <hr>
         </section>
-
         <section id="tim">
             <h2>Tím</h2>
             <p class="uvod">Zloženie tímu a ich hlavné úlohy:</p>
@@ -137,6 +224,7 @@
                 </li>
             </ul>
         </section>
+        <hr>
     </main>
 
     <footer>
@@ -154,5 +242,4 @@
         </section>
     </footer>
 </body>
-
 </html>
