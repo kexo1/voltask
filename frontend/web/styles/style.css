@@ -114,18 +114,13 @@ article li { margin-bottom: 0.5rem; }
 
 .tlacidlo:hover { background: var(--btn-hover); transform: translateY(-2px); }
 
-/* Spolocna mriezka (tim a dokumenty) */
-.tim, .dokumenty {
+/* Mriezka clenov timu */
+.tim {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--min, 380px)), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
     gap: 1.5rem;
     list-style: none;
 }
-
-/* Dokumenty */
-.dokumenty { --min: 240px; }
-.dokumenty article { display: flex; flex-direction: column; height: 100%; }
-.dokumenty .tlacidlo { margin-top: auto; align-self: flex-start; }
 
 /* Tim */
 .uvod { margin-bottom: 1.5rem; color: var(--muted); }
@@ -166,12 +161,32 @@ hr {
     background: linear-gradient(90deg, transparent, rgba(61, 132, 255, 0.5), transparent);
 }
 
+/* Tabulky (harmonogram a dokumenty) */
+table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+th, td { padding: 0.7rem 0.9rem; text-align: left; border-bottom: 1px solid var(--line); }
+th { color: #fff; background: rgba(61, 132, 255, 0.12); white-space: nowrap; }
+
 /* Harmonogram (tabulka sa na uzkych obrazovkach posuva do strany) */
 #harmonogram article { margin-bottom: 1.5rem; overflow-x: auto; }
-#harmonogram table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 0.95rem; }
-#harmonogram th, #harmonogram td { padding: 0.7rem 0.9rem; text-align: left; border-bottom: 1px solid var(--line); }
+#harmonogram table { min-width: 560px; }
 #harmonogram td:nth-child(2), #harmonogram td:nth-child(3) { white-space: nowrap; }
-#harmonogram th { color: #fff; background: rgba(61, 132, 255, 0.12); white-space: nowrap; }
+
+/* Dokumenty - kompaktna tabulka, novy subor = novy riadok <tr> */
+.dokumenty {
+    border-collapse: separate;
+    border-spacing: 0;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.dokumenty td { padding: 0.5rem 0.9rem; }
+.dokumenty td:nth-child(2) { color: var(--muted); white-space: nowrap; }
+.dokumenty th:last-child, .dokumenty td:last-child { text-align: right; }
+.dokumenty tbody tr:last-child td { border-bottom: 0; }
+.dokumenty tbody tr:hover { background: rgba(255, 255, 255, 0.04); }
+.dokumenty .tlacidlo { margin: 0; padding: 0.35rem 1rem; font-size: 0.85rem; box-shadow: none; white-space: nowrap; }
 
 /* Footer */
 footer {
