@@ -26,11 +26,10 @@
         <section id="harmonogram">
             <h2>Harmonogram</h2>
             <article>
-                <h3>Prehľad fáz</h3>
+                <h3>Úlohy podľa týždňov</h3>
                 <table>
                     <thead>
                         <tr>
-                            <th>Týždeň</th>
                             <th>Člen tímu</th>
                             <th>Úloha</th>
                             <th>Merateľný výstup</th>
@@ -38,59 +37,160 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1. Iniciácia projektu</td>
-                            <td>1 týždeň</td>
-                            <td>1</td>
-                            <td>Zadanie, rozdelenie rolí, nastavenie komunikácie</td>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span>1. týždeň</span><span class="week-date">Termín: 19.
+                                    10. 2026</span></th>
                         </tr>
                         <tr>
-                            <td>2. Analýza požiadaviek</td>
-                            <td>1 týždeň</td>
-                            <td>2</td>
-                            <td>SRS dokument, ERD model databázy</td>
+                            <td>Martin Polanský (vedúci tímu)</td>
+                            <td>Rozdelenie rolí, vytvorenie GitHub repozitára a branches, predstavenie klonovania a
+                                základov GitHubu, vytvorenie základnej štruktúry projektu a spolupráca na prezentácii
+                            </td>
+                            <td>Rozdelené roly, vytvorený repozitár s branches a základná štruktúra projektu; členovia
+                                oboznámení so základmi GitHubu a príspevok do spoločnej prezentácie</td>
+                            <td>19. 10. 2026</td>
                         </tr>
                         <tr>
-                            <td>3. Návrh riešenia</td>
-                            <td>1 týždeň</td>
-                            <td>3</td>
+                            <td>Peter Lužák</td>
+                            <td>Spolupráca na prezentácii a príprava podkladov k zápisnici</td>
+                            <td>Príspevok do spoločnej prezentácie a pripravené podklady k zápisnici</td>
+                            <td>19. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Matúš Tóth</td>
+                            <td>Vypracovanie motivačného listu a spolupráca na prezentácii</td>
+                            <td>Dokončený motivačný list a príspevok do spoločnej prezentácie</td>
+                            <td>19. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Michal Trebichalský</td>
+                            <td>Vytvorenie úvodnej stránky a spolupráca na prezentácii</td>
+                            <td>Hotová úvodná stránka a príspevok do spoločnej prezentácie</td>
+                            <td>19. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Juraj Vozárik</td>
+                            <td>Spolupráca na prezentácii, zaznamenanie priebehu práce do zápisnice a kontrola
+                                dokumentov a stránky</td>
+                            <td>Príspevok do spoločnej prezentácie, vypracovaná zápisnica a skontrolované dokumenty a
+                                úvodná stránka</td>
+                            <td>19. 10. 2026</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span>2. týždeň</span><span class="week-date">Termín: 28.
+                                    10. 2026</span></th>
+                        </tr>
+                        <tr>
+                            <td>Martin Polanský (vedúci tímu)</td>
+                            <td>Nastavenie backendu pre Node.js, ukážka inštalácie Dockeru a načítania databázy,
+                                zaznamenanie harmonogramu</td>
+                            <td>Pripravený základ backendu, členovia oboznámení s Dockerom a načítaním databázy,
+                                harmonogram zaznamenaný</td>
+                            <td>28. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Peter Lužák</td>
+                            <td>Pomoc členom tímu pri inštalácii Dockeru</td>
+                            <td>Poskytnutá pomoc pri inštalácii Dockeru</td>
+                            <td>28. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Matúš Tóth</td>
+                            <td>Kontrola databázy PostgreSQL a Node.js</td>
+                            <td>Skontrolované nastavenie databázy PostgreSQL a Node.js</td>
+                            <td>28. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Michal Trebichalský</td>
+                            <td>Vytvorenie harmonogramu na stránke a aktualizácia rozdelenia zápisníc v zozname</td>
+                            <td>Harmonogram zverejnený na stránke a aktualizované rozdelenie zápisníc v zozname</td>
+                            <td>28. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Juraj Vozárik</td>
+                            <td>Spracovanie zápisnice a aktualizácia dokumentácie podľa priebehu práce</td>
+                            <td>Spracovaná zápisnica a aktualizovaná dokumentácia</td>
+                            <td>28. 10. 2026</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span>3. týždeň</span><span class="week-date">Plán</span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>Tím</td>
+                            <td>Návrh riešenia projektu</td>
                             <td>Architektúra systému, návrh databázy a API, návrhy obrazoviek</td>
+                            <td>Do konca 3. týždňa</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span>4.–5. týždeň</span><span
+                                    class="week-date">Plán</span></th>
                         </tr>
                         <tr>
-                            <td>4. Implementácia – backend (I.)</td>
-                            <td>2 týždne</td>
-                            <td>4–5</td>
+                            <td>Tím</td>
+                            <td>Implementácia backendu (I.)</td>
                             <td>Databáza (Prisma), JWT autentifikácia, tímy a úlohy (REST API)</td>
+                            <td>Do konca 5. týždňa</td>
                         </tr>
                         <tr>
-                            <td>5. Implementácia – frontend (I.)</td>
-                            <td>2 týždne</td>
-                            <td>4–5</td>
+                            <td>Tím</td>
+                            <td>Implementácia frontendu (I.)</td>
                             <td>Základné UI (prihlásenie, prehľad tímov), Kanban nástenka</td>
+                            <td>Do konca 5. týždňa</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span>6.–7. týždeň</span><span
+                                    class="week-date">Plán</span></th>
                         </tr>
                         <tr>
-                            <td>6. Implementácia – backend + frontend (II.)</td>
-                            <td>2 týždne</td>
-                            <td>6–7</td>
+                            <td>Tím</td>
+                            <td>Implementácia backendu a frontendu (II.)</td>
                             <td>Real-time aktualizácie (WebSockety), Discord webhook notifikácie, pohľad učiteľa</td>
+                            <td>Do konca 7. týždňa</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span>8. týždeň</span><span class="week-date">Plán</span>
+                            </th>
                         </tr>
                         <tr>
-                            <td>7. Testovanie a ladenie</td>
-                            <td>1 týždeň</td>
-                            <td>8</td>
-                            <td>Testovací plán, opravy chýb</td>
+                            <td>Tím</td>
+                            <td>Testovanie a ladenie</td>
+                            <td>Testovací plán a opravené chyby</td>
+                            <td>Do konca 8. týždňa</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span>9. týždeň</span><span class="week-date">Plán</span>
+                            </th>
                         </tr>
                         <tr>
-                            <td>8. Nasadenie a dokumentácia</td>
-                            <td>1 týždeň</td>
-                            <td>9</td>
-                            <td>Nasadenie (Docker Compose), používateľská dokumentácia</td>
+                            <td>Tím</td>
+                            <td>Nasadenie a dokumentácia</td>
+                            <td>Nasadenie pomocou Docker Compose a používateľská dokumentácia</td>
+                            <td>Do konca 9. týždňa</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span>10.–11. týždeň</span><span
+                                    class="week-date">Plán</span></th>
                         </tr>
                         <tr>
-                            <td>9. Rezerva</td>
-                            <td>2 týždne</td>
-                            <td>10–11</td>
-                            <td>Finálne úpravy, prezentácia projektu</td>
+                            <td>Tím</td>
+                            <td>Rezerva, finálne úpravy a prezentácia projektu</td>
+                            <td>Dokončené finálne úpravy a pripravená prezentácia projektu</td>
+                            <td>Do konca 11. týždňa</td>
                         </tr>
                     </tbody>
                 </table>
