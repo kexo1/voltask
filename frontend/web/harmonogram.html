@@ -167,14 +167,64 @@
                     </tbody>
                     <tbody>
                         <tr class="week-heading">
-                            <th scope="rowgroup" colspan="4"><span>3. týždeň</span><span class="week-date">Plán</span>
-                            </th>
+                            <th scope="rowgroup" colspan="4"><span>3. týždeň</span><span class="week-date">Termín: 1.
+                                    11. 2026</span></th>
                         </tr>
                         <tr>
-                            <td>Tím</td>
-                            <td>Návrh riešenia projektu</td>
-                            <td>Architektúra systému, návrh databázy a API, návrhy obrazoviek</td>
-                            <td>Do konca 3. týždňa</td>
+                            <td>Martin Polanský (vedúci tímu)</td>
+                            <td>Rozdelenie úloh a vetiev (branches) medzi členov tímu, vytvorenie základu tímového API
+                                v NestJS a zapojenie modulov do AppModule. Postup: 1) na stretnutí sa každému členovi
+                                pridelila úloha a vlastná vetva, aby sa pri práci neprekrývali, 2) pre svoju úlohu
+                                vytvoril vetvu feature/teams-api, 3) v NestJS vytvoril samostatný modul pre tímy, 4)
+                                do modulu pridal endpointy na načítanie tímov a vytvorenie nového tímu a vyskúšal ich,
+                                5) po dokončení modulov ostatných členov ich zapojil do AppModule, 6) overil, že
+                                aplikácia po zapojení modulov beží</td>
+                            <td>Rozdelené úlohy a vetvy, funkčný základ tímového API (načítanie a vytvorenie tímu) a
+                                moduly zapojené do AppModule</td>
+                            <td>1. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Peter Lužák</td>
+                            <td>Vytvorenie samostatného formulára na vytvorenie úlohy a výber riešiteľa. Postup: 1)
+                                vytvoril vlastnú vetvu feature/task-create-form, 2) formulár vytvoril ako samostatný
+                                komponent v oddelenom súbore, 3) pridal polia na zadanie úlohy a výber riešiteľa, 4)
+                                skontroloval, že komponent nezasahuje do súborov Kanban nástenky, aby sa pri
+                                zlučovaní vetiev neprekrýval s prácou Michala</td>
+                            <td>Samostatný komponent formulára na vytvorenie úlohy s výberom riešiteľa, pripravený na
+                                zapojenie do nástenky</td>
+                            <td>1. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Matúš Tóth</td>
+                            <td>Vytvorenie základu API pre úlohy (načítanie úloh a zmena stavu). Postup: 1) vytvoril
+                                vlastnú vetvu feature/tasks-api, 2) v NestJS vytvoril samostatný modul pre úlohy, 3)
+                                využil existujúcu Prisma schému na prístup k úlohám v databáze, 4) pridal endpointy
+                                na načítanie úloh a zmenu stavu úlohy a vyskúšal ich, 5) AppModule zatiaľ neupravoval,
+                                aby nevznikli konflikty pri zlučovaní, jeho zapojenie vykoná vedúci tímu</td>
+                            <td>Základ API pre úlohy (načítanie úloh a zmena stavu) pripravený na zapojenie do
+                                AppModule</td>
+                            <td>1. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Michal Trebichalský</td>
+                            <td>Vytvorenie jednoduchej Kanban nástenky s tromi stĺpcami a ukážkovými úlohami. Postup:
+                                1) vytvoril vlastnú vetvu feature/kanban-board, 2) odstránil úvodnú obrazovku
+                                vygenerovanú nástrojom Vite, 3) vytvoril nástenku s tromi stĺpcami podľa stavu úlohy,
+                                4) stĺpce naplnil ukážkovými úlohami, 5) skontroloval zobrazenie nástenky v prehliadači
+                            </td>
+                            <td>Jednoduchá Kanban nástenka s tromi stĺpcami a ukážkovými úlohami, ktorá nahradila
+                                úvodnú obrazovku z Vite</td>
+                            <td>1. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Juraj Vozárik</td>
+                            <td>Spísanie testovacích scenárov a testovanie API. Postup: 1) vytvoril vetvu
+                                docs/prototype-test-cases, 2) spísal krátke scenáre na otestovanie tímov, úloh a
+                                zmeny stavu, pričom každý obsahuje kroky a očakávaný výsledok, 3) po dokončení API
+                                scenáre prešiel, 4) zistené chyby nahlásil autorom príslušných častí</td>
+                            <td>Spísané testovacie scenáre, otestované API a nahlásené chyby autorom jednotlivých
+                                častí</td>
+                            <td>1. 11. 2026</td>
                         </tr>
                     </tbody>
                     <tbody>
