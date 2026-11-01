@@ -17,7 +17,7 @@ export class EventsGateway {
   // TODO: po pridaní autentifikácie overiť, že používateľ je členom tímu
   @SubscribeMessage('joinTeam')
   handleJoinTeam(
-    @MessageBody() teamId: number,
+    @MessageBody() teamId: string,
     @ConnectedSocket() client: Socket,
   ) {
     client.join(`team:${teamId}`);

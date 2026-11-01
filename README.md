@@ -1,44 +1,164 @@
-# Platforma na evidenciu tímov a úloh
+# Voltask
 
-**TL;DR:** Webová aplikácia na správu tímov a úloh (Kanban nástenka, real-time aktualizácie, notifikácie na Discord). Celý projekt sa spúšťa jedným príkazom cez Docker Compose.
+Voltask je tímový projekt pre predmet Tímový projekt na UCM: platforma na
+evidenciu tímov a úloh, Kanban nástenka, real-time aktualizácie a prehľad progresu.
 
-## Spustenie
+## Spustenie cez Docker
 
+Požiadavky: Docker Desktop s Docker Compose.
+
+1. Skopíruj `.env.example` do `.env`.
+2. Spusti projekt:
+
+   ```sh
+   docker compose up --build
+   ```
+
+3. Otvor aplikácie:
+
+   | Služba | Adresa |
+   |---|---|
+   | Voltask React aplikácia | http://localhost:5173 |
+   | Voltask projektová stránka | http://localhost:8080 |
+   | Backend health check | http://localhost:3000/api/health |
+   | PostgreSQL | localhost:5432 |
+
+Každý člen tímu klonuje repozitár a vytvorí si vlastný `.env` z `.env.example`.
+Potom spustí rovnaké `docker compose up --build`; netreba samostatne inštalovať
+Node.js, NestJS ani PostgreSQL. Docker vytvorí oddelenú lokálnu databázu pre
+každý počítač. Prvé spustenie backendu aplikuje verzované Prisma migrácie.
+
+Discord webhook je voliteľný. Jeho URL nastav v `.env` ako
+`DISCORD_WEBHOOK_URL`; webhook neposielaj do Gitu ani tímového chatu. Súbor `.env`
+obsahuje lokálne nastavenia a tajomstvá a nesmie sa commitnúť.
+
+Užitočné Docker príkazy z koreňa repozitára:
+
+```sh
+docker compose up --build       # spustí alebo prestavia všetky služby
+docker compose logs -f backend  # zobrazí backend logy
+docker compose down             # zastaví kontajnery, dáta databázy ponechá
 ```
-cp .env.example .env
-docker compose up --build
+
+`docker compose down -v` navyše vymaže lokálnu databázu. Použi ho iba vtedy,
+keď chceš zahodiť všetky lokálne dáta.
+
+### Spustenie bez Dockeru (voliteľné)
+
+Vyžaduje Node.js 22+ a lokálny PostgreSQL. V `backend/.env` nastav
+`DATABASE_URL` podľa `backend/.env.example`, potom:
+
+```sh
+cd backend
+npm ci
+npm run db:generate
+npm run db:migrate
+npm run start:dev
 ```
 
-Po spustení:
+V druhom termináli:
 
-| Služba | Adresa |
+```sh
+cd frontend
+npm ci
+npm run dev
+```
+
+Vite proxy posiela `/api` a `/socket.io` požiadavky na lokálny backend.
+
+## Štruktúra projektu
+
+| Cesta | Obsah |
 |---|---|
-| Frontend | http://localhost:5173 |
-| Backend (health check) | http://localhost:3000/api/health |
-| PostgreSQL | localhost:5432 |
+| `frontend/src/` | React + TypeScript aplikácia (Vite) |
+| `frontend/web/` | Povinná samostatná školská stránka, dostupná cez port 8080 |
+| `backend/src/` | NestJS API, WebSocket gateway a moduly podľa oblastí |
+| `backend/prisma/` | Prisma schéma a verzované databázové migrácie |
+| `docker-compose.yml` | Zoznam služieb, portov, volume a ich prepojenie pre Docker |
+| `.github/workflows/` | Automatický build a lint pri pushi a pull requeste |
+| `AGENTS.md` | Pokyny pre prácu s projektom a tímové konvencie |
 
-Súbor `.env` obsahuje heslá a nikdy sa nesmie pridať do Gitu. Odkaz na Discord webhook sa dopĺňa do premennej `DISCORD_WEBHOOK_URL`.
+PostgreSQL je databázový server; Prisma je ORM a nástroj na schému/migrácie.
+Obe technológie používame spolu.
 
-Skript `database/init.sql` sa vykoná len pri prvom vytvorení databázy. Po zmene schémy treba databázu zmazať a vytvoriť znova:
+## Ktoré konfiguračné súbory riešiť
 
+Nemusíš poznať všetky konfigurácie naraz. Pri bežnej práci najčastejšie upravíš
+zdrojové súbory v `frontend/src/` alebo `backend/src/`.
+
+| Súbor | Na čo slúži | Bežné pravidlo |
+|---|---|---|
+| `frontend/package.json` | Frontendové knižnice a príkazy `build`, `lint`, `dev` | Príkaz spustíš cez `npm run <názov>` |
+| `frontend/package-lock.json` | Presné verzie frontendových knižníc | Udržiava ho npm; ručne ho neupravuj |
+| `backend/package.json` | Backendové knižnice a príkazy vrátane Prisma | Nové balíky pridávaj cez `npm install` |
+| `backend/package-lock.json` | Presné verzie backendových knižníc | Commituje sa spolu s `package.json` |
+| `docker-compose.yml` | Ako sa spolu spúšťajú PostgreSQL, API, React a školský web | Zmena portov alebo služieb patrí sem |
+| `.env.example` | Vzor lokálnych nastavení pre Docker Compose | Bez reálnych hesiel a webhookov |
+| `.env` | Tvoje lokálne nastavenia | Je ignorovaný Gitom; neposielaj ho spolužiakom |
+| `backend/prisma/schema.prisma` | Tabuľky, polia a vzťahy databázy | Zmenu schémy sprevádza nová migrácia |
+| `backend/prisma/migrations/` | História prenosných databázových zmien | Migrácie commituj; nemaž ani neupravuj už zdieľané |
+| `backend/prisma.config.ts` | Nastavenie Prisma schémy a ciest migrácií | Zvyčajne netreba meniť |
+| `backend/tsconfig.json`, `frontend/tsconfig*.json` | Pravidlá TypeScript kompilátora | Menia sa len pri zámere zmeniť type-check |
+| `frontend/vite.config.ts` | Vývojový frontend server a API/WebSocket proxy | Vďaka proxy frontend volá backend cez rovnaký origin |
+| `Dockerfile`, `.dockerignore` | Ako sa zostaví image danej služby a čo do nej nekopírovať | Uprav pri zmene Docker buildu |
+| `.github/workflows/ci.yml` | Automatické kontroly na GitHube pri PR | CI musí prejsť pred zlúčením |
+| `.gitignore` | Súbory, ktoré Git nemá commitovať | `.env`, `node_modules` a build výstupy ignorujeme |
+
+Názov projektu v Compose je `voltask`, preto Docker vytvára kontajnery ako
+`voltask-backend-1`, `voltask-frontend-1` a `voltask-db-1`. Tento interný názov
+nemení adresu GitHub repozitára.
+
+## Branch stratégia a pull requesty
+
+- `main` — stabilná verzia; chráňte ju pravidlami GitHubu, bez priameho pushu.
+- `develop` — integračná vetva pre aktuálnu prácu tímu; tiež bez priameho pushu.
+- Pracovné vetvy zakladajte z `develop`:
+  - `feature/<číslo-úlohy>-<stručný-názov>` — nová funkcionalita, napr. `feature/12-team-api`
+  - `fix/<číslo-úlohy>-<stručný-názov>` — oprava chyby
+  - `docs/<stručný-názov>` — dokumentácia
+  - `chore/<stručný-názov>` — údržba, konfigurácia alebo tooling
+- Otvorte PR do `develop`, priraďte reviewera a počkajte na CI. PR do `main`
+  vytvárajte z `develop`, keď je verzia pripravená na odovzdanie/prezentáciu.
+- Jedna vetva má riešiť jednu dohodnutú úlohu. Pred prácou si s tímom
+  zosúlaďte API a Prisma modely, ak sa zmena dotýka frontendu aj backendu.
+- Commit správy píšte stručne v štýle `feat: add team endpoint`,
+  `fix: handle missing assignee`, `docs: clarify local setup`.
+
+Na GitHube nastavte branch protection pre `main` a `develop`: zakázať priamy
+push a vyžadovať aspoň jedno schválenie PR a úspešný CI workflow. Toto nastavenie
+sa robí v GitHub repozitári, nie v lokálnom Gite.
+
+### Vrátenie commitu
+
+Ak už commit pushneš alebo ho mohli stiahnuť spolužiaci, vytvor opačný commit:
+
+```sh
+git log -1 --oneline
+git revert <hash-commitu>
+git push
 ```
-docker compose down -v
-docker compose up --build
+
+`git revert` zachová históriu a je bezpečný pre zdieľanú vetvu. Ak commit ešte
+nebol pushnutý a je posledný, môžeš ho zrušiť a ponechať zmeny pripravené na
+úpravu:
+
+```sh
+git reset --soft HEAD~1
 ```
 
-## Štruktúra
+Na zdieľanej vetve nepoužívaj `git reset` ani `git push --force`; prepísali by
+históriu, ktorú môžu mať spolužiaci už stiahnutú.
 
-| Priečinok | Obsah |
-|---|---|
-| `frontend/` | React + TypeScript (Vite), stránky v `src/pages`, komponenty v `src/components` |
-| `backend/` | Node.js + NestJS + Socket.IO, každá oblasť má vlastný priečinok v `src/` |
-| `database/` | SQL schéma databázy |
-| `tests/` | testy |
-| `docs/` | dokumentácia a zápisnice zo stretnutí |
-| `.github/workflows/` | automatická kontrola (CI) |
+## Kontroly pred PR
 
-## Pravidlá tímu
+```sh
+cd backend
+npm run db:generate
+npm run build
+```
 
-- Vetvy: `main` (stabilná), `develop` (aktuálna práca), pracovné vetvy `feature/...`, `fix/...`, `docs/...`
-- Priamy push do `main` a `develop` nie je povolený, zmeny idú cez pull request s kontrolou (code review)
-- Commit správy: `typ: popis` (napr. `feat: add login form`)
+```sh
+cd frontend
+npm run lint
+npm run build
+```
