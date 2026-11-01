@@ -24,7 +24,7 @@ export class EventsGateway {
     return { joined: teamId };
   }
 
-  emitToTeam(teamId: number, event: string, payload: unknown) {
+  emitToTeam(teamId: string, event: string, payload: unknown) {
     this.server.to(`team:${teamId}`).emit(event, payload);
   }
 }
