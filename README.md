@@ -80,6 +80,29 @@ Vite proxy posiela `/api` a `/socket.io` požiadavky na lokálny backend.
 PostgreSQL je databázový server; Prisma je ORM a nástroj na schému/migrácie.
 Obe technológie používame spolu.
 
+### Teams API (prototyp)
+
+API zatiaľ nemá JWT autentifikáciu, preto sú tieto endpointy otvorené. Sú určené
+iba na lokálny vývojový prototyp; pred zverejnením aplikácie treba doplniť
+overenie používateľa a jeho oprávnení.
+
+| Metóda a cesta | Čo robí |
+|---|---|
+| `GET /api/teams` | Vráti tímy, počet členov a počet úloh v každom Kanban stave |
+| `POST /api/teams` | Vytvorí tím; vyžaduje `name` (1–80 znakov), voliteľné `description` (najviac 500 znakov) |
+| `GET /api/teams/:id` | Vráti detail tímu, členov, úlohy a súhrn progresu |
+
+Príklad vytvorenia tímu:
+
+```sh
+curl -X POST http://localhost:3000/api/teams \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"Tím A\",\"description\":\"Ukážkový tím\"}"
+```
+
+Odpoveď so súhrnom progresu obsahuje počty `total`, `todo`, `inProgress` a
+`done`. Pri neplatnom vstupe API vráti `400`, pri neexistujúcom tíme `404`.
+
 ## Ktoré konfiguračné súbory riešiť
 
 Nemusíš poznať všetky konfigurácie naraz. Pri bežnej práci najčastejšie upravíš
