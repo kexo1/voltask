@@ -276,6 +276,7 @@ main>#harmonogram {
     vertical-align: top;
     border-bottom: 1px solid var(--line);
     overflow-wrap: anywhere;
+    line-height: 1.55;
 }
 
 #harmonogram thead th {
@@ -299,63 +300,252 @@ main>#harmonogram {
     width: 16%;
 }
 
-#harmonogram tbody+tbody .week-heading th {
-    padding-top: 1.5rem;
+#harmonogram .week-heading th {
+    padding: 0.9rem 0 0.75rem;
+    color: #fff;
+    background: rgba(61, 132, 255, 0.1);
+    border-bottom-color: rgba(61, 132, 255, 0.45);
+    box-shadow: inset 3px 0 var(--blue);
+    font-size: 1.4rem;
+    font-weight: 700;
 }
 
-#harmonogram .week-heading th {
-    padding-bottom: 0.6rem;
-    color: #fff;
-    background: transparent;
-    border-bottom-color: rgba(61, 132, 255, 0.4);
-    font-size: 1.05rem;
+#harmonogram .week-heading-content {
+    display: grid;
+    width: 100%;
+    min-height: 2rem;
+    grid-template-columns: 20% 30% 34% 16%;
+    align-items: center;
+    gap: 0;
+    line-height: 1.4;
+}
+
+#harmonogram .week-heading-content > span:first-child {
+    grid-column: 1 / 4;
+    padding-left: 0.65rem;
 }
 
 #harmonogram .week-date {
-    float: right;
+    grid-column: 4;
+    padding-left: 0.65rem;
+    text-align: left;
     color: var(--muted);
-    font-size: 0.85rem;
+    font-size: 0.92rem;
     font-weight: 400;
+    line-height: 1.4;
 }
 
-/* Dokumenty - kompaktna tabulka, novy subor = novy riadok <tr> */
-.dokumenty {
-    border-collapse: separate;
-    border-spacing: 0;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--line);
-    border-radius: 1rem;
-    overflow: hidden;
+#harmonogram .task-steps {
+    margin: 0.35rem 0 0 1.25rem;
+    padding: 0;
 }
 
-.dokumenty td {
-    padding: 0.5rem 0.9rem;
+#harmonogram .task-steps li {
+    margin-bottom: 0.3rem;
+    padding-left: 0.15rem;
 }
 
-.dokumenty td:nth-child(2) {
-    color: var(--muted);
-    white-space: nowrap;
+#harmonogram .task-steps li:last-child {
+    margin-bottom: 0;
 }
 
-.dokumenty th:last-child,
-.dokumenty td:last-child {
-    text-align: right;
+#harmonogram .task-details {
+    margin-top: 0.5rem;
 }
 
-.dokumenty tbody tr:last-child td {
-    border-bottom: 0;
+#harmonogram .task-details summary {
+    width: fit-content;
+    position: relative;
+    padding-right: 1.2rem;
+    color: #a9c8ff;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
 }
 
-.dokumenty tbody tr:hover {
-    background: rgba(255, 255, 255, 0.04);
+#harmonogram .task-details summary::-webkit-details-marker {
+    display: none;
 }
 
-.dokumenty .tlacidlo {
+#harmonogram .task-details summary::after {
+    content: "+";
+    position: absolute;
+    right: 0;
+    color: #a9c8ff;
+    font-size: 1.1rem;
+    line-height: 1.3;
+    transition: transform 0.2s ease;
+}
+
+#harmonogram .task-details[open] summary::after {
+    transform: rotate(45deg);
+}
+
+#harmonogram .task-details summary:focus-visible,
+.minute-weeks summary:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 3px;
+}
+
+#harmonogram .task-details[open] > .task-steps {
+    margin-top: 0.6rem;
+    animation: disclosure-enter 0.24s ease-out both;
+}
+
+#harmonogram code {
+    color: #dce8ff;
+    overflow-wrap: anywhere;
+}
+
+.dokumenty-groups {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.document-group h3 {
+    margin-bottom: 0.8rem;
+}
+
+.project-documents,
+.minute-weeks {
+    display: grid;
+    gap: 0.65rem;
     margin: 0;
-    padding: 0.35rem 1rem;
+    padding: 0;
+    list-style: none;
+}
+
+.project-documents li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--line);
+    border-radius: 0.65rem;
+}
+
+.minute-weeks li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.75rem 0;
+    box-shadow: inset 0 1px var(--line);
+}
+
+.minute-weeks li > span {
+    line-height: 1.4;
+}
+
+.project-documents .tlacidlo:hover,
+.minute-weeks .tlacidlo:hover {
+    transform: none;
+}
+
+.minute-weeks ul {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.project-documents .tlacidlo,
+.minute-weeks .tlacidlo {
+    margin: 0;
+    padding: 0.45rem 1rem;
     font-size: 0.85rem;
     box-shadow: none;
     white-space: nowrap;
+}
+
+.minute-weeks details {
+    padding: 0.85rem 1rem;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--line);
+    border-radius: 0.65rem;
+}
+
+.minute-weeks summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    min-height: 2rem;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.minute-week-info {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    align-items: center;
+    gap: 0.15rem 0.75rem;
+    line-height: 1.4;
+}
+
+.minute-week-info span:last-child {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.minute-week-toggle {
+    flex: 0 0 auto;
+    color: #a9c8ff;
+    font-size: 1.2rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.minute-weeks details[open] .minute-week-toggle {
+    transform: rotate(45deg);
+}
+
+.minute-weeks details[open] > .disclosure-content {
+    margin-top: 0.75rem;
+    animation: disclosure-enter 0.24s ease-out both;
+}
+
+@keyframes disclosure-enter {
+    from {
+        opacity: 0;
+        transform: translateY(-0.3rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@supports selector(details::details-content) and (interpolate-size: allow-keywords) {
+    #harmonogram .task-details,
+    .minute-weeks details {
+        interpolate-size: allow-keywords;
+    }
+
+    #harmonogram .task-details::details-content,
+    .minute-weeks details::details-content {
+        block-size: 0;
+        overflow: clip;
+        opacity: 0;
+        transition:
+            content-visibility 0.25s allow-discrete,
+            block-size 0.25s ease,
+            opacity 0.2s ease;
+    }
+
+    #harmonogram .task-details[open]::details-content,
+    .minute-weeks details[open]::details-content {
+        block-size: auto;
+        opacity: 1;
+    }
 }
 
 /* Footer */
@@ -419,9 +609,13 @@ footer a:hover {
 /* Mobil */
 @media (max-width: 600px) {
     nav {
-        gap: 1rem;
+        gap: clamp(0.5rem, 2.5vw, 1rem);
         padding: 0.5rem 1rem;
-        font-size: 0.85rem;
+        font-size: clamp(0.72rem, 3.6vw, 0.85rem);
+    }
+
+    nav a {
+        padding: 0.6rem 0;
     }
 
     .nav-logo img {
@@ -459,23 +653,39 @@ footer a:hover {
     }
 
     #harmonogram .week-heading th {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        gap: 0.75rem;
-        padding: 1rem 0 0.55rem;
+        display: block;
+        width: 100%;
+        padding: 0.85rem 0 0.65rem;
+        font-size: 1.25rem;
+        white-space: normal;
     }
 
-    #harmonogram tbody+tbody .week-heading th {
-        padding-top: 1.5rem;
+    #harmonogram .week-heading-content {
+        width: 100%;
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+    }
+
+    #harmonogram .week-heading-content > span:first-child {
+        padding-left: 0.75rem;
+    }
+
+    #harmonogram .day-heading th {
+        display: block;
+        padding: 0.6rem 0.75rem 0.45rem;
+        color: #a9c8ff;
+        background: transparent;
+        border-bottom: 0;
+        font-size: 0.9rem;
     }
 
     #harmonogram .week-date {
-        float: none;
-        text-align: right;
+        grid-column: 1;
+        padding-left: 0.75rem;
+        text-align: left;
     }
 
-    #harmonogram tr:not(.week-heading) {
+    #harmonogram tr:not(.week-heading):not(.day-heading) {
         margin-bottom: 0.85rem;
         padding: 0.45rem 0.8rem;
         background: rgba(255, 255, 255, 0.035);
@@ -484,10 +694,8 @@ footer a:hover {
     }
 
     #harmonogram td {
-        display: grid;
-        grid-template-columns: minmax(5.8rem, 32%) minmax(0, 1fr);
-        gap: 0.75rem;
-        padding: 0.5rem 0;
+        display: block;
+        padding: 0.65rem 0;
         border-bottom: 1px solid var(--line);
     }
 
@@ -496,8 +704,18 @@ footer a:hover {
     }
 
     #harmonogram td::before {
+        display: block;
+        margin-bottom: 0.2rem;
         color: var(--muted);
         font-weight: 600;
+    }
+
+    #harmonogram td p {
+        margin-bottom: 0.35rem;
+    }
+
+    #harmonogram .task-steps {
+        margin-left: 1.2rem;
     }
 
     #harmonogram td:nth-child(1)::before {
@@ -515,9 +733,31 @@ footer a:hover {
     #harmonogram td:nth-child(4)::before {
         content: "Termín";
     }
+
 }
 
 @media (max-width: 480px) {
+    #harmonogram .week-heading th {
+        font-size: 1rem;
+    }
+
+    #harmonogram .week-heading-content {
+        grid-template-columns: 1fr;
+    }
+
+    .minute-weeks summary {
+        gap: 0.5rem;
+    }
+
+    .minute-week-info {
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 0.15rem 0.4rem;
+    }
+
+    .minute-week-info span:last-child {
+        font-size: 0.72rem;
+    }
+
     .tim article {
         grid-template: none;
         justify-items: center;
@@ -530,14 +770,17 @@ footer a:hover {
     }
 }
 
-/* ===== Rezponzivnost pre telefony===== */
-
 /* iOS: zabrani zvacsovaniu pisma pri otoceni telefonu */
-html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
 
 /* iOS Safari nepodporuje background-attachment: fixed, preto je ziara pozadia
    v samostatnej fixnej vrstve, ktora funguje vsade */
-body { background: var(--bg); }
+body {
+    background: var(--bg);
+}
 
 body::before {
     content: "";
@@ -548,34 +791,19 @@ body::before {
     background: radial-gradient(circle at 50% 20%, #12285c, transparent 55%);
 }
 
-@media (max-width: 600px) {
-    /* navigacia: pismo a medzery sa prisposobia sirke, aby sa vsetky odkazy vosli (aj pri 320 px) */
-    nav { gap: clamp(0.5rem, 2.5vw, 1rem); 
-    font-size: clamp(0.72rem, 3.6vw, 0.85rem); }
-    nav a { padding: 0.6rem 0; }
-}
-
-@media (max-width: 700px) {
-    /* harmonogram: hlavicka tyzdna sa moze zalomit na uzkych telefonoch */
-    #harmonogram .week-heading th { flex-wrap: wrap; white-space: normal; }
-
-    /* dokumenty: kazdy riadok tabulky je kompaktna karta (nazov a datum vlavo, tlacidlo vpravo) */
-    .dokumenty, .dokumenty tbody { display: block; }
-    .dokumenty thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
-
-    .dokumenty tr {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        align-items: center;
-        column-gap: 0.75rem;
-        padding: 0.6rem 0.9rem;
-        border-bottom: 1px solid var(--line);
+@media (prefers-reduced-motion: reduce) {
+    #harmonogram .task-details summary::after,
+    .minute-week-toggle {
+        transition: none;
     }
 
-    .dokumenty td { padding: 0; border: 0; }
-    .dokumenty td:nth-child(1) { grid-area: 1 / 1; }
-    .dokumenty td:nth-child(2) { grid-area: 2 / 1; font-size: 0.85rem; white-space: normal; }
-    .dokumenty td:nth-child(3) { grid-area: 1 / 2 / span 2; }
-    .dokumenty tbody tr:last-child { border-bottom: 0; }
-    .dokumenty .tlacidlo { padding: 0.5rem 1rem; }
+    #harmonogram .task-details[open] > .task-steps,
+    .minute-weeks details[open] > .disclosure-content {
+        animation: none;
+    }
+
+    #harmonogram .task-details::details-content,
+    .minute-weeks details::details-content {
+        transition: none;
+    }
 }

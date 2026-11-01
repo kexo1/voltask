@@ -57,43 +57,59 @@
 
         <section id="dokumenty">
             <h2>Dokumenty</h2>
-            <!-- rel="noopener" zvysuje bezpecnost odkazu otvereneho v novej karte -->
-            <table class="dokumenty">
-                <thead>
-                    <tr>
-                        <th>Dokument</th>
-                        <th>Dátum</th>
-                        <th>Súbor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Motivačný list</td>
-                        <td>-</td>
-                        <td><a class="tlacidlo" href="doc/motivacny-list-skupina-3.pdf" target="_blank" rel="noopener">Otvoriť PDF</a></td>
-                    </tr>
-                    <tr>
-                        <td>Prezentácia</td>
-                        <td>-</td>
-                        <td><a class="tlacidlo" href="doc/voltask-project.pdf" target="_blank" rel="noopener">Otvoriť PDF</a></td>
-                    </tr>
-                    <tr>
-                        <td>Zápisnica – týždeň 1</td>
-                        <td>19. 10. 2026 - 21. 10. 2026</td>
-                        <td><a class="tlacidlo" href="doc/2026-10-19-zapisnica.pdf" target="_blank" rel="noopener">Otvoriť PDF</a></td>
-                    </tr>
-                    <tr>
-                        <td>Zápisnica – týždeň 2</td>
-                        <td>28. 10. 2026</td>
-                        <td><a class="tlacidlo" href="doc/2026-10-28-zapisnica.pdf" target="_blank" rel="noopener">Otvoriť PDF</a></td>
-                    </tr>
-                    <tr>
-                        <td>Zápisnica – týždeň 2</td>
-                        <td>1. 11. 2026</td>
-                        <td><a class="tlacidlo" href="doc/2026-11-01-zapisnica.pdf" target="_blank" rel="noopener">Otvoriť PDF</a></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="dokumenty-groups">
+                <article class="document-group">
+                    <h3>Projektové dokumenty</h3>
+                    <ul class="project-documents">
+                        <li>
+                            <span>Motivačný list</span>
+                            <a class="tlacidlo" href="doc/motivacny-list-skupina-3.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
+                        </li>
+                        <li>
+                            <span>Prezentácia</span>
+                            <a class="tlacidlo" href="doc/voltask-project.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
+                        </li>
+                    </ul>
+                </article>
+
+                <article class="document-group">
+                    <h3>Zápisnice zo stretnutí</h3>
+                    <div class="minute-weeks">
+                        <details>
+                            <summary>
+                                <span class="minute-week-info"><span>1. týždeň</span><span>19. 10. – 21. 10. 2026</span></span>
+                                <span class="minute-week-toggle" aria-hidden="true">＋</span>
+                            </summary>
+                            <div class="disclosure-content">
+                                <ul>
+                                    <li>
+                                        <span>Zápisnica – 19. 10. 2026</span>
+                                        <a class="tlacidlo" href="doc/2026-10-19-zapisnica.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </details>
+                        <details>
+                            <summary>
+                                <span class="minute-week-info"><span>2. týždeň</span><span>28. 10. – 1. 11. 2026</span></span>
+                                <span class="minute-week-toggle" aria-hidden="true">＋</span>
+                            </summary>
+                            <div class="disclosure-content">
+                                <ul>
+                                    <li>
+                                        <span>Zápisnica – 28. 10. 2026</span>
+                                        <a class="tlacidlo" href="doc/2026-10-28-zapisnica.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
+                                    </li>
+                                    <li>
+                                        <span>Zápisnica – 1. 11. 2026</span>
+                                        <a class="tlacidlo" href="doc/2026-11-01-zapisnica.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+            </div>
             <hr>
         </section>
 
@@ -160,12 +176,12 @@
     </main>
 
     <footer>
-        <section class="footer-brand">
+        <section>
             <h2>Voltask</h2>
             <p>© 2026 Voltask. Všetky práva vyhradené.</p>
         </section>
 
-        <section class="footer-contact">
+        <section>
             <h3>Kontakt</h3>
             <address>
                 <a href="mailto:kontakt@voltask.sk">kontakt@voltask.sk</a>
