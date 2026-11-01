@@ -22,6 +22,7 @@ aplikácia a NestJS API na evidenciu tímov a úloh.
 - Jedna vetva/PR má riešiť jednu dohodnutú úlohu. Ak úloha mení API alebo
   databázový model, dohodni kontrakt s kolegami pracujúcimi na druhej časti.
 - Používaj stručné commit správy, napr. `feat: add team endpoint`.
+- Neupravuj /web, iba ak to developer vyžaduje
 
 ## Konvencie implementácie
 
