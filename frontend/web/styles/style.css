@@ -529,3 +529,53 @@ footer a:hover {
         margin-bottom: 1rem;
     }
 }
+
+/* ===== Rezponzivnost pre telefony===== */
+
+/* iOS: zabrani zvacsovaniu pisma pri otoceni telefonu */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+/* iOS Safari nepodporuje background-attachment: fixed, preto je ziara pozadia
+   v samostatnej fixnej vrstve, ktora funguje vsade */
+body { background: var(--bg); }
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 20%, #12285c, transparent 55%);
+}
+
+@media (max-width: 600px) {
+    /* navigacia: pismo a medzery sa prisposobia sirke, aby sa vsetky odkazy vosli (aj pri 320 px) */
+    nav { gap: clamp(0.5rem, 2.5vw, 1rem); 
+    font-size: clamp(0.72rem, 3.6vw, 0.85rem); }
+    nav a { padding: 0.6rem 0; }
+}
+
+@media (max-width: 700px) {
+    /* harmonogram: hlavicka tyzdna sa moze zalomit na uzkych telefonoch */
+    #harmonogram .week-heading th { flex-wrap: wrap; white-space: normal; }
+
+    /* dokumenty: kazdy riadok tabulky je kompaktna karta (nazov a datum vlavo, tlacidlo vpravo) */
+    .dokumenty, .dokumenty tbody { display: block; }
+    .dokumenty thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+
+    .dokumenty tr {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        column-gap: 0.75rem;
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .dokumenty td { padding: 0; border: 0; }
+    .dokumenty td:nth-child(1) { grid-area: 1 / 1; }
+    .dokumenty td:nth-child(2) { grid-area: 2 / 1; font-size: 0.85rem; white-space: normal; }
+    .dokumenty td:nth-child(3) { grid-area: 1 / 2 / span 2; }
+    .dokumenty tbody tr:last-child { border-bottom: 0; }
+    .dokumenty .tlacidlo { padding: 0.5rem 1rem; }
+}
