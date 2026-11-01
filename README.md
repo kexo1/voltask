@@ -19,8 +19,7 @@ Požiadavky: Docker Desktop s Docker Compose.
    | Služba | Adresa |
    |---|---|
    | Voltask React aplikácia | http://localhost:5173 |
-   | Voltask projektová stránka | http://localhost:8080 |
-   | Backend health check | http://localhost:3000/api/health |
+   | Node.js/NestJS API health check | http://localhost:3000/api/health |
    | PostgreSQL | localhost:5432 |
 
 Každý člen tímu klonuje repozitár a vytvorí si vlastný `.env` z `.env.example`.
@@ -36,7 +35,8 @@ Užitočné Docker príkazy z koreňa repozitára:
 
 ```sh
 docker compose up --build       # spustí alebo prestavia všetky služby
-docker compose logs -f backend  # zobrazí backend logy
+docker compose logs -f api      # Node.js/NestJS logy
+docker compose logs -f postgres # PostgreSQL logy
 docker compose down             # zastaví kontajnery, dáta databázy ponechá
 ```
 
@@ -71,10 +71,9 @@ Vite proxy posiela `/api` a `/socket.io` požiadavky na lokálny backend.
 | Cesta | Obsah |
 |---|---|
 | `frontend/src/` | React + TypeScript aplikácia (Vite) |
-| `frontend/web/` | Povinná samostatná školská stránka, dostupná cez port 8080 |
 | `backend/src/` | NestJS API, WebSocket gateway a moduly podľa oblastí |
 | `backend/prisma/` | Prisma schéma a verzované databázové migrácie |
-| `docker-compose.yml` | Zoznam služieb, portov, volume a ich prepojenie pre Docker |
+| `docker-compose.yml` | PostgreSQL, Node.js/NestJS API a React/Vite služby, porty a volume |
 | `.github/workflows/` | Automatický build a lint pri pushi a pull requeste |
 | `AGENTS.md` | Pokyny pre prácu s projektom a tímové konvencie |
 
@@ -92,7 +91,7 @@ zdrojové súbory v `frontend/src/` alebo `backend/src/`.
 | `frontend/package-lock.json` | Presné verzie frontendových knižníc | Udržiava ho npm; ručne ho neupravuj |
 | `backend/package.json` | Backendové knižnice a príkazy vrátane Prisma | Nové balíky pridávaj cez `npm install` |
 | `backend/package-lock.json` | Presné verzie backendových knižníc | Commituje sa spolu s `package.json` |
-| `docker-compose.yml` | Ako sa spolu spúšťajú PostgreSQL, API, React a školský web | Zmena portov alebo služieb patrí sem |
+| `docker-compose.yml` | Ako sa spolu spúšťajú PostgreSQL, Node.js/NestJS API a React/Vite | Zmena portov alebo služieb patrí sem |
 | `.env.example` | Vzor lokálnych nastavení pre Docker Compose | Bez reálnych hesiel a webhookov |
 | `.env` | Tvoje lokálne nastavenia | Je ignorovaný Gitom; neposielaj ho spolužiakom |
 | `backend/prisma/schema.prisma` | Tabuľky, polia a vzťahy databázy | Zmenu schémy sprevádza nová migrácia |
@@ -104,8 +103,10 @@ zdrojové súbory v `frontend/src/` alebo `backend/src/`.
 | `.github/workflows/ci.yml` | Automatické kontroly na GitHube pri PR | CI musí prejsť pred zlúčením |
 | `.gitignore` | Súbory, ktoré Git nemá commitovať | `.env`, `node_modules` a build výstupy ignorujeme |
 
-Názov projektu v Compose je `voltask`, preto Docker vytvára kontajnery ako
-`voltask-backend-1`, `voltask-frontend-1` a `voltask-db-1`. Tento interný názov
+Názov projektu v Compose je `voltask`. Služby sú pomenované podľa toho, čo v
+nich beží: `api` je Node.js/NestJS, `postgres` je PostgreSQL a `frontend` je
+React/Vite. Docker kontajnery majú názvy `voltask-api-1`, `voltask-postgres-1`
+a `voltask-frontend-1`. Tento interný názov
 nemení adresu GitHub repozitára.
 
 ## Branch stratégia a pull requesty

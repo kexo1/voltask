@@ -7,7 +7,8 @@ aplikácia a NestJS API na evidenciu tímov a úloh.
 
 - `frontend/src/` — React + TypeScript aplikácia.
 - `frontend/web/` — samostatná povinná projektová stránka pre školu. Nie je to
-  súčasť React aplikácie; zachovaj ju. V Compose je dostupná na porte 8080.
+  súčasť React aplikácie ani Docker Compose stacku; zachovaj ju a upravuj ju iba
+  v rámci príslušnej úlohy.
 - `backend/src/` — NestJS API, gateway a backendové oblasti.
 - `backend/prisma/schema.prisma` — databázový model.
 - `backend/prisma/migrations/` — verzované Prisma migrácie.
@@ -54,4 +55,6 @@ npm run build
 
 Celý vývojový stack možno spustiť z koreňa repozitára príkazom
 `docker compose up --build`; Prisma migrácie sa pri štarte backendu aplikujú
-príkazom `prisma migrate deploy`.
+príkazmi `prisma generate` a `prisma migrate deploy`. Prisma client sa generuje
+pri štarte API kontajnera až po pripojení `backend/src` volume, aby bind mount
+neprekryl vygenerované súbory.
