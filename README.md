@@ -45,7 +45,7 @@ keď chceš zahodiť všetky lokálne dáta.
 
 ### Spustenie bez Dockeru (voliteľné)
 
-Vyžaduje Node.js 22+ a lokálny PostgreSQL. V `backend/.env` nastav
+Vyžaduje Node.js 26 a lokálny PostgreSQL. V `backend/.env` nastav
 `DATABASE_URL` podľa `backend/.env.example`, potom:
 
 ```sh
