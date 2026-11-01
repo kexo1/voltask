@@ -17,14 +17,14 @@ export class EventsGateway {
   // TODO: po pridaní autentifikácie overiť, že používateľ je členom tímu
   @SubscribeMessage('joinTeam')
   handleJoinTeam(
-    @MessageBody() teamId: number,
+    @MessageBody() teamId: string,
     @ConnectedSocket() client: Socket,
   ) {
     client.join(`team:${teamId}`);
     return { joined: teamId };
   }
 
-  emitToTeam(teamId: number, event: string, payload: unknown) {
+  emitToTeam(teamId: string, event: string, payload: unknown) {
     this.server.to(`team:${teamId}`).emit(event, payload);
   }
 }

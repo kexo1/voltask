@@ -1,17 +1,194 @@
 <!DOCTYPE html>
 <html lang="sk">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Voltask</title>
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <link rel="stylesheet" href="styles/style.css">
 </head>
+
 <body>
-    <a href="" target="_blank" rel="noopener noreferrer">Zápisnica</a>
-    <a href="" target="_blank" rel="noopener noreferrer">Motivačný list</a>
-    <a href="/frontend/web/index.html" target="_blank" rel="noopener noreferrer">Životopis</a>
-    <section class="logo">
-        <img src="/frontend/web/images/logo.png" alt="Názov firmy - Logo">
-    </section>
-</a>
+    <header>
+        <nav>
+            <a class="nav-logo" href="#"><img src="logo.png" alt="Voltask - logo"></a>
+            <a href="#projekt">Projekt</a>
+            <a href="harmonogram.html">Harmonogram</a>
+            <a href="#dokumenty">Dokumenty</a>
+            <a href="#tim">Tím</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1 class="sr-only">Voltask</h1>
+
+        <section id="projekt">
+            <h2>Projekt</h2>
+            <article>
+                <h3>Voltask</h3>
+                <p>
+                    Voltask je platforma na evidenciu tímov a úloh, ktorá vzniká ako alternatíva k nástrojom
+                    ako Jira alebo Trello. Je optimalizovaná priamo pre potreby predmetu Tímový projekt,
+                    aby študenti aj učitelia mali prehľad o práci tímov na jednom mieste.
+                </p>
+
+                <p>Hlavné funkcie:</p>
+                <ul>
+                    <li>vytváranie tímov a pridávanie členov</li>
+                    <li>Kanban nástenka s úlohami v stĺpcoch To Do, In Progress a Done</li>
+                    <li>prideľovanie úloh členom tímu a sledovanie aktivity</li>
+                    <li>real-time aktualizácia úloh vďaka WebSocketom</li>
+                    <li>notifikácie cez webhooky do fakultného Discordu alebo Slacku, napríklad „Jozef dokončil úlohu X“
+                    </li>
+                    <li>prehľad všetkých tímov a ich progresu pre učiteľa</li>
+                </ul>
+
+                <p>Použité technológie:</p>
+                <ul>
+                    <li>Frontend: TypeScript + React</li>
+                    <li>Backend: TypeScript + Node.js + NestJS + Socket.IO</li>
+                    <li>Databáza: PostgreSQL + Prisma</li>
+                    <li>Ostatné: JWT autentifikácia, Discord webhook, Docker Compose, GitHub Actions</li>
+                </ul>
+            </article>
+            <hr>
+        </section>
+
+        <section id="dokumenty">
+            <h2>Dokumenty</h2>
+            <div class="dokumenty-groups">
+                <article class="document-group">
+                    <h3>Projektové dokumenty</h3>
+                    <ul class="project-documents">
+                        <li>
+                            <span>Motivačný list</span>
+                            <a class="tlacidlo" href="doc/motivacny-list-skupina-3.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
+                        </li>
+                        <li>
+                            <span>Prezentácia</span>
+                            <a class="tlacidlo" href="doc/voltask-project.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
+                        </li>
+                    </ul>
+                </article>
+
+                <article class="document-group">
+                    <h3>Zápisnice zo stretnutí</h3>
+                    <div class="minute-weeks">
+                        <details>
+                            <summary>
+                                <span class="minute-week-info"><span>1. týždeň</span><span>19. 10. – 21. 10. 2026</span></span>
+                                <span class="minute-week-toggle" aria-hidden="true">＋</span>
+                            </summary>
+                            <div class="disclosure-content">
+                                <ul>
+                                    <li>
+                                        <span>Zápisnica – 19. 10. 2026</span>
+                                        <a class="tlacidlo" href="doc/2026-10-19-zapisnica.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </details>
+                        <details>
+                            <summary>
+                                <span class="minute-week-info"><span>2. týždeň</span><span>28. 10. – 1. 11. 2026</span></span>
+                                <span class="minute-week-toggle" aria-hidden="true">＋</span>
+                            </summary>
+                            <div class="disclosure-content">
+                                <ul>
+                                    <li>
+                                        <span>Zápisnica – 28. 10. 2026</span>
+                                        <a class="tlacidlo" href="doc/2026-10-28-zapisnica.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
+                                    </li>
+                                    <li>
+                                        <span>Zápisnica – 1. 11. 2026</span>
+                                        <a class="tlacidlo" href="doc/2026-11-01-zapisnica.pdf" target="_blank" rel="noopener">Otvoriť PDF</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+            </div>
+            <hr>
+        </section>
+
+        <section id="tim">
+            <h2>Tím</h2>
+            <p class="uvod">Zloženie tímu a ich hlavné úlohy:</p>
+
+            <figure class="tim-foto">
+                <img src="images/tim.jpg" alt="Celý tím Voltask" loading="lazy">
+            </figure>
+
+            <ul class="tim">
+                <li>
+                    <article>
+                        <img src="images/juraj_vozarik.jpg" alt="Juraj Vozárik" loading="lazy">
+                        <h3>Juraj Vozárik</h3>
+                        <p class="rola">Researcher, Documentation Specialist, Proofreader</p>
+                        <p>Zodpovedá za vyhľadávanie a spracovanie informácií, tvorbu projektovej dokumentácie a
+                            jazykovú korektúru textov.
+                            Dbá na prehľadnosť a kvalitu dokumentácie.</p>
+                    </article>
+                </li>
+                <li>
+                    <article>
+                        <img src="images/martin_polansky.jpg" alt="Martin Polanský" loading="lazy">
+                        <h3>Martin Polanský</h3>
+                        <p class="rola">Team Leader, Developer, QA Engineer</p>
+                        <p>V projekte Voltask pôsobím ako vedúci tímu a hlavný backend programátor.
+                            Zodpovedám za návrh architektúry aplikácie, databázy a API, vývoj backendu a jeho prepojenie
+                            s frontendom.
+                            Zároveň koordinujem tím, rozdeľujem úlohy a dohliadam na kvalitu kódu.</p>
+                    </article>
+                </li>
+                <li>
+                    <article>
+                        <img src="images/matus_toth.jpg" alt="Matúš Tóth" loading="lazy">
+                        <h3>Matúš Tóth</h3>
+                        <p class="rola">Developer, Data Engineer, DevOps Engineer</p>
+                        <p>Podieľa sa na vývoji aplikácie, spracovaní dát a technickom zabezpečení projektu.
+                            Zameriava sa na praktické riešenia a rozvoj technických znalostí.</p>
+                    </article>
+                </li>
+                <li>
+                    <article>
+                        <img src="images/peter_luzak.jpeg" alt="Peter Lužák" loading="lazy">
+                        <h3>Peter Lužák</h3>
+                        <p class="rola">Frontend Developer, Team Motivator, Time Manager</p>
+                        <p>Zodpovedá za vývoj frontendu a používateľské rozhranie.
+                            Pomáha s organizáciou tímovej práce, plánovaním času a koordináciou spoločných úloh.</p>
+                    </article>
+                </li>
+                <li>
+                    <article>
+                        <img src="images/michal_trebichalsky.png" alt="Michal Trebichalský" loading="lazy">
+                        <h3>Michal Trebichalský</h3>
+                        <p class="rola">Frontend Developer, UI/UX Designer, Content Writer</p>
+                        <p>Navrhuje a vyvíja frontend projektovej webovej stránky a zodpovedá za jej funkčnosť.
+                            Spracúva obsah a dbá na to, aby bol tím a jeho práca predstavené jasne a prehľadne.</p>
+                    </article>
+                </li>
+            </ul>
+        </section>
+        <hr>
+    </main>
+
+    <footer>
+        <section>
+            <h2>Voltask</h2>
+            <p>© 2026 Voltask. Všetky práva vyhradené.</p>
+        </section>
+
+        <section>
+            <h3>Kontakt</h3>
+            <address>
+                <a href="mailto:kontakt@voltask.sk">kontakt@voltask.sk</a>
+                <a href="tel:+421900123456">+421 900 123 456</a>
+            </address>
+        </section>
+    </footer>
 </body>
+
 </html>

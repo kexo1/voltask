@@ -1,0 +1,99 @@
+/* Nastav odsadenie a zarovnanie obsahu nástenky doľava. */
+.board {
+  padding: 16px;
+  text-align: left;
+}
+
+/* Zmenši nadpis nástenky oproti hlavnému nadpisu stránky. */
+.board h1 {
+  font-size: 32px;
+  margin: 0 0 16px;
+}
+
+/* Umiestni tri stĺpce stavov vedľa seba. */
+.board__columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+/* Nastav stĺpcom pozadie panela a minimálnu výšku. */
+.board-column {
+  background: var(--code-bg);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 240px;
+}
+
+/* Zvýrazni stĺpec, keď je nad ním karta. */
+.board-column--over {
+  border-color: var(--accent-border);
+}
+
+/* Uprav vzhľad nadpisu stĺpca. */
+.board-column h2 {
+  font-size: 18px;
+  margin: 0 0 12px;
+}
+
+/* Zobraz počet úloh menej výrazne ako nadpis. */
+.board-column__count {
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* Ulož karty úloh pod seba s rovnakými medzerami. */
+.board-column__tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Uprav vzhľad bežnej karty, ktorú možno ťahať. */
+.task-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: grab;
+  touch-action: manipulation;
+}
+
+/* Uprav vzhľad názvu úlohy. */
+.task-card h3 {
+  font-size: 16px;
+  margin: 0 0 4px;
+  color: var(--text-h);
+}
+
+/* Oddeľ popis úlohy od mena priradenej osoby. */
+.task-card p {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+/* Zvýrazni meno priradenej osoby. */
+.task-card__assignee {
+  font-size: 13px;
+  color: var(--accent);
+}
+
+/* Stlm pôvodnú kartu počas jej presúvania. */
+.task-card--dragging {
+  opacity: 0.4;
+}
+
+/* Pridaj tieň plávajúcej karte počas presúvania. */
+.task-card--overlay {
+  box-shadow: var(--shadow);
+  cursor: grabbing;
+}
+
+/* Na úzkych obrazovkách ulož stĺpce pod seba. */
+@media (max-width: 700px) {
+  .board__columns {
+    grid-template-columns: 1fr;
+  }
+}

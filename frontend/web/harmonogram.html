@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="sk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonogram | Voltask</title>
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a class="nav-logo" href="index.html"><img src="logo.png" alt="Voltask - logo"></a>
+            <a href="index.html#projekt">Projekt</a>
+            <a href="harmonogram.html" aria-current="page">Harmonogram</a>
+            <a href="index.html#dokumenty">Dokumenty</a>
+            <a href="index.html#tim">Tím</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1 class="sr-only">Voltask - Harmonogram</h1>
+
+        <section id="harmonogram">
+            <h2>Harmonogram</h2>
+            <article>
+                <h3>Úlohy podľa týždňov</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Člen tímu</th>
+                            <th>Úloha</th>
+                            <th>Merateľný výstup</th>
+                            <th>Termín</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4">
+                                <span class="week-heading-content"><span>1. týždeň</span><span class="week-date">19. 10. 2026</span></span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>Martin Polanský (vedúci tímu)</td>
+                            <td>
+                                <p>Príprava repozitára, rozdelenie rolí a úvod do GitHubu.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Na úvodnom stretnutí tímu sa roly rozdelili podľa záujmu a skúseností členov.</li>
+                                    <li>Na GitHube sa vytvoril repozitár projektu s úvodným súborom README.</li>
+                                    <li>V repozitári sa vytvorila hlavná vetva (main) pre stabilnú verziu a ďalšie vetvy (branches) pre samostatnú prácu členov.</li>
+                                    <li>Členom sa ukázalo, ako repozitár naklonovať (git clone), odoslať zmenu (git add, git commit, git push) a získať zmeny ostatných (git pull).</li>
+                                    <li>Vytvorili sa priečinky pre backend, frontend a dokumentáciu spolu s východiskovými súbormi.</li>
+                                    <li>Vypracoval svoju časť spoločnej prezentácie.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Rozdelené roly, vytvorený repozitár s branches a základná štruktúra projektu; členovia
+                                oboznámení so základmi GitHubu (každý si vie repozitár naklonovať a odoslať vlastnú
+                                zmenu) a príspevok do spoločnej prezentácie</td>
+                            <td>19. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Peter Lužák</td>
+                            <td>
+                                <p>Prezentácia a podklady k zápisnici.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Tím si rozdelil slajdy prezentácie a Peter vypracoval pridelenú časť.</li>
+                                    <li>Počas stretnutia si priebežne zapisoval rozhodnutia a pridelené úlohy.</li>
+                                    <li>Poznámky usporiadal do podkladov a odovzdal ich na spracovanie do zápisnice.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Príspevok do spoločnej prezentácie a pripravené podklady k zápisnici</td>
+                            <td>19. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Matúš Tóth</td>
+                            <td>
+                                <p>Motivačný list a príspevok do prezentácie.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Určilo sa, prečo tím zvolil tému Voltask a čo chce dosiahnuť.</li>
+                                    <li>Navrhla sa osnova: úvod, motivácia, ciele projektu a prínos pre tím.</li>
+                                    <li>List sa napísal podľa osnovy a predložil ostatným členom.</li>
+                                    <li>List sa upravil podľa pripomienok a dokončil.</li>
+                                    <li>Vypracoval svoju časť spoločnej prezentácie.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Dokončený motivačný list a príspevok do spoločnej prezentácie</td>
+                            <td>19. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Michal Trebichalský</td>
+                            <td>
+                                <p>Úvodná stránka a príspevok do prezentácie.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Navrhlo sa rozloženie stránky s navigáciou, sekciami Projekt, Dokumenty a Tím a pätičkou s kontaktom.</li>
+                                    <li>Stránka sa napísala v HTML so sémantickými značkami.</li>
+                                    <li>Vzhľad sa nastavil v samostatnom súbore style.css vrátane zobrazenia na rôznych veľkostiach obrazovky.</li>
+                                    <li>Skontrolovalo sa, že odkazy v navigácii smerujú na správne časti stránky.</li>
+                                    <li>Vypracoval svoju časť spoločnej prezentácie.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Hotová úvodná stránka a príspevok do spoločnej prezentácie</td>
+                            <td>19. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Juraj Vozárik</td>
+                            <td>
+                                <p>Zápisnica, kontrola dokumentov a úvodnej stránky.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Počas stretnutia zapisoval priebeh a rozhodnutia.</li>
+                                    <li>Zápisnicu spracoval do jednotného formátu s dátumom, trvaním, formou stretnutia, rozoberanými bodmi a rozdelením úloh.</li>
+                                    <li>Dokumenty skontroloval z hľadiska pravopisu, úplnosti a jednotného formátu.</li>
+                                    <li>Úvodnú stránku otvoril v prehliadači, vyskúšal odkazy a skontroloval zobrazenie textov; nájdené chyby nahlásil autorom na opravu.</li>
+                                    <li>Vypracoval svoju časť spoločnej prezentácie.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Príspevok do spoločnej prezentácie, vypracovaná zápisnica a skontrolované dokumenty a
+                                úvodná stránka</td>
+                            <td>19. 10. 2026</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4">
+                                <span class="week-heading-content"><span>2. týždeň</span><span class="week-date">28. 10. – 1. 11. 2026</span></span>
+                            </th>
+                        </tr>
+                        <tr class="day-heading">
+                            <th scope="row" colspan="4">28. október 2026</th>
+                        </tr>
+                        <tr>
+                            <td>Martin Polanský (vedúci tímu)</td>
+                            <td>
+                                <p>Príprava backendu a ukážka Dockeru s databázou.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Na online stretnutí cez Discord zdieľal obrazovku a ukázal inštaláciu.</li>
+                                    <li>Nainštaloval Docker Desktop s využitím WSL 2 a spustil ho.</li>
+                                    <li>Overil funkčnosť Dockeru príkazom <code>docker --version</code>.</li>
+                                    <li>Spustil databázu PostgreSQL a ukázal pripojenie z vývojového prostredia.</li>
+                                    <li>Inicializoval Node.js (npm init) a pripravil základ servera.</li>
+                                    <li>Rozpísal úlohy v harmonograme podľa týždňov a členov tímu.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Pripravený základ backendu, členovia oboznámení s Dockerom a načítaním databázy (každý
+                                si vie nástroje nainštalovať a spustiť sám), harmonogram zaznamenaný</td>
+                            <td>28. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Peter Lužák</td>
+                            <td>
+                                <p>Pomoc členom s inštaláciou Dockeru.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Počas ukážky sledoval, kto z členov sa dostal do problému.</li>
+                                    <li>Kontroloval podporu WSL 2, zapnutú virtualizáciu a spustený Docker Desktop.</li>
+                                    <li>V prípade potreby pomohol s reštartom Docker Desktop alebo počítača.</li>
+                                    <li>Overil, že Docker odpovedá na príkaz <code>docker --version</code>.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Poskytnutá pomoc pri inštalácii Dockeru; Docker funguje u všetkých členov tímu</td>
+                            <td>28. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Matúš Tóth</td>
+                            <td>
+                                <p>Overenie Node.js a databázy PostgreSQL.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Skontroloval dostupnosť Node.js a npm (príkazy <code>node -v</code> a <code>npm -v</code>).</li>
+                                    <li>Overil, že PostgreSQL beží, a skúsil sa k nemu pripojiť z vývojového prostredia.</li>
+                                    <li>Overil, že Docker, Node.js a PostgreSQL spolu fungujú.</li>
+                                    <li>Zaznamenal výsledky a prípadné nedostatky nahlásil príslušným členom.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Skontrolované nastavenie databázy PostgreSQL a Node.js</td>
+                            <td>28. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Michal Trebichalský</td>
+                            <td>
+                                <p>Zverejnenie harmonogramu a aktualizácia zoznamu zápisníc.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Vytvoril stránku harmonogram.html s rovnakou hlavičkou a pätičkou ako úvodná stránka.</li>
+                                    <li>Usporiadal úlohy do tabuľky so stĺpcami Člen tímu, Úloha, Merateľný výstup a Termín.</li>
+                                    <li>Zoskupil riadky podľa týždňov s vlastným nadpisom a termínom.</li>
+                                    <li>Pridal odkaz Harmonogram do navigácie.</li>
+                                    <li>Aktualizoval rozdelenie zápisníc v zozname dokumentov.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Harmonogram zverejnený na stránke a aktualizované rozdelenie zápisníc v zozname</td>
+                            <td>28. 10. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Juraj Vozárik</td>
+                            <td>
+                                <p>Zápisnica a aktualizácia dokumentácie.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Počas stretnutia zapisoval, ktoré nástroje sa inštalovali a čo sa overovalo.</li>
+                                    <li>Z poznámok vypracoval zápisnicu č. 2 s dátumom, trvaním, formou, bodmi a rozdelením úloh.</li>
+                                    <li>Doplnil dokumentáciu o stav prác po stretnutí.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Spracovaná zápisnica a aktualizovaná dokumentácia</td>
+                            <td>28. 10. 2026</td>
+                        </tr>
+                        <tr class="day-heading">
+                            <th scope="row" colspan="4">1. november 2026</th>
+                        </tr>
+                        <tr>
+                            <td>Martin Polanský (vedúci tímu)</td>
+                            <td>
+                                <p>Rozdelenie práce a implementácia základu tímového API.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Každému členovi sa pridelila úloha a vlastná vetva.</li>
+                                    <li>Vytvoril vetvu <code>feature/teams-api</code>.</li>
+                                    <li>V NestJS vytvoril samostatný modul pre tímy.</li>
+                                    <li>Pridal a vyskúšal endpointy na načítanie a vytvorenie tímu.</li>
+                                    <li>Moduly ostatných členov zapojil do AppModule a overil, že aplikácia beží.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Rozdelené úlohy a vetvy, funkčný základ tímového API (načítanie a vytvorenie tímu) a
+                                moduly zapojené do AppModule</td>
+                            <td>1. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Matúš Tóth</td>
+                            <td>
+                                <p>Implementácia API pre načítanie úloh a zmenu ich stavu.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Vytvoril vlastnú vetvu <code>feature/tasks-api</code>.</li>
+                                    <li>V NestJS vytvoril samostatný modul pre úlohy.</li>
+                                    <li>Využil existujúcu Prisma schému na prístup k úlohám v databáze.</li>
+                                    <li>Pridal a vyskúšal endpointy na načítanie úloh a zmenu ich stavu.</li>
+                                    <li>AppModule neupravoval, aby nevznikli konflikty pri zlučovaní; zapojenie vykoná vedúci tímu.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Základ API pre úlohy (načítanie úloh a zmena stavu) pripravený na zapojenie do
+                                AppModule</td>
+                            <td>1. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Michal Trebichalský</td>
+                            <td>
+                                <p>Kanban nástenka s tromi stĺpcami a ukážkovými úlohami.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Vytvoril vlastnú vetvu <code>feature/kanban-board</code>.</li>
+                                    <li>Odstránil úvodnú obrazovku vygenerovanú nástrojom Vite.</li>
+                                    <li>Vytvoril nástenku s tromi stĺpcami podľa stavu úlohy.</li>
+                                    <li>Stĺpce naplnil ukážkovými úlohami.</li>
+                                    <li>Skontroloval zobrazenie nástenky v prehliadači.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Jednoduchá Kanban nástenka s tromi stĺpcami a ukážkovými úlohami, ktorá nahradila
+                                úvodnú obrazovku z Vite</td>
+                            <td>1. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Juraj Vozárik</td>
+                            <td>
+                                <p>Testovacie scenáre a kontrola API.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Vytvoril vetvu <code>docs/prototype-test-cases</code>.</li>
+                                    <li>Spísal scenáre na otestovanie tímov, úloh a zmeny stavu vrátane krokov a očakávaného výsledku.</li>
+                                    <li>Po dokončení API scenáre prešiel a zistené chyby nahlásil autorom príslušných častí.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Spísané testovacie scenáre, otestované API a nahlásené chyby autorom jednotlivých
+                                častí</td>
+                            <td>1. 11. 2026</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>3. týždeň</span><span class="week-date">Plán</span></span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>Tím</td>
+                            <td>Návrh riešenia projektu</td>
+                            <td>Architektúra systému, návrh databázy a API, návrhy obrazoviek</td>
+                            <td>Do konca 3. týždňa</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>4.–5. týždeň</span><span
+                                    class="week-date">Plán</span></span></th>
+                        </tr>
+                        <tr>
+                            <td>Tím</td>
+                            <td>Implementácia backendu (I.)</td>
+                            <td>Databáza (Prisma), JWT autentifikácia, tímy a úlohy (REST API)</td>
+                            <td>Do konca 5. týždňa</td>
+                        </tr>
+                        <tr>
+                            <td>Tím</td>
+                            <td>Implementácia frontendu (I.)</td>
+                            <td>Základné UI (prihlásenie, prehľad tímov), Kanban nástenka</td>
+                            <td>Do konca 5. týždňa</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>6.–7. týždeň</span><span
+                                    class="week-date">Plán</span></span></th>
+                        </tr>
+                        <tr>
+                            <td>Tím</td>
+                            <td>Implementácia backendu a frontendu (II.)</td>
+                            <td>Real-time aktualizácie (WebSockety), Discord webhook notifikácie, pohľad učiteľa</td>
+                            <td>Do konca 7. týždňa</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>8. týždeň</span><span class="week-date">Plán</span></span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>Tím</td>
+                            <td>Testovanie a ladenie</td>
+                            <td>Testovací plán a opravené chyby</td>
+                            <td>Do konca 8. týždňa</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>9. týždeň</span><span class="week-date">Plán</span></span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>Tím</td>
+                            <td>Nasadenie a dokumentácia</td>
+                            <td>Nasadenie pomocou Docker Compose a používateľská dokumentácia</td>
+                            <td>Do konca 9. týždňa</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>10.–11. týždeň</span><span
+                                    class="week-date">Plán</span></span></th>
+                        </tr>
+                        <tr>
+                            <td>Tím</td>
+                            <td>Rezerva, finálne úpravy a prezentácia projektu</td>
+                            <td>Dokončené finálne úpravy a pripravená prezentácia projektu</td>
+                            <td>Do konca 11. týždňa</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <section>
+            <h2>Voltask</h2>
+            <p>© 2026 Voltask. Všetky práva vyhradené.</p>
+        </section>
+
+        <section>
+            <h3>Kontakt</h3>
+            <address>
+                <a href="mailto:kontakt@voltask.sk">kontakt@voltask.sk</a>
+                <a href="tel:+421900123456">+421 900 123 456</a>
+            </address>
+        </section>
+    </footer>
+</body>
+
+</html>

@@ -1,4 +1,809 @@
-.logo {
-    width: 150px; /* Zmeňte veľkosť podľa potreby */
-    height: auto; /* Zachová pôvodný pomer strán */
+:root {
+    --bg: #0a1128;
+    --bg2: #060b1c;
+    --text: #cfd9ee;
+    --muted: #7f8db0;
+    --blue: #3d84ff;
+    --btn: #2563eb;
+    --btn-hover: #1d4ed8;
+    --line: rgba(255, 255, 255, 0.08);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+h2,
+h3 {
+    color: #fff;
+}
+
+body {
+    background: radial-gradient(circle at 50% 20%, #12285c, transparent 55%) fixed, var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* Navigacia */
+nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 0.6rem 5vw;
+    background: rgba(10, 17, 40, 0.7);
+    /* -webkit-backdrop-filter je predpona pre Safari (starsie iPhony a Macy):
+       rozmaze obsah za priesvitnym panelom, rovnako ako backdrop-filter v ostatnych prehliadacoch */
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+}
+
+nav a {
+    position: relative;
+    padding: 0.4rem 0;
+    color: var(--text);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+nav a:not(.nav-logo)::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 2px;
+    background: var(--blue);
+    transform: scaleX(0);
+    transition: transform 0.25s;
+}
+
+/* Aktualna podstranka (aria-current) ma odkaz zvyraznena rovnako ako pri hoveri */
+nav a:hover,
+nav a[aria-current] {
+    color: #fff;
+}
+
+nav a:hover::after,
+nav a[aria-current]::after {
+    transform: scaleX(1);
+}
+
+.nav-logo {
+    margin-right: auto;
+    padding: 0;
+}
+
+.nav-logo img {
+    display: block;
+    height: 51px;
+    border-radius: 0.6rem;
+}
+
+/* Sekcie */
+main {
+    padding-top: 4.5rem;
+}
+
+main>section {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 2rem;
+    scroll-margin-top: 4.5rem;
+}
+
+main h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+}
+
+main h2::after {
+    content: "";
+    display: block;
+    width: 3rem;
+    height: 3px;
+    margin-top: 0.5rem;
+    background: var(--blue);
+    border-radius: 2px;
+}
+
+article {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+}
+
+article h3 {
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+}
+
+article p {
+    margin-bottom: 0.8rem;
+}
+
+article ul {
+    margin: 0 0 0.8rem 1.4rem;
+}
+
+article li {
+    margin-bottom: 0.5rem;
+}
+
+/* Tlacidlo na stiahnutie (tmavsia modra kvoli kontrastu s bielym textom) */
+.tlacidlo {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.8rem 1.8rem;
+    color: #fff;
+    background: var(--btn);
+    border-radius: 0.6rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 6px 24px rgba(37, 99, 235, 0.3);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.tlacidlo:hover {
+    background: var(--btn-hover);
+    transform: translateY(-2px);
+}
+
+/* Mriezka clenov timu */
+.tim {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: 1.5rem;
+    list-style: none;
+}
+
+/* Tim */
+.uvod {
+    margin-bottom: 1.5rem;
+    color: var(--muted);
+}
+
+/* Fotka celeho timu */
+.tim-foto {
+    margin-bottom: 2rem;
+}
+
+.tim-foto img {
+    display: block;
+    width: 100%;
+    max-height: 520px;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+}
+
+/* Karty clenov timu */
+.tim article {
+    display: grid;
+    grid-template: auto auto 1fr / 100px 1fr;
+    column-gap: 1.2rem;
+    height: 100%;
+    padding: 1.25rem;
+}
+
+.tim img {
+    grid-row: 1 / span 3;
+    align-self: center;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    background: #12285c;
+    box-shadow: 0 0 0 3px rgba(61, 132, 255, 0.35);
+}
+
+.tim h3 {
+    margin-bottom: 0.2rem;
+    font-size: 1.15rem;
+}
+
+.rola {
+    margin-bottom: 0.6rem;
+    color: var(--blue);
+    font-weight: 500;
+}
+
+.tim article p:last-child {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+/* Cara pod sekciou */
+hr {
+    height: 1px;
+    margin-top: 3rem;
+    border: 0;
+    background: linear-gradient(90deg, transparent, rgba(61, 132, 255, 0.5), transparent);
+}
+
+/* Tabulky (harmonogram a dokumenty) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+th,
+td {
+    padding: 0.7rem 0.9rem;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+}
+
+th {
+    color: #fff;
+    background: rgba(61, 132, 255, 0.12);
+    white-space: nowrap;
+}
+
+/* Harmonogram */
+main>#harmonogram {
+    max-width: 1240px;
+}
+
+#harmonogram article {
+    margin-bottom: 1.5rem;
+}
+
+#harmonogram table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 0.92rem;
+}
+
+#harmonogram th,
+#harmonogram td {
+    padding: 0.7rem 0.65rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--line);
+    overflow-wrap: anywhere;
+    line-height: 1.55;
+}
+
+#harmonogram thead th {
+    color: #fff;
+    background: rgba(61, 132, 255, 0.12);
+}
+
+#harmonogram thead th:nth-child(1) {
+    width: 20%;
+}
+
+#harmonogram thead th:nth-child(2) {
+    width: 30%;
+}
+
+#harmonogram thead th:nth-child(3) {
+    width: 34%;
+}
+
+#harmonogram thead th:nth-child(4) {
+    width: 16%;
+}
+
+#harmonogram .week-heading th {
+    padding: 0.9rem 0 0.75rem;
+    color: #fff;
+    background: rgba(61, 132, 255, 0.1);
+    border-bottom-color: rgba(61, 132, 255, 0.45);
+    box-shadow: inset 3px 0 var(--blue);
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+#harmonogram .week-heading-content {
+    display: grid;
+    width: 100%;
+    min-height: 2rem;
+    grid-template-columns: 20% 30% 34% 16%;
+    align-items: center;
+    gap: 0;
+    line-height: 1.4;
+}
+
+#harmonogram .week-heading-content > span:first-child {
+    grid-column: 1 / 4;
+    padding-left: 0.65rem;
+}
+
+#harmonogram .week-date {
+    grid-column: 4;
+    padding-left: 0.65rem;
+    text-align: left;
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+#harmonogram .task-steps {
+    margin: 0.35rem 0 0 1.25rem;
+    padding: 0;
+}
+
+#harmonogram .task-steps li {
+    margin-bottom: 0.3rem;
+    padding-left: 0.15rem;
+}
+
+#harmonogram .task-steps li:last-child {
+    margin-bottom: 0;
+}
+
+#harmonogram .task-details {
+    margin-top: 0.5rem;
+}
+
+#harmonogram .task-details summary {
+    width: fit-content;
+    position: relative;
+    padding-right: 1.2rem;
+    color: #a9c8ff;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+}
+
+#harmonogram .task-details summary::-webkit-details-marker {
+    display: none;
+}
+
+#harmonogram .task-details summary::after {
+    content: "+";
+    position: absolute;
+    right: 0;
+    color: #a9c8ff;
+    font-size: 1.1rem;
+    line-height: 1.3;
+    transition: transform 0.2s ease;
+}
+
+#harmonogram .task-details[open] summary::after {
+    transform: rotate(45deg);
+}
+
+#harmonogram .task-details summary:focus-visible,
+.minute-weeks summary:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 3px;
+}
+
+#harmonogram .task-details[open] > .task-steps {
+    margin-top: 0.6rem;
+    animation: disclosure-enter 0.24s ease-out both;
+}
+
+#harmonogram code {
+    color: #dce8ff;
+    overflow-wrap: anywhere;
+}
+
+.dokumenty-groups {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.document-group h3 {
+    margin-bottom: 0.8rem;
+}
+
+.project-documents,
+.minute-weeks {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.project-documents li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--line);
+    border-radius: 0.65rem;
+}
+
+.minute-weeks li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.75rem 0;
+    box-shadow: inset 0 1px var(--line);
+}
+
+.minute-weeks li > span {
+    line-height: 1.4;
+}
+
+.project-documents .tlacidlo:hover,
+.minute-weeks .tlacidlo:hover {
+    transform: none;
+}
+
+.minute-weeks ul {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.project-documents .tlacidlo,
+.minute-weeks .tlacidlo {
+    margin: 0;
+    padding: 0.45rem 1rem;
+    font-size: 0.85rem;
+    box-shadow: none;
+    white-space: nowrap;
+}
+
+.minute-weeks details {
+    padding: 0.85rem 1rem;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--line);
+    border-radius: 0.65rem;
+}
+
+.minute-weeks summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    min-height: 2rem;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.minute-week-info {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    align-items: center;
+    gap: 0.15rem 0.75rem;
+    line-height: 1.4;
+}
+
+.minute-week-info span:last-child {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.minute-week-toggle {
+    flex: 0 0 auto;
+    color: #a9c8ff;
+    font-size: 1.2rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.minute-weeks details[open] .minute-week-toggle {
+    transform: rotate(45deg);
+}
+
+.minute-weeks details[open] > .disclosure-content {
+    margin-top: 0.75rem;
+    animation: disclosure-enter 0.24s ease-out both;
+}
+
+@keyframes disclosure-enter {
+    from {
+        opacity: 0;
+        transform: translateY(-0.3rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@supports selector(details::details-content) and (interpolate-size: allow-keywords) {
+    #harmonogram .task-details,
+    .minute-weeks details {
+        interpolate-size: allow-keywords;
+    }
+
+    #harmonogram .task-details::details-content,
+    .minute-weeks details::details-content {
+        block-size: 0;
+        overflow: clip;
+        opacity: 0;
+        transition:
+            content-visibility 0.25s allow-discrete,
+            block-size 0.25s ease,
+            opacity 0.2s ease;
+    }
+
+    #harmonogram .task-details[open]::details-content,
+    .minute-weeks details[open]::details-content {
+        block-size: auto;
+        opacity: 1;
+    }
+}
+
+/* Footer */
+footer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 5rem;
+    padding: 3rem 8vw;
+    background: var(--bg2);
+    border-top: 1px solid var(--line);
+}
+
+footer h2 {
+    margin-bottom: 0.6rem;
+    font-size: 1.5rem;
+    letter-spacing: 0.15em;
+}
+
+footer h3 {
+    margin-bottom: 0.6rem;
+    font-size: 1.1rem;
+}
+
+footer address {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-style: normal;
+}
+
+footer p,
+footer a {
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+footer a:hover {
+    color: var(--blue);
+}
+
+/* Skryty nadpis h1 (viditelny len pre vyhladavace a citacky obrazovky) */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+}
+
+/* Vypnutie plynuleho skrolovania pre ludi, ktori maju v systeme zapnute obmedzenie animacii */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* Mobil */
+@media (max-width: 600px) {
+    nav {
+        gap: clamp(0.5rem, 2.5vw, 1rem);
+        padding: 0.5rem 1rem;
+        font-size: clamp(0.72rem, 3.6vw, 0.85rem);
+    }
+
+    nav a {
+        padding: 0.6rem 0;
+    }
+
+    .nav-logo img {
+        height: 40px;
+    }
+
+    article {
+        padding: 1.2rem;
+    }
+}
+
+@media (max-width: 700px) {
+    #harmonogram article {
+        padding: 1rem;
+    }
+
+    #harmonogram thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    #harmonogram table,
+    #harmonogram tbody,
+    #harmonogram tr,
+    #harmonogram td {
+        display: block;
+        width: 100%;
+    }
+
+    #harmonogram .week-heading th {
+        display: block;
+        width: 100%;
+        padding: 0.85rem 0 0.65rem;
+        font-size: 1.25rem;
+        white-space: normal;
+    }
+
+    #harmonogram .week-heading-content {
+        width: 100%;
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+    }
+
+    #harmonogram .week-heading-content > span:first-child {
+        padding-left: 0.75rem;
+    }
+
+    #harmonogram .day-heading th {
+        display: block;
+        padding: 0.6rem 0.75rem 0.45rem;
+        color: #a9c8ff;
+        background: transparent;
+        border-bottom: 0;
+        font-size: 0.9rem;
+    }
+
+    #harmonogram .week-date {
+        grid-column: 1;
+        padding-left: 0.75rem;
+        text-align: left;
+    }
+
+    #harmonogram tr:not(.week-heading):not(.day-heading) {
+        margin-bottom: 0.85rem;
+        padding: 0.45rem 0.8rem;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--line);
+        border-radius: 0.6rem;
+    }
+
+    #harmonogram td {
+        display: block;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    #harmonogram td:last-child {
+        border-bottom: 0;
+    }
+
+    #harmonogram td::before {
+        display: block;
+        margin-bottom: 0.2rem;
+        color: var(--muted);
+        font-weight: 600;
+    }
+
+    #harmonogram td p {
+        margin-bottom: 0.35rem;
+    }
+
+    #harmonogram .task-steps {
+        margin-left: 1.2rem;
+    }
+
+    #harmonogram td:nth-child(1)::before {
+        content: "Člen tímu";
+    }
+
+    #harmonogram td:nth-child(2)::before {
+        content: "Úloha";
+    }
+
+    #harmonogram td:nth-child(3)::before {
+        content: "Výstup";
+    }
+
+    #harmonogram td:nth-child(4)::before {
+        content: "Termín";
+    }
+
+}
+
+@media (max-width: 480px) {
+    #harmonogram .week-heading th {
+        font-size: 1rem;
+    }
+
+    #harmonogram .week-heading-content {
+        grid-template-columns: 1fr;
+    }
+
+    .minute-weeks summary {
+        gap: 0.5rem;
+    }
+
+    .minute-week-info {
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 0.15rem 0.4rem;
+    }
+
+    .minute-week-info span:last-child {
+        font-size: 0.72rem;
+    }
+
+    .tim article {
+        grid-template: none;
+        justify-items: center;
+        text-align: center;
+    }
+
+    .tim img {
+        grid-row: auto;
+        margin-bottom: 1rem;
+    }
+}
+
+/* iOS: zabrani zvacsovaniu pisma pri otoceni telefonu */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* iOS Safari nepodporuje background-attachment: fixed, preto je ziara pozadia
+   v samostatnej fixnej vrstve, ktora funguje vsade */
+body {
+    background: var(--bg);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 20%, #12285c, transparent 55%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #harmonogram .task-details summary::after,
+    .minute-week-toggle {
+        transition: none;
+    }
+
+    #harmonogram .task-details[open] > .task-steps,
+    .minute-weeks details[open] > .disclosure-content {
+        animation: none;
+    }
+
+    #harmonogram .task-details::details-content,
+    .minute-weeks details::details-content {
+        transition: none;
+    }
 }
