@@ -312,14 +312,26 @@
                     </tbody>
                     <tbody>
                         <tr class="week-heading">
-                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>3. týždeň</span><span class="week-date">Plán</span></span>
+                            <th scope="rowgroup" colspan="4">
+                                <span class="week-heading-content"><span>3. týždeň</span><span class="week-date">4. 11. 2026</span></span>
                             </th>
                         </tr>
                         <tr>
-                            <td>Tím</td>
-                            <td>Návrh riešenia projektu</td>
-                            <td>Architektúra systému, návrh databázy a API, návrhy obrazoviek</td>
-                            <td>Do konca 3. týždňa</td>
+                            <td>Peter Lužák</td>
+                            <td>
+                                <p><code>create-form</code> – samostatný formulár na vytvorenie úlohy a výber riešiteľa.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Navrhol komponent <code>TaskCreateForm</code> ako samostatnú časť funkcionality mimo komponentu Kanban nástenky.</li>
+                                    <li>Implementoval formulárové polia pre názov úlohy, popis a výber riešiteľa zo zoznamu členov tímu.</li>
+                                    <li>Doplnil validáciu povinného názvu úlohy a vymazanie formulára po úspešnom odoslaní.</li>
+                                    <li>Napojil formulár na stránku nástenky tak, aby sa nová úloha vytvorila v stave <code>TODO</code> bez prekrývania prezentačnej a formulárovej logiky.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Funkčný, izolovaný React komponent <code>TaskCreateForm</code> s validáciou vstupov, výberom riešiteľa a integráciou do Kanban nástenky bez zásahu do jej zobrazovacej logiky.</td>
+                            <td>4. 11. 2026</td>
                         </tr>
                     </tbody>
                     <tbody>
