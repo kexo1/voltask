@@ -11,7 +11,11 @@ Požiadavky: Docker Desktop s Docker Compose.
 2. Vygeneruj `JWT_SECRET` (minimálne 32 náhodných bajtov), napríklad v PowerShelli:
 
    ```powershell
-   [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+   $bytes = New-Object byte[] 32
+   $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+   $rng.GetBytes($bytes)
+   [Convert]::ToBase64String($bytes)
+   $rng.Dispose()
    ```
 
    Vlož výsledok do `.env` ako `JWT_SECRET`. Každý člen tímu používa vlastný
@@ -51,35 +55,13 @@ docker compose down             # zastaví kontajnery, dáta databázy ponechá
 `docker compose down -v` navyše vymaže lokálnu databázu. Použi ho iba vtedy,
 keď chceš zahodiť všetky lokálne dáta.
 
-### Spustenie bez Dockeru (voliteľné)
-
-Vyžaduje Node.js 26 a lokálny PostgreSQL. V `backend/.env` nastav
-`DATABASE_URL` podľa `backend/.env.example`, potom:
-
-```sh
-cd backend
-npm ci
-npm run db:generate
-npm run db:migrate
-npm run start:dev
-```
-
-V druhom termináli:
-
-```sh
-cd frontend
-npm ci
-npm run dev
-```
-
-Vite proxy posiela `/api` a `/socket.io` požiadavky na lokálny backend.
-
 ## Štruktúra projektu
 
 | Cesta | Obsah |
 |---|---|
 | `frontend/src/` | React + TypeScript aplikácia (Vite) |
 | `backend/src/` | NestJS API, WebSocket gateway a moduly podľa oblastí |
+| `backend/test/` | API testovacie požiadavky a výsledky |
 | `backend/prisma/` | Prisma schéma a verzované databázové migrácie |
 | `docker-compose.yml` | PostgreSQL, Node.js/NestJS API a React/Vite služby, porty a volume |
 | `.github/workflows/` | Automatický build a lint pri pushi a pull requeste |
