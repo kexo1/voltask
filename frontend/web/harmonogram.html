@@ -313,8 +313,11 @@
                     <tbody>
                         <tr class="week-heading">
                             <th scope="rowgroup" colspan="4">
-                                <span class="week-heading-content"><span>3. týždeň</span><span class="week-date">4. 11. 2026</span></span>
+                                <span class="week-heading-content"><span>3. týždeň</span><span class="week-date">4. 11. – 6. 11. 2026</span></span>
                             </th>
+                        </tr>
+                        <tr class="day-heading">
+                            <th scope="row" colspan="4">4. november 2026</th>
                         </tr>
                         <tr>
                             <td>Peter Lužák</td>
@@ -332,6 +335,61 @@
                             </td>
                             <td>Funkčný, izolovaný React komponent <code>TaskCreateForm</code> s validáciou vstupov, výberom riešiteľa a integráciou do Kanban nástenky bez zásahu do jej zobrazovacej logiky.</td>
                             <td>4. 11. 2026</td>
+                        </tr>
+                        <tr class="day-heading">
+                            <th scope="row" colspan="4">6. november 2026</th>
+                        </tr>
+                        <tr>
+                            <td>Martin Polanský (vedúci tímu)</td>
+                            <td>
+                                <p>Implementácia základu registrácie a prihlásenia (auth API).</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                <li>Vytvoril vlastnú vetvu <code>feature/auth-api</code>.</li>
+                                <li>Pridal endpointy <code>POST /api/auth/register</code> a <code>POST /api/auth/login</code>.</li>
+                                <li>Zabezpečil bezpečné hashovanie hesla.</li>
+                                <li>Po úspešnom prihlásení vydal JWT.</li>
+                                <li>Ochranu všetkých endpointov Teams a Tasks zatiaľ nezapínal.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Funkčný základ registrácie a prihlásenia s hashovaním hesla a vydaním JWT; endpointy Teams a Tasks zatiaľ bez ochrany</td>
+                            <td>6. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Peter Lužák</td>
+                            <td>
+                                <p>Registračný a prihlasovací formulár.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                <li>Vytvoril vlastnú vetvu <code>feature/auth-forms</code>.</li>
+                                <li>Vytvoril jednoduchý registračný a prihlasovací formulár.</li>
+                                <li>Použil dohodnutý API kontrakt: registrácia <code>{ email, displayName, password }</code>, prihlásenie <code>{ email, password }</code>.</li>
+                                <li>Zmenu Kanbanu zatiaľ nerobil.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Jednoduché registračné a prihlasovacie formuláre podľa dohodnutého API kontraktu</td>
+                            <td>6. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Juraj Vozárik</td>
+                            <td>
+                                <p>Testovacia matica a požiadavky pre auth API.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                <li>Vytvoril vetvu <code>test/auth-api</code>.</li>
+                                <li>Pripravil testovaciu maticu a HTTP/Postman požiadavky: úspešná registrácia, duplicitný email, úspešné prihlásenie, zlé heslo a neplatné vstupy.</li>
+                                <li>Po dokončení endpointov ich otestoval.</li>
+                                <li>Výsledky testovania spísal.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Testovacia matica a HTTP/Postman požiadavky, otestované auth endpointy a spísané výsledky</td>
+                            <td>6. 11. 2026</td>
                         </tr>
                     </tbody>
                     <tbody>
