@@ -8,13 +8,21 @@ evidenciu tímov a úloh, Kanban nástenka, real-time aktualizácie a prehľad p
 Požiadavky: Docker Desktop s Docker Compose.
 
 1. Skopíruj `.env.example` do `.env`.
-2. Spusti projekt:
+2. Vygeneruj `JWT_SECRET` (minimálne 32 náhodných bajtov), napríklad v PowerShelli:
+
+   ```powershell
+   [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+   ```
+
+   Vlož výsledok do `.env` ako `JWT_SECRET`. Každý člen tímu používa vlastný
+   lokálny secret; `.env` sa necommitne.
+3. Spusti projekt:
 
    ```sh
    docker compose up --build
    ```
 
-3. Otvor aplikácie:
+4. Otvor aplikácie:
 
    | Služba | Adresa |
    |---|---|
@@ -82,9 +90,26 @@ Obe technológie používame spolu.
 
 ### Teams API (prototyp)
 
-API zatiaľ nemá JWT autentifikáciu, preto sú tieto endpointy otvorené. Sú určené
-iba na lokálny vývojový prototyp; pred zverejnením aplikácie treba doplniť
-overenie používateľa a jeho oprávnení.
+Prihlasovacie endpointy vytvárajú JWT. Teams a Tasks endpointy zatiaľ tento
+token nevyžadujú; autorizácia používateľov na nich bude samostatná úloha.
+
+| Metóda a cesta | Čo robí |
+|---|---|
+| `POST /api/auth/register` | Zaregistruje používateľa; heslo (8–72 znakov/bajtov) sa uloží ako bcrypt hash |
+| `POST /api/auth/login` | Overí prihlasovacie údaje a vráti JWT s platnosťou 1 hodina |
+
+Registrácia prijíma `email`, `displayName` a `password`. Prihlásenie prijíma
+`email` a `password`. Úspešná odpoveď obsahuje `user` a `accessToken`; hash hesla
+sa v odpovedi nevracia. Duplicitný email vráti `409`, neplatné údaje `400` a
+nesprávne prihlasovacie údaje `401`.
+
+Príklad:
+
+```sh
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"student@example.test\",\"displayName\":\"Student\",\"password\":\"StrongPass123\"}"
+```
 
 | Metóda a cesta | Čo robí |
 |---|---|
