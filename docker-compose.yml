@@ -29,6 +29,7 @@ services:
       PORT: 3000
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
       FRONTEND_URL: ${FRONTEND_URL}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in the root .env file}
       DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
     volumes:
       - ./backend/src:/app/src
