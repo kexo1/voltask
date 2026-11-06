@@ -1,2 +1,66 @@
 ### Auth API test requests
 # Doplň požiadavky po dohode na endpointoch a API kontrakte.
+
+### Auth API test requests
+
+### AUTH-01: Úspešná registrácia
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "displayName": "Test User",
+  "password": "Test12345"
+}
+
+
+### AUTH-02: Duplicitný email
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "displayName": "Another User",
+  "password": "Test12345"
+}
+
+
+### AUTH-03: Úspešné prihlásenie
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Test12345"
+}
+
+
+### AUTH-04: Prihlásenie so zlým heslom
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "WrongPassword123"
+}
+
+
+### AUTH-05: Registrácia s neplatným emailom
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "abc",
+  "displayName": "Test User",
+  "password": "Test12345"
+}
+
+
+### AUTH-06: Registrácia bez hesla
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "another@example.com",
+  "displayName": "Test User"
+}
