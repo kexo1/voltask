@@ -1,32 +1,32 @@
-// Importuj hook, vďaka ktorému sa dá karta ťahať.
+// Import the hook that makes a card draggable.
 import { useDraggable } from '@dnd-kit/core'
-// Importuj typ údajov úlohy.
+// Import the task type.
 import type { Task } from '../types/task'
 
-// Karta potrebuje údaje úlohy; isOverlay označuje dočasný náhľad pri ťahaní.
-type Props = { task: Task; isOverlay?: boolean }
+// isOverlay marks the temporary card preview used while dragging.
+type Props = { task: Task; isOverlay?: boolean; disabled?: boolean }
 
-// Zobraz údaje úlohy a zapoj kartu do ťahania.
-export default function TaskCard({ task, isOverlay = false }: Props) {
-  // Nastav kartu ako ťahateľnú, okrem prípadu, keď vykresľujeme jej náhľad.
+// Render the task data and enable dragging.
+export default function TaskCard({ task, isOverlay = false, disabled = false }: Props) {
+  // Disable dragging for the overlay and while a status update is pending.
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
-    disabled: isOverlay,
+    disabled: isOverlay || disabled,
   })
 
-  // Vykresli kartu a nastav triedy pre ťahanie a jeho náhľad.
+  // Render the card with styles for dragging and the overlay.
   return (
     <div
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className={`task-card${isDragging ? ' task-card--dragging' : ''}${isOverlay ? ' task-card--overlay' : ''}`}
+      className={`task-card${isDragging ? ' task-card--dragging' : ''}${isOverlay ? ' task-card--overlay' : ''}${disabled ? ' task-card--disabled' : ''}`}
     >
       <h3>{task.title}</h3>
-      {/* Popis zobraz iba vtedy, ak je vyplnený. */}
+      {/* Show the description only when one is available. */}
       {task.description && <p>{task.description}</p>}
       <span className="task-card__assignee">
-        {/* Zobraz meno priradenej osoby alebo text, ak nikto nie je priradený. */}
+        {/* Show the assignee name or the unassigned label. */}
         {task.assignee ? task.assignee.displayName : 'Nepridelené'}
       </span>
     </div>
