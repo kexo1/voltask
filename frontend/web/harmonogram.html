@@ -313,7 +313,7 @@
                     <tbody>
                         <tr class="week-heading">
                             <th scope="rowgroup" colspan="4">
-                                <span class="week-heading-content"><span>3. týždeň</span><span class="week-date">4. 11. – 6. 11. 2026</span></span>
+                                <span class="week-heading-content"><span>3. týždeň</span><span class="week-date">4. 11. – 8. 11. 2026</span></span>
                             </th>
                         </tr>
                         <tr class="day-heading">
@@ -391,18 +391,49 @@
                             <td>Testovacia matica a HTTP/Postman požiadavky, otestované auth endpointy a spísané výsledky</td>
                             <td>6. 11. 2026</td>
                         </tr>
+                        <th scope="row" colspan="4">8. november 2026</th>
+                        <tr>
+                            <td>Michal Trebichalský</td>
+                            <td>
+                                <p>Prepojenie Kanbanu s API úloh.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                <li>Vytvoril vetvu <code>feature/kanban-api-integration</code>.</li>
+                                <li>Napojil nástenku na načítanie tímov a úloh z API.</li>
+                                <li>Doplnil ukladanie zmeny stavu úlohy cez <code>PATCH /api/tasks/:id/status</code>.</li>
+                                <li>Pripravil formulár na vytváranie úloh cez <code>POST /api/tasks</code> vrátane výberu tímu a riešiteľa.</li>
+                                <li>Doplnil načítavacie hlásenia a zobrazenie chýb.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Kanban načítava úlohy z API a ukladá zmeny stavu; vytváranie úloh je pripravené na backendový endpoint.</td>
+                            <td>8. 11. 2026</td>
+                        </tr>
                     </tbody>
                     <tbody>
                         <tr class="week-heading">
                             <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>4.–5. týždeň</span><span
-                                    class="week-date">Plán</span></span></th>
+                                    class="week-date">9. 11. - </span></span></th>
                         </tr>
                         <tr>
-                            <td>Tím</td>
-                            <td>Implementácia backendu (I.)</td>
-                            <td>Databáza (Prisma), JWT autentifikácia, tímy a úlohy (REST API)</td>
-                            <td>Do konca 5. týždňa</td>
+                            <td>Matúš Tóth</td>
+                            <td>
+                                <p>Rozšírenie API úloh o ich vytváranie.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                <li>Doplnil endpoint <code>POST /api/tasks.</code>.</li>
+                                <li>Uložil úlohu do PostgreSQL cez existujúcu Prisma schému.</li>
+                                <li>ID tvorcu získal z JWT a overil existenciu tímu a riešiteľa. <code>PATCH /api/tasks/:id/status</code>.</li>
+                                <li>Otestoval vytvorenie úlohy a jej načítanie z databázy.</li>
+                                </ol>
+                                </details>
+                            </td>
+                            <td>Funkčné vytváranie úloh cez API, overené voči PostgreSQL.</td>
+                            <td>9. 11. 2026</td>
                         </tr>
+
                         <tr>
                             <td>Tím</td>
                             <td>Implementácia frontendu (I.)</td>
