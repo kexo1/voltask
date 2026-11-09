@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 // Import drag-and-drop tools and event types.
 import {
   DndContext,
@@ -17,6 +17,7 @@ import TaskCreateForm, {
   type TeamMember,
 } from '../features/kanban/components/TaskCreateForm'
 import {
+  createTeam,
   createTask,
   getTeamMembers,
   getTasks,
@@ -53,6 +54,8 @@ export default function BoardPage() {
   const [members, setMembers] = useState<TeamMember[]>([])
   const [pendingTaskIds, setPendingTaskIds] = useState<Set<string>>(new Set())
   const [isCreatingTask, setIsCreatingTask] = useState(false)
+  const [teamName, setTeamName] = useState('')
+  const [isCreatingTeam, setIsCreatingTeam] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
 
   const selectedTeam = teams.find((team) => team.id === selectedTeamId) ?? null
@@ -204,6 +207,29 @@ export default function BoardPage() {
     }
   }
 
+  async function handleCreateTeam(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const name = teamName.trim()
+    if (!name) return
+
+    setBoardError('')
+    setIsCreatingTeam(true)
+    try {
+      const team = await createTeam(name)
+      setTeams((current) => [...current, team])
+      setSelectedTeamId(team.id)
+      setTasks([])
+      setMembers([])
+      setTeamName('')
+    } catch (error) {
+      setBoardError(
+        error instanceof Error ? error.message : 'Tím sa nepodarilo vytvoriť.',
+      )
+    } finally {
+      setIsCreatingTeam(false)
+    }
+  }
+
   return (
     <main className="board">
       <h1>Kanban nástenka</h1>
@@ -221,6 +247,7 @@ export default function BoardPage() {
           }}
           disabled={
             isLoadingTeams ||
+            isCreatingTeam ||
             isCreatingTask ||
             pendingTaskIds.size > 0 ||
             teams.length === 0
@@ -246,11 +273,29 @@ export default function BoardPage() {
       {!isLoadingTeams && !loadError && teams.length === 0 && (
         <p>Nie ste členom žiadneho tímu.</p>
       )}
+      <form className="board__create-team" onSubmit={handleCreateTeam}>
+        <label htmlFor="new-team-name">Vytvoriť tím</label>
+        <div>
+          <input
+            id="new-team-name"
+            value={teamName}
+            onChange={(event) => setTeamName(event.target.value)}
+            placeholder="Názov tímu"
+            maxLength={80}
+            required
+            disabled={isLoadingTeams || isCreatingTeam}
+          />
+          <button type="submit" disabled={isLoadingTeams || isCreatingTeam}>
+            {isCreatingTeam ? 'Vytváram…' : 'Vytvoriť tím'}
+          </button>
+        </div>
+      </form>
       <TaskCreateForm
         members={members}
         disabled={
           isLoadingTeams ||
           isLoadingTasks ||
+          isCreatingTeam ||
           isCreatingTask ||
           !selectedTeam ||
           Boolean(loadError)
