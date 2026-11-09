@@ -1,0 +1,73 @@
+### Task API test requests
+# Run with the REST Client extension. Use the accessToken and user.id returned by
+# registration, then replace the placeholders below. The team request can create
+# a test team without changing the Prisma schema.
+
+@baseUrl = http://localhost:3000/api
+@token = paste-access-token-here
+@teamId = paste-team-id-here
+@assigneeId = paste-existing-user-id-here
+
+### TASK-01: Create a team for testing and copy its response id to @teamId
+POST {{baseUrl}}/teams
+Content-Type: application/json
+
+{
+  "name": "Task API test team"
+}
+
+### TASK-02: Create a task (expected 201)
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Verify task persistence",
+  "description": "Created through the tasks API",
+  "teamId": "{{teamId}}"
+}
+
+### TASK-03: Verify the task is persisted and listed (expected to include the new task)
+GET {{baseUrl}}/tasks?teamId={{teamId}}
+Authorization: Bearer {{token}}
+
+### TASK-04: Create a task with an existing user as assignee (expected 201)
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Assigned task",
+  "teamId": "{{teamId}}",
+  "assigneeId": "{{assigneeId}}"
+}
+
+### TASK-05: Reject a request without a token (expected 401)
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Should not be created",
+  "teamId": "{{teamId}}"
+}
+
+### TASK-06: Reject a missing team (expected 404)
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Missing team",
+  "teamId": "missing-team-id"
+}
+
+### TASK-07: Reject a missing assignee (expected 404)
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Missing assignee",
+  "teamId": "{{teamId}}",
+  "assigneeId": "missing-user-id"
+}
