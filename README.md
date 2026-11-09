@@ -8,13 +8,25 @@ evidenciu tímov a úloh, Kanban nástenka, real-time aktualizácie a prehľad p
 Požiadavky: Docker Desktop s Docker Compose.
 
 1. Skopíruj `.env.example` do `.env`.
-2. Spusti projekt:
+2. Vygeneruj `JWT_SECRET` (minimálne 32 náhodných bajtov), napríklad v PowerShelli:
+
+   ```powershell
+   $bytes = New-Object byte[] 32
+   $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+   $rng.GetBytes($bytes)
+   [Convert]::ToBase64String($bytes)
+   $rng.Dispose()
+   ```
+
+   Vlož výsledok do `.env` ako `JWT_SECRET`. Každý člen tímu používa vlastný
+   lokálny secret; `.env` sa necommitne.
+3. Spusti projekt:
 
    ```sh
    docker compose up --build
    ```
 
-3. Otvor aplikácie:
+4. Otvor aplikácie:
 
    | Služba | Adresa |
    |---|---|
@@ -43,35 +55,13 @@ docker compose down             # zastaví kontajnery, dáta databázy ponechá
 `docker compose down -v` navyše vymaže lokálnu databázu. Použi ho iba vtedy,
 keď chceš zahodiť všetky lokálne dáta.
 
-### Spustenie bez Dockeru (voliteľné)
-
-Vyžaduje Node.js 26 a lokálny PostgreSQL. V `backend/.env` nastav
-`DATABASE_URL` podľa `backend/.env.example`, potom:
-
-```sh
-cd backend
-npm ci
-npm run db:generate
-npm run db:migrate
-npm run start:dev
-```
-
-V druhom termináli:
-
-```sh
-cd frontend
-npm ci
-npm run dev
-```
-
-Vite proxy posiela `/api` a `/socket.io` požiadavky na lokálny backend.
-
 ## Štruktúra projektu
 
 | Cesta | Obsah |
 |---|---|
 | `frontend/src/` | React + TypeScript aplikácia (Vite) |
 | `backend/src/` | NestJS API, WebSocket gateway a moduly podľa oblastí |
+| `backend/test/` | API testovacie požiadavky a výsledky |
 | `backend/prisma/` | Prisma schéma a verzované databázové migrácie |
 | `docker-compose.yml` | PostgreSQL, Node.js/NestJS API a React/Vite služby, porty a volume |
 | `.github/workflows/` | Automatický build a lint pri pushi a pull requeste |
@@ -82,14 +72,33 @@ Obe technológie používame spolu.
 
 ### Teams API (prototyp)
 
-API zatiaľ nemá JWT autentifikáciu, preto sú tieto endpointy otvorené. Sú určené
-iba na lokálny vývojový prototyp; pred zverejnením aplikácie treba doplniť
-overenie používateľa a jeho oprávnení.
+Prihlasovacie endpointy vytvárajú JWT. Registrácia vytvorí používateľa aj jeho
+predvolený tím `Môj tím`; pri prihlásení sa predvolený tím doplní aj starším
+účtom, ktorý ešte nie je členom žiadneho tímu. Vytvorenie ďalšieho tímu vyžaduje
+JWT a jeho tvorca sa stane vlastníkom.
+
+| Metóda a cesta | Čo robí |
+|---|---|
+| `POST /api/auth/register` | Zaregistruje používateľa, vytvorí mu predvolený tím a vráti JWT |
+| `POST /api/auth/login` | Overí prihlasovacie údaje, prípadne doplní predvolený tím a vráti JWT s platnosťou 1 hodina |
+
+Registrácia prijíma `email`, `displayName` a `password`. Prihlásenie prijíma
+`email` a `password`. Úspešná odpoveď obsahuje `user` a `accessToken`; hash hesla
+sa v odpovedi nevracia. Duplicitný email vráti `409`, neplatné údaje `400` a
+nesprávne prihlasovacie údaje `401`.
+
+Príklad:
+
+```sh
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"student@example.test\",\"displayName\":\"Student\",\"password\":\"StrongPass123\"}"
+```
 
 | Metóda a cesta | Čo robí |
 |---|---|
 | `GET /api/teams` | Vráti tímy, počet členov a počet úloh v každom Kanban stave |
-| `POST /api/teams` | Vytvorí tím; vyžaduje `name` (1–80 znakov), voliteľné `description` (najviac 500 znakov) |
+| `POST /api/teams` | Vytvorí tím a pridá tvorcu ako vlastníka; vyžaduje JWT, `name` (1–80 znakov), voliteľné `description` (najviac 500 znakov) |
 | `GET /api/teams/:id` | Vráti detail tímu, členov, úlohy a súhrn progresu |
 
 Príklad vytvorenia tímu:
@@ -97,6 +106,7 @@ Príklad vytvorenia tímu:
 ```sh
 curl -X POST http://localhost:3000/api/teams \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <accessToken>" \
   -d "{\"name\":\"Tím A\",\"description\":\"Ukážkový tím\"}"
 ```
 

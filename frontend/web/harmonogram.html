@@ -312,80 +312,212 @@
                     </tbody>
                     <tbody>
                         <tr class="week-heading">
-                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>3. týždeň</span><span class="week-date">Plán</span></span>
+                            <th scope="rowgroup" colspan="4">
+                                <span class="week-heading-content"><span>3. týždeň</span><span class="week-date">4. 11. – 8. 11. 2026</span></span>
                             </th>
                         </tr>
+                        <tr class="day-heading">
+                            <th scope="row" colspan="4">4. november 2026</th>
+                        </tr>
                         <tr>
-                            <td>Tím</td>
-                            <td>Návrh riešenia projektu</td>
-                            <td>Architektúra systému, návrh databázy a API, návrhy obrazoviek</td>
-                            <td>Do konca 3. týždňa</td>
+                            <td>Peter Lužák</td>
+                            <td>
+                                <p><code>create-form</code> – samostatný formulár na vytvorenie úlohy a výber riešiteľa.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Navrhol komponent <code>TaskCreateForm</code> ako samostatnú časť funkcionality mimo komponentu Kanban nástenky.</li>
+                                    <li>Implementoval formulárové polia pre názov úlohy, popis a výber riešiteľa zo zoznamu členov tímu.</li>
+                                    <li>Doplnil validáciu povinného názvu úlohy a vymazanie formulára po úspešnom odoslaní.</li>
+                                    <li>Napojil formulár na stránku nástenky tak, aby sa nová úloha vytvorila v stave <code>TODO</code> bez prekrývania prezentačnej a formulárovej logiky.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Funkčný, izolovaný React komponent <code>TaskCreateForm</code> s validáciou vstupov, výberom riešiteľa a integráciou do Kanban nástenky bez zásahu do jej zobrazovacej logiky.</td>
+                            <td>4. 11. 2026</td>
+                        </tr>
+                        <tr class="day-heading">
+                            <th scope="row" colspan="4">6. november 2026</th>
+                        </tr>
+                        <tr>
+                            <td>Martin Polanský (vedúci tímu)</td>
+                            <td>
+                                <p>Implementácia základu registrácie a prihlásenia (auth API).</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                <li>Vytvoril vlastnú vetvu <code>feature/auth-api</code>.</li>
+                                <li>Pridal endpointy <code>POST /api/auth/register</code> a <code>POST /api/auth/login</code>.</li>
+                                <li>Zabezpečil bezpečné hashovanie hesla.</li>
+                                <li>Po úspešnom prihlásení vydal JWT.</li>
+                                <li>Ochranu všetkých endpointov Teams a Tasks zatiaľ nezapínal.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Funkčný základ registrácie a prihlásenia s hashovaním hesla a vydaním JWT; endpointy Teams a Tasks zatiaľ bez ochrany</td>
+                            <td>6. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Peter Lužák</td>
+                            <td>
+                                <p>Registračný a prihlasovací formulár.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                <li>Vytvoril vlastnú vetvu <code>feature/auth-forms</code>.</li>
+                                <li>Vytvoril jednoduchý registračný a prihlasovací formulár.</li>
+                                <li>Použil dohodnutý API kontrakt: registrácia <code>{ email, displayName, password }</code>, prihlásenie <code>{ email, password }</code>.</li>
+                                <li>Zmenu Kanbanu zatiaľ nerobil.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Jednoduché registračné a prihlasovacie formuláre podľa dohodnutého API kontraktu</td>
+                            <td>6. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Juraj Vozárik</td>
+                            <td>
+                                <p>Testovacia matica a požiadavky pre auth API.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                <li>Vytvoril vetvu <code>test/auth-api</code>.</li>
+                                <li>Pripravil testovaciu maticu a HTTP/Postman požiadavky: úspešná registrácia, duplicitný email, úspešné prihlásenie, zlé heslo a neplatné vstupy.</li>
+                                <li>Po dokončení endpointov ich otestoval.</li>
+                                <li>Výsledky testovania spísal.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Testovacia matica a HTTP/Postman požiadavky, otestované auth endpointy a spísané výsledky</td>
+                            <td>6. 11. 2026</td>
+                        </tr>
+                        <th scope="row" colspan="4">8. november 2026</th>
+                        <tr>
+                            <td>Michal Trebichalský</td>
+                            <td>
+                                <p>Prepojenie Kanbanu s API úloh.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                <li>Vytvoril vetvu <code>feature/kanban-api-integration</code>.</li>
+                                <li>Napojil nástenku na načítanie tímov a úloh z API.</li>
+                                <li>Doplnil ukladanie zmeny stavu úlohy cez <code>PATCH /api/tasks/:id/status</code>.</li>
+                                <li>Pripravil formulár na vytváranie úloh cez <code>POST /api/tasks</code> vrátane výberu tímu a riešiteľa.</li>
+                                <li>Doplnil načítavacie hlásenia a zobrazenie chýb.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Kanban načítava úlohy z API a ukladá zmeny stavu; vytváranie úloh je pripravené na backendový endpoint.</td>
+                            <td>8. 11. 2026</td>
                         </tr>
                     </tbody>
                     <tbody>
                         <tr class="week-heading">
-                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>4.–5. týždeň</span><span
-                                    class="week-date">Plán</span></span></th>
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>4. týždeň</span><span
+                                    class="week-date">9. 11. – 15. 11. 2026</span></span></th>
+                        </tr>
+                        <tr class="day-heading">
+                            <th scope="row" colspan="4">9. november 2026</th>
                         </tr>
                         <tr>
-                            <td>Tím</td>
-                            <td>Implementácia backendu (I.)</td>
-                            <td>Databáza (Prisma), JWT autentifikácia, tímy a úlohy (REST API)</td>
-                            <td>Do konca 5. týždňa</td>
-                        </tr>
-                        <tr>
-                            <td>Tím</td>
-                            <td>Implementácia frontendu (I.)</td>
-                            <td>Základné UI (prihlásenie, prehľad tímov), Kanban nástenka</td>
-                            <td>Do konca 5. týždňa</td>
+                            <td>Matúš Tóth</td>
+                            <td>
+                                <p>Vytvorenie úlohy cez API.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                        <li>Doplnil endpoint <code>POST /api/tasks</code>.</li>
+                                        <li>Uložil úlohu do PostgreSQL a overil tím, riešiteľa aj tvorcu z JWT.</li>
+                                        <li>Otestoval vytvorenie a načítanie úlohy.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Vytváranie úloh cez API funkčné a otestované.</td>
+                            <td>9. 11. 2026</td>
                         </tr>
                     </tbody>
                     <tbody>
                         <tr class="week-heading">
-                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>6.–7. týždeň</span><span
-                                    class="week-date">Plán</span></span></th>
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>5. týždeň</span><span
+                                    class="week-date">16. 11. – 22. 11. 2026</span></span></th>
                         </tr>
                         <tr>
                             <td>Tím</td>
-                            <td>Implementácia backendu a frontendu (II.)</td>
-                            <td>Real-time aktualizácie (WebSockety), Discord webhook notifikácie, pohľad učiteľa</td>
-                            <td>Do konca 7. týždňa</td>
+                            <td>Dokončenie prihlasovania a ochrana API tímov a úloh.</td>
+                            <td>JWT ochrana, kontrola členstva v tíme a zachovanie prihlásenia po obnovení stránky.</td>
+                            <td>Do 22. 11. 2026</td>
                         </tr>
                     </tbody>
                     <tbody>
                         <tr class="week-heading">
-                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>8. týždeň</span><span class="week-date">Plán</span></span>
-                            </th>
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>6. týždeň</span><span
+                                    class="week-date">23. 11. – 29. 11. 2026</span></span></th>
                         </tr>
                         <tr>
                             <td>Tím</td>
-                            <td>Testovanie a ladenie</td>
-                            <td>Testovací plán a opravené chyby</td>
-                            <td>Do konca 8. týždňa</td>
+                            <td>Živé aktualizácie Kanban nástenky cez WebSocket.</td>
+                            <td>Zmena úlohy sa zobrazí ostatným členom bez obnovenia stránky.</td>
+                            <td>Do 29. 11. 2026</td>
                         </tr>
                     </tbody>
                     <tbody>
                         <tr class="week-heading">
-                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>9. týždeň</span><span class="week-date">Plán</span></span>
-                            </th>
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>7. týždeň</span><span
+                                    class="week-date">30. 11. – 6. 12. 2026</span></span></th>
                         </tr>
                         <tr>
                             <td>Tím</td>
-                            <td>Nasadenie a dokumentácia</td>
-                            <td>Nasadenie pomocou Docker Compose a používateľská dokumentácia</td>
-                            <td>Do konca 9. týždňa</td>
+                            <td>Učiteľský prehľad tímov a úloh.</td>
+                            <td>Učiteľ vidí tímy a ich úlohy podľa pridelených oprávnení.</td>
+                            <td>Do 6. 12. 2026</td>
                         </tr>
                     </tbody>
                     <tbody>
                         <tr class="week-heading">
-                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>10.–11. týždeň</span><span
-                                    class="week-date">Plán</span></span></th>
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>8. týždeň</span><span
+                                    class="week-date">7. 12. – 13. 12. 2026</span></span></th>
                         </tr>
                         <tr>
                             <td>Tím</td>
-                            <td>Rezerva, finálne úpravy a prezentácia projektu</td>
-                            <td>Dokončené finálne úpravy a pripravená prezentácia projektu</td>
-                            <td>Do konca 11. týždňa</td>
+                            <td>Discord notifikácie pri vytvorení a zmene úlohy.</td>
+                            <td>Notifikácie funkčné; webhook sa načítava z konfigurácie prostredia.</td>
+                            <td>Do 13. 12. 2026</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>9. týždeň</span><span
+                                    class="week-date">14. 12. – 20. 12. 2026</span></span></th>
+                        </tr>
+                        <tr>
+                            <td>Tím</td>
+                            <td>Integračné testovanie a oprava chýb.</td>
+                            <td>Otestované hlavné scenáre a opravené nájdené chyby.</td>
+                            <td>Do 20. 12. 2026</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>10. týždeň</span><span
+                                    class="week-date">21. 12. – 27. 12. 2026</span></span></th>
+                        </tr>
+                        <tr>
+                            <td>Tím</td>
+                            <td>Overenie nasadenia a doplnenie dokumentácie.</td>
+                            <td>Projekt sa spustí cez Docker Compose podľa návodu.</td>
+                            <td>Do 27. 12. 2026</td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr class="week-heading">
+                            <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>11. týždeň</span><span
+                                    class="week-date">28. 12. 2026 – 3. 1. 2027</span></span></th>
+                        </tr>
+                        <tr>
+                            <td>Tím</td>
+                            <td>Finálne úpravy a príprava prezentácie projektu.</td>
+                            <td>Dokončená kontrola projektu a pripravená prezentácia.</td>
+                            <td>Do 3. 1. 2027</td>
                         </tr>
                     </tbody>
                 </table>

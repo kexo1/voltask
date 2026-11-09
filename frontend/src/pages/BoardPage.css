@@ -10,6 +10,73 @@
   margin: 0 0 16px;
 }
 
+.board__team-picker {
+  display: grid;
+  gap: 6px;
+  max-width: 560px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.board__team-picker select {
+  padding: 9px 10px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}
+
+.board__create-team {
+  display: grid;
+  gap: 6px;
+  max-width: 560px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.board__create-team > div {
+  display: flex;
+  gap: 8px;
+}
+
+.board__create-team input,
+.board__create-team button {
+  padding: 9px 10px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}
+
+.board__create-team input {
+  min-width: 0;
+  flex: 1;
+}
+
+.board__create-team button {
+  cursor: pointer;
+}
+
+.board__error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px;
+  color: #b42318;
+}
+
+.board__error button {
+  padding: 6px 10px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+}
+
 /* Umiestni tri stĺpce stavov vedľa seba. */
 .board__columns {
   display: grid;
@@ -89,6 +156,10 @@
 .task-card--overlay {
   box-shadow: var(--shadow);
   cursor: grabbing;
+}
+
+.task-card--disabled {
+  cursor: wait;
 }
 
 /* Na úzkych obrazovkách ulož stĺpce pod seba. */

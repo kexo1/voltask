@@ -1,18 +1,28 @@
-// Importuj hook, vďaka ktorému je stĺpec cieľom na pustenie karty.
+// Import the hook that makes the column a drop target.
 import { useDroppable } from '@dnd-kit/core'
-// Importuj typy úloh a komponent karty úlohy.
+// Import task types and the task card component.
 import type { Task, TaskStatus } from '../types/task'
 import TaskCard from './TaskCard'
 
-// Tieto hodnoty dostane komponent zo stránky nástenky.
-type Props = { status: TaskStatus; label: string; tasks: Task[] }
+// The board page supplies these column values.
+type Props = {
+  status: TaskStatus
+  label: string
+  tasks: Task[]
+  pendingTaskIds?: Set<string>
+}
 
-// Zobraz stĺpec jedného stavu a úlohy, ktoré doň patria.
-export default function BoardColumn({ status, label, tasks }: Props) {
-  // Nastav túto sekciu ako cieľ na pustenie; jej ID je stav úlohy.
+// Render one status column and its tasks.
+export default function BoardColumn({
+  status,
+  label,
+  tasks,
+  pendingTaskIds = new Set(),
+}: Props) {
+  // Use the status as the column drop target ID.
   const { setNodeRef, isOver } = useDroppable({ id: status })
 
-  // Vykresli názov stĺpca, počet úloh a ich karty.
+  // Render the column title, task count, and cards.
   return (
     <section
       ref={setNodeRef}
@@ -22,9 +32,13 @@ export default function BoardColumn({ status, label, tasks }: Props) {
         {label} <span className="board-column__count">{tasks.length}</span>
       </h2>
       <div className="board-column__tasks">
-        {/* Vytvor kartu pre každú úlohu v tomto stĺpci. */}
+        {/* Render every task in this column. */}
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            disabled={pendingTaskIds.has(task.id)}
+          />
         ))}
       </div>
     </section>
