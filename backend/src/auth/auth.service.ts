@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcryptjs';
-import { Prisma, type User } from '../generated/prisma/client';
+import { Prisma, TeamRole, type User } from '../generated/prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -33,13 +33,28 @@ export class AuthService {
     const passwordHash = await hash(registerDto.password, 12);
 
     try {
-      const user = await this.prisma.user.create({
-        data: {
-          email: registerDto.email,
-          displayName: registerDto.displayName,
-          passwordHash,
-        },
-        select: userResponseSelect,
+      const user = await this.prisma.$transaction(async (transaction) => {
+        const createdUser = await transaction.user.create({
+          data: {
+            email: registerDto.email,
+            displayName: registerDto.displayName,
+            passwordHash,
+          },
+          select: userResponseSelect,
+        });
+
+        const team = await transaction.team.create({
+          data: { name: 'Môj tím' },
+        });
+        await transaction.teamMember.create({
+          data: {
+            teamId: team.id,
+            userId: createdUser.id,
+            role: TeamRole.OWNER,
+          },
+        });
+
+        return createdUser;
       });
 
       return this.createAuthResponse(user);
@@ -68,11 +83,40 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
+    await this.ensureDefaultTeam(user.id);
+
     return this.createAuthResponse({
       id: user.id,
       email: user.email,
       displayName: user.displayName,
       createdAt: user.createdAt,
+    });
+  }
+
+  private async ensureDefaultTeam(userId: string) {
+    const membership = await this.prisma.teamMember.findFirst({
+      where: { userId },
+      select: { teamId: true },
+    });
+    if (membership) return;
+
+    await this.prisma.$transaction(async (transaction) => {
+      const existingMembership = await transaction.teamMember.findFirst({
+        where: { userId },
+        select: { teamId: true },
+      });
+      if (existingMembership) return;
+
+      const team = await transaction.team.create({
+        data: { name: 'Môj tím' },
+      });
+      await transaction.teamMember.create({
+        data: {
+          teamId: team.id,
+          userId,
+          role: TeamRole.OWNER,
+        },
+      });
     });
   }
 

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TaskStatus } from '../generated/prisma/client';
+import { TaskStatus, TeamRole } from '../generated/prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 
@@ -58,9 +58,19 @@ export class TeamsService {
     return { ...team, progress };
   }
 
-  create(createTeamDto: CreateTeamDto) {
-    return this.prisma.team.create({
-      data: createTeamDto,
+  create(createTeamDto: CreateTeamDto, creatorId: string) {
+    return this.prisma.$transaction(async (transaction) => {
+      const team = await transaction.team.create({
+        data: createTeamDto,
+      });
+      await transaction.teamMember.create({
+        data: {
+          teamId: team.id,
+          userId: creatorId,
+          role: TeamRole.OWNER,
+        },
+      });
+      return team;
     });
   }
 

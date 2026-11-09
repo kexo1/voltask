@@ -106,6 +106,17 @@ export async function getTeams(): Promise<KanbanTeam[]> {
   return parseTeams(await requestApi('/api/teams'))
 }
 
+export async function createTeam(name: string): Promise<KanbanTeam> {
+  const [team] = parseTeams([
+    await requestApi('/api/teams', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    }),
+  ])
+  if (!team) throw new Error('API nevytvorilo tím.')
+  return team
+}
+
 export async function getTeamMembers(teamId: string): Promise<TeamMember[]> {
   return parseMembers(
     await requestApi(`/api/teams/${encodeURIComponent(teamId)}`),

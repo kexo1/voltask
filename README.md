@@ -72,13 +72,15 @@ Obe technológie používame spolu.
 
 ### Teams API (prototyp)
 
-Prihlasovacie endpointy vytvárajú JWT. Teams a Tasks endpointy zatiaľ tento
-token nevyžadujú; autorizácia používateľov na nich bude samostatná úloha.
+Prihlasovacie endpointy vytvárajú JWT. Registrácia vytvorí používateľa aj jeho
+predvolený tím `Môj tím`; pri prihlásení sa predvolený tím doplní aj starším
+účtom, ktorý ešte nie je členom žiadneho tímu. Vytvorenie ďalšieho tímu vyžaduje
+JWT a jeho tvorca sa stane vlastníkom.
 
 | Metóda a cesta | Čo robí |
 |---|---|
-| `POST /api/auth/register` | Zaregistruje používateľa; heslo (8–72 znakov/bajtov) sa uloží ako bcrypt hash |
-| `POST /api/auth/login` | Overí prihlasovacie údaje a vráti JWT s platnosťou 1 hodina |
+| `POST /api/auth/register` | Zaregistruje používateľa, vytvorí mu predvolený tím a vráti JWT |
+| `POST /api/auth/login` | Overí prihlasovacie údaje, prípadne doplní predvolený tím a vráti JWT s platnosťou 1 hodina |
 
 Registrácia prijíma `email`, `displayName` a `password`. Prihlásenie prijíma
 `email` a `password`. Úspešná odpoveď obsahuje `user` a `accessToken`; hash hesla
@@ -96,7 +98,7 @@ curl -X POST http://localhost:3000/api/auth/register \
 | Metóda a cesta | Čo robí |
 |---|---|
 | `GET /api/teams` | Vráti tímy, počet členov a počet úloh v každom Kanban stave |
-| `POST /api/teams` | Vytvorí tím; vyžaduje `name` (1–80 znakov), voliteľné `description` (najviac 500 znakov) |
+| `POST /api/teams` | Vytvorí tím a pridá tvorcu ako vlastníka; vyžaduje JWT, `name` (1–80 znakov), voliteľné `description` (najviac 500 znakov) |
 | `GET /api/teams/:id` | Vráti detail tímu, členov, úlohy a súhrn progresu |
 
 Príklad vytvorenia tímu:
@@ -104,6 +106,7 @@ Príklad vytvorenia tímu:
 ```sh
 curl -X POST http://localhost:3000/api/teams \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <accessToken>" \
   -d "{\"name\":\"Tím A\",\"description\":\"Ukážkový tím\"}"
 ```
 
