@@ -14,7 +14,18 @@ async function requestApi(path: string, options: RequestInit = {}): Promise<unkn
   if (options.body) headers.set('Content-Type', 'application/json')
   if (token) headers.set('Authorization', `Bearer ${token}`)
 
-  const response = await fetch(path, { ...options, headers })
+  let response: Response
+  try {
+    response = await fetch(path, { ...options, headers })
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error(
+        'Nepodarilo sa spojiť so serverom.',
+      )
+    }
+    throw error
+  }
+
   if (!response.ok) throw new Error(await getAuthError(response))
   return response.json()
 }
