@@ -37,6 +37,11 @@ async function createTeamRequest(name: string): Promise<TeamSummary> {
   return parseTeam(await response.json())
 }
 
+async function deleteTeamRequest(teamId: string): Promise<void> {
+  const response = await fetch(`/api/teams/${encodeURIComponent(teamId)}`, { method: 'DELETE', credentials: 'include' })
+  if (!response.ok) throw new Error(await getAuthError(response))
+}
+
 type LoadState =
   | { status: 'loading' }
   | { status: 'ready'; teams: TeamSummary[] }
@@ -48,6 +53,8 @@ export default function TeamsPage() {
   const [teamName, setTeamName] = useState('')
   const [createError, setCreateError] = useState('')
   const [isCreating, setIsCreating] = useState(false)
+  const [deletingTeamId, setDeletingTeamId] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState('')
 
   useEffect(() => {
     let active = true
@@ -90,6 +97,20 @@ export default function TeamsPage() {
     }
   }
 
+  async function handleDeleteTeam(team: TeamSummary) {
+    if (deletingTeamId || !window.confirm(`Naozaj chcete odstranit tim "${team.name}"?`)) return
+    setDeleteError('')
+    setDeletingTeamId(team.id)
+    try {
+      await deleteTeamRequest(team.id)
+      setLoadState((state) => state.status === 'ready' ? { status: 'ready', teams: state.teams.filter((item) => item.id !== team.id) } : state)
+    } catch (error) {
+      setDeleteError(error instanceof Error ? error.message : 'Tim sa nepodarilo odstranit.')
+    } finally {
+      setDeletingTeamId(null)
+    }
+  }
+
   return (
     <section className="app-page">
       <h1>Tímy</h1>
@@ -119,14 +140,18 @@ export default function TeamsPage() {
       {loadState.status === 'ready' && loadState.teams.length > 0 && (
         <ul className="app-page__team-list">
           {loadState.teams.map((team) => (
-            <li key={team.id}>
+            <li key={team.id} className="app-page__team-item">
               <Link className="app-page__team-link" to={`/teams/${encodeURIComponent(team.id)}/board`}>
                 {team.name}
               </Link>
+              <button className="app-button app-button--danger app-page__delete-button" type="button" onClick={() => void handleDeleteTeam(team)} disabled={deletingTeamId !== null} aria-label={`Odstranit tim ${team.name}`}>
+                {deletingTeamId === team.id ? 'Odstranujem...' : 'Odstranit'}
+              </button>
             </li>
           ))}
         </ul>
       )}
+      {deleteError && <p className="app-page__error" role="alert">{deleteError}</p>}
       <section className="app-card">
         <h2 className="app-card__title">Vytvoriť tím</h2>
         <form className="team-form" onSubmit={handleCreateTeam}>

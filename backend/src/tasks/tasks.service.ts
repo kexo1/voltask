@@ -111,6 +111,16 @@ export class TasksService {
     });
   }
 
+  async delete(id: string, userId: string) {
+    const task = await this.prisma.task.findFirst({
+      where: { id, team: { members: { some: { userId } } } },
+      select: { id: true },
+    });
+    if (!task) throw new NotFoundException(`Task ${id} not found`);
+    await this.prisma.task.delete({ where: { id } });
+    return { success: true };
+  }
+
   private async lockTeam(
     transaction: Prisma.TransactionClient,
     teamId: string,

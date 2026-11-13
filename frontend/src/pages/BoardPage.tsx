@@ -42,6 +42,7 @@ export default function BoardPage({ teamId, teamName }: Props) {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
+  const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null)
   const suppressClickAfterDrag = useRef(false)
 
   useEffect(() => {
@@ -78,13 +79,28 @@ export default function BoardPage({ teamId, teamName }: Props) {
     try { const created = await requestApi('/api/tasks', { method: 'POST', body: JSON.stringify({ ...data, teamId }) }); setTasks((current) => [parseTask(created, teamId, members), ...current]); setIsCreateOpen(false) }
     finally { setIsCreating(false) }
   }
+  async function handleDeleteTask() {
+    if (!selectedTask || deletingTaskId || !window.confirm(`Naozaj chcete odstrániť úlohu "${selectedTask.title}"?`)) return
+    const taskId = selectedTask.id
+    setDeletingTaskId(taskId)
+    setError('')
+    try {
+      await requestApi(`/api/tasks/${encodeURIComponent(taskId)}`, { method: 'DELETE' })
+      setTasks((current) => current.filter((task) => task.id !== taskId))
+      setSelectedTaskId(null)
+    } catch (deleteError: unknown) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Úlohu sa nepodarilo odstrániť.')
+    } finally {
+      setDeletingTaskId(null)
+    }
+  }
   return <main className="board">
-    <header className="board__header"><div><p className="board__eyebrow">Voltask · tímová nástenka</p><h1>Kanban nástenka</h1><p className="board__team-id">Tím: {teamName}</p></div><button className="board__add-button" type="button" onClick={() => setIsCreateOpen(true)} disabled={loadState !== 'ready' || pendingTaskIds.size > 0} aria-label="Vytvoriť úlohu">+</button></header>
+    <header className="board__header"><div><p className="board__eyebrow">Voltask · tímová nástenka</p><h1>Kanban nástenka</h1><p className="board__team-id">Tím: {teamName}</p></div><button className="board__add-button" type="button" onClick={() => setIsCreateOpen(true)} disabled={loadState !== 'ready'} aria-label="Vytvoriť úlohu">+</button></header>
     {loadState === 'loading' && <p className="board__status" role="status">Načítavam nástenku…</p>}
     {error && <div className="board__error" role="alert"><span>{error}</span><button type="button" onClick={() => setReloadKey((key) => key + 1)}>Skúsiť znova</button></div>}
     {loadState === 'ready' && tasks.length === 0 && <p className="board__empty">Tento tím zatiaľ nemá žiadne úlohy. Vytvorte prvú pomocou tlačidla +.</p>}
-    {isCreateOpen && <div className="board__drawer-backdrop" onClick={() => setIsCreateOpen(false)}><aside className="board__drawer" onClick={(event) => event.stopPropagation()}><TaskCreateForm members={members} disabled={isCreating || pendingTaskIds.size > 0} onSubmit={handleCreateTask} onCancel={() => setIsCreateOpen(false)} /></aside></div>}
+    {isCreateOpen && createPortal(<div className="board__drawer-backdrop" onClick={() => setIsCreateOpen(false)}><aside className="board__drawer" onClick={(event) => event.stopPropagation()}><TaskCreateForm members={members} disabled={isCreating || pendingTaskIds.size > 0} onSubmit={handleCreateTask} onCancel={() => setIsCreateOpen(false)} /></aside></div>, document.body)}
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={() => setActiveId(null)}><div className="board__columns" onClick={(event) => { if (suppressClickAfterDrag.current) { suppressClickAfterDrag.current = false; return } const card = (event.target as HTMLElement).closest<HTMLElement>('[data-task-id]'); if (card) setSelectedTaskId(card.dataset.taskId ?? null) }}>{COLUMNS.map(({ status, label }) => <BoardColumn key={status} status={status} label={label} tasks={tasks.filter((task) => task.status === status)} pendingTaskIds={pendingTaskIds} arrivingTaskIds={arrivingTaskIds} />)}</div>{createPortal(<DragOverlay dropAnimation={null}>{activeTask && <TaskCard task={activeTask} isOverlay />}</DragOverlay>, document.body)}</DndContext>
-    <TaskDetailPanel task={selectedTask} onClose={() => setSelectedTaskId(null)} />
+    <TaskDetailPanel task={selectedTask} onClose={() => setSelectedTaskId(null)} onDelete={() => void handleDeleteTask()} isDeleting={deletingTaskId !== null} />
   </main>
 }

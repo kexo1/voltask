@@ -365,7 +365,14 @@ html body .auth-page .auth-card__switch button:hover {
   list-style: none;
 }
 
+.app-page__team-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .app-page__team-link {
+  flex: 1;
   display: block;
   padding: 16px;
   border: 1px solid var(--brand-border);
@@ -378,6 +385,26 @@ html body .auth-page .auth-card__switch button:hover {
     border-color 180ms ease,
     background 180ms ease,
     transform 180ms ease;
+}
+
+.app-button--danger,
+.task-detail-panel__delete {
+  border-color: #fca5a5;
+  background: #fff7f7;
+  color: #b42318;
+}
+
+.app-button--danger:hover,
+.task-detail-panel__delete:hover:not(:disabled) {
+  border-color: #b42318;
+  background: #b42318;
+  color: #fff;
+}
+
+.app-page__delete-button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding-inline: 13px;
 }
 
 .app-page__team-link:hover {
