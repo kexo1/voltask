@@ -14,6 +14,7 @@ import './components/AppShell.css'
 import BoardPage from './pages/BoardPage'
 import DashboardPage from './pages/DashboardPage'
 import LoginPage from './pages/LoginPage'
+import ProfilePage from './pages/ProfilePage'
 import RegisterPage from './pages/RegisterPage'
 import TeamsPage from './pages/TeamsPage'
 import { getAuthError, getCurrentUser, type AuthUser } from './pages/authApi'
@@ -219,9 +220,11 @@ export default function App() {
             <Route
               path="/profile"
               element={
-                <section className="app-page">
-                  <h1>Profil</h1>
-                </section>
+                user ? (
+                  <ProfilePage user={user} onUserUpdated={setAuthenticatedUser} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
               }
             />
           </Route>

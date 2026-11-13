@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { AuthResponse } from './authApi'
 import { getProfile, updateProfile } from './profileApi'
 import './ProfilePage.css'
@@ -21,6 +21,11 @@ export default function ProfilePage({ user, onUserUpdated }: ProfilePageProps) {
   const [success, setSuccess] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const onUserUpdatedRef = useRef(onUserUpdated)
+
+  useEffect(() => {
+    onUserUpdatedRef.current = onUserUpdated
+  }, [onUserUpdated])
 
   useEffect(() => {
     let isCurrent = true
@@ -29,7 +34,7 @@ export default function ProfilePage({ user, onUserUpdated }: ProfilePageProps) {
         if (!isCurrent) return
         setProfile(loadedUser)
         setDisplayName(loadedUser.displayName)
-        onUserUpdated(loadedUser)
+        onUserUpdatedRef.current(loadedUser)
       })
       .catch((requestError: unknown) => {
         if (isCurrent) setError(requestError instanceof Error ? requestError.message : 'Profil sa nepodarilo načítať.')
@@ -38,7 +43,7 @@ export default function ProfilePage({ user, onUserUpdated }: ProfilePageProps) {
         if (isCurrent) setIsLoading(false)
       })
     return () => { isCurrent = false }
-  }, [onUserUpdated])
+  }, [user.id])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
