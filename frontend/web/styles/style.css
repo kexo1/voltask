@@ -1,12 +1,22 @@
+/* ==========================================================================
+   Voltask – povinná projektová stranka pre školu (frontend/web/styles/style.css)
+   ==========================================================================
+   Všetky opakovajúce sa farby sú definované ako premenné v :root. Jednotlivé
+   sekcie sú okomentované po slovensky. Vzhľad stránky zostal rovnaký.
+   ========================================================================== */
+
 :root {
     --bg: #0a1128;
     --bg2: #060b1c;
     --text: #cfd9ee;
     --muted: #7f8db0;
     --blue: #3d84ff;
+    --blue-rgb: 61, 132, 255;
     --btn: #2563eb;
     --btn-hover: #1d4ed8;
     --line: rgba(255, 255, 255, 0.08);
+    --glow: #12285c;
+    --text-light: #a9c8ff;
 }
 
 * {
@@ -25,7 +35,7 @@ h3 {
 }
 
 body {
-    background: radial-gradient(circle at 50% 20%, #12285c, transparent 55%) fixed, var(--bg);
+    background: radial-gradient(circle at 50% 20%, var(--glow), transparent 55%) fixed, var(--bg);
     color: var(--text);
     font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.6;
@@ -204,8 +214,8 @@ article li {
     height: 100px;
     object-fit: cover;
     border-radius: 50%;
-    background: #12285c;
-    box-shadow: 0 0 0 3px rgba(61, 132, 255, 0.35);
+    background: var(--glow);
+    box-shadow: 0 0 0 3px rgba(var(--blue-rgb), 0.35);
 }
 
 .tim h3 {
@@ -230,7 +240,7 @@ hr {
     height: 1px;
     margin-top: 3rem;
     border: 0;
-    background: linear-gradient(90deg, transparent, rgba(61, 132, 255, 0.5), transparent);
+    background: linear-gradient(90deg, transparent, rgba(var(--blue-rgb), 0.5), transparent);
 }
 
 /* Tabulky (harmonogram a dokumenty) */
@@ -249,7 +259,7 @@ td {
 
 th {
     color: #fff;
-    background: rgba(61, 132, 255, 0.12);
+    background: rgba(var(--blue-rgb), 0.12);
     white-space: nowrap;
 }
 
@@ -281,7 +291,7 @@ main>#harmonogram {
 
 #harmonogram thead th {
     color: #fff;
-    background: rgba(61, 132, 255, 0.12);
+    background: rgba(var(--blue-rgb), 0.12);
 }
 
 #harmonogram thead th:nth-child(1) {
@@ -303,8 +313,8 @@ main>#harmonogram {
 #harmonogram .week-heading th {
     padding: 0.9rem 0 0.75rem;
     color: #fff;
-    background: rgba(61, 132, 255, 0.1);
-    border-bottom-color: rgba(61, 132, 255, 0.45);
+    background: rgba(var(--blue-rgb), 0.1);
+    border-bottom-color: rgba(var(--blue-rgb), 0.45);
     box-shadow: inset 3px 0 var(--blue);
     font-size: 1.4rem;
     font-weight: 700;
@@ -357,7 +367,7 @@ main>#harmonogram {
     width: fit-content;
     position: relative;
     padding-right: 1.2rem;
-    color: #a9c8ff;
+    color: var(--text-light);
     cursor: pointer;
     font-weight: 600;
     list-style: none;
@@ -371,7 +381,7 @@ main>#harmonogram {
     content: "+";
     position: absolute;
     right: 0;
-    color: #a9c8ff;
+    color: var(--text-light);
     font-size: 1.1rem;
     line-height: 1.3;
     transition: transform 0.2s ease;
@@ -517,7 +527,6 @@ main>#harmonogram {
         opacity: 0;
         transform: translateY(-0.3rem);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -745,7 +754,6 @@ footer a:hover {
     #harmonogram td:nth-child(4)::before {
         content: "Termín";
     }
-
 }
 
 @media (max-width: 480px) {
@@ -800,7 +808,7 @@ body::before {
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(circle at 50% 20%, #12285c, transparent 55%);
+    background: radial-gradient(circle at 50% 20%, var(--glow), transparent 55%);
 }
 
 @media (prefers-reduced-motion: reduce) {

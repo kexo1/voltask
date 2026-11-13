@@ -1,3 +1,7 @@
+/* ==========================================================================
+   Voltask – profil používateľa (ProfilePage.css)
+   ========================================================================== */
+
 .profile-page {
   display: grid;
   width: 100%;
@@ -5,14 +9,15 @@
   box-sizing: border-box;
 }
 
+/* Hlavná karta profilu. */
 .profile-card {
   width: min(100%, 760px);
   box-sizing: border-box;
   padding: clamp(24px, 4vw, 36px);
   border: 1px solid var(--brand-border);
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 12px 32px rgb(16 42 86 / 8%);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-card);
 }
 
 .profile-card__header {
@@ -26,11 +31,12 @@
 
 .profile-card h1 {
   margin: 0 0 6px;
-  color: var(--text-h);
+  color: var(--color-text-heading);
   font-size: clamp(30px, 5vw, 42px);
   letter-spacing: -1px;
 }
 
+/* Avatar používateľa (inicialy na farbenom pozadí). */
 .profile-avatar {
   display: grid;
   flex: 0 0 76px;
@@ -46,10 +52,11 @@
 
 .profile-avatar__note {
   margin: 0;
-  color: var(--text);
+  color: var(--color-text);
   font-size: 14px;
 }
 
+/* Formulár na úpravu profilu. */
 .profile-form {
   display: grid;
   gap: 18px;
@@ -58,7 +65,7 @@
 .profile-form__field {
   display: grid;
   gap: 7px;
-  color: var(--text-h);
+  color: var(--color-text-heading);
   font-size: 14px;
   font-weight: 600;
 }
@@ -70,8 +77,8 @@
   padding: 0 12px;
   border: 1px solid var(--brand-border);
   border-radius: 8px;
-  background: #fff;
-  color: var(--text-h);
+  background: var(--color-bg);
+  color: var(--color-text-heading);
   font: inherit;
 }
 
@@ -80,9 +87,10 @@
   outline-offset: 1px;
 }
 
+/* Nieeditovateľné políčko (napr. e-mail). */
 .profile-form__field input[readonly] {
-  background: var(--accent-bg);
-  color: var(--text);
+  background: var(--color-accent-bg);
+  color: var(--color-text);
 }
 
 .profile-form__submit {
@@ -113,6 +121,7 @@
   opacity: 0.65;
 }
 
+/* Hlášky pod formulárom (chyba, úspech, informačný stav). */
 .profile-form__error,
 .profile-form__success,
 .profile-status {
@@ -124,21 +133,21 @@
 }
 
 .profile-form__error {
-  border-color: #fecaca;
-  background: #fff7f7;
-  color: #b42318;
+  border-color: var(--color-error-border);
+  background: var(--color-error-bg-soft);
+  color: var(--color-error);
 }
 
 .profile-form__success {
-  border-color: #bbf7d0;
-  background: #f0fdf4;
-  color: #166534;
+  border-color: var(--color-success-border);
+  background: var(--color-success-bg);
+  color: var(--color-success);
 }
 
 .profile-status {
   border-color: var(--brand-border);
-  background: var(--accent-bg);
-  color: var(--text);
+  background: var(--color-accent-bg);
+  color: var(--color-text);
 }
 
 @media (max-width: 520px) {
