@@ -11,14 +11,16 @@
 .board-column h2 { margin: 0 0 14px; color: var(--text-h); font-size: 18px; }
 .board-column__count { color: var(--accent); font-size: 14px; }
 .board-column__tasks { display: flex; flex-direction: column; gap: 10px; }
-.task-card { padding: 12px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 9px; cursor: grab; touch-action: manipulation; transition: border-color .15s, transform .15s; }
-.task-card:hover { border-color: var(--accent-border); transform: translateY(-1px); }
+.task-card { padding: 12px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 9px; cursor: grab; touch-action: manipulation; transition: border-color .15s; }
+.task-card:hover { border-color: var(--accent-border); }
 .task-card h3 { margin: 0 0 5px; color: var(--text-h); font-size: 16px; }
 .task-card p { margin: 0 0 8px; font-size: 14px; }
 .task-card__assignee { color: var(--accent); font-size: 13px; }
 .task-card--dragging { opacity: .4; }
 .task-card--overlay { box-shadow: var(--shadow); cursor: grabbing; }
-.task-card--disabled { cursor: wait; opacity: .7; }
+.task-card--arriving { animation: task-arrive 220ms cubic-bezier(.2, .75, .3, 1) both; }
+.task-card--disabled { cursor: wait; }
+@keyframes task-arrive { from { transform: translateY(10px) scale(.98); opacity: .45; } to { transform: translateY(0) scale(1); opacity: 1; } }
 .board__status, .board__empty, .board__pending { max-width: 1180px; margin: 0 auto 18px; }
 .board__pending { color: var(--accent); font-weight: 600; }
 .board__empty { padding: 24px; background: var(--code-bg); border: 1px dashed var(--border); border-radius: 10px; }
@@ -37,3 +39,4 @@
 .task-detail-panel dd { margin: 0 0 8px; }
 .task-detail-panel__note { color: var(--text); font-size: 13px; }
 @media (max-width: 760px) { .board__columns { grid-template-columns: 1fr; } .board { padding: 22px 14px; } .task-detail-panel { right: 14px; bottom: 14px; width: calc(100% - 28px); } }
+@media (prefers-reduced-motion: reduce) { .task-card--arriving { animation: none; } }

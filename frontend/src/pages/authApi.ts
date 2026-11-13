@@ -54,6 +54,14 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   return parseAuthUserResponse(await response.json())
 }
 
+export async function logout(): Promise<void> {
+  const response = await fetch('/api/auth/logout', {
+    method: 'POST',
+    credentials: 'include',
+  })
+  if (!response.ok) throw new Error(await getAuthError(response))
+}
+
 export async function submitAuthRequest(
   endpoint: string,
   payload: Record<string, string | boolean>,

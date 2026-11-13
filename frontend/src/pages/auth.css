@@ -55,6 +55,51 @@
   font: inherit;
 }
 
+.auth-form__password {
+  position: relative;
+  display: flex;
+}
+
+.auth-form__password input {
+  padding-right: 48px;
+}
+
+.auth-form__password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  padding: 7px;
+  transform: translateY(-50%);
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #35527c;
+  cursor: pointer;
+}
+
+.auth-form__password-toggle:hover {
+  background: #e7f0ff;
+  color: #1456c0;
+}
+
+.auth-form__password-toggle:focus-visible {
+  outline: 2px solid #0866f5;
+  outline-offset: 1px;
+}
+
+.auth-form__password-toggle svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
 .auth-form__field input:focus {
   outline: 2px solid #0866f5;
   outline-offset: 1px;

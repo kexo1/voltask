@@ -4,10 +4,10 @@ import { useDraggable } from '@dnd-kit/core'
 import type { Task } from '../types/task'
 
 // isOverlay marks the temporary card preview used while dragging.
-type Props = { task: Task; isOverlay?: boolean; disabled?: boolean }
+type Props = { task: Task; isOverlay?: boolean; disabled?: boolean; isArriving?: boolean }
 
 // Render the task data and enable dragging.
-export default function TaskCard({ task, isOverlay = false, disabled = false }: Props) {
+export default function TaskCard({ task, isOverlay = false, disabled = false, isArriving = false }: Props) {
   // Disable dragging for the overlay and while a status update is pending.
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
@@ -21,7 +21,7 @@ export default function TaskCard({ task, isOverlay = false, disabled = false }: 
       {...listeners}
       {...attributes}
       data-task-id={task.id}
-      className={`task-card${isDragging ? ' task-card--dragging' : ''}${isOverlay ? ' task-card--overlay' : ''}${disabled ? ' task-card--disabled' : ''}`}
+      className={`task-card${isDragging ? ' task-card--dragging' : ''}${isOverlay ? ' task-card--overlay' : ''}${disabled ? ' task-card--disabled' : ''}${isArriving ? ' task-card--arriving' : ''}`}
     >
       <h3>{task.title}</h3>
       {/* Show the description only when one is available. */}
