@@ -1,170 +1,39 @@
-/* Nastav odsadenie a zarovnanie obsahu nástenky doľava. */
-.board {
-  padding: 16px;
-  text-align: left;
-}
-
-/* Zmenši nadpis nástenky oproti hlavnému nadpisu stránky. */
-.board h1 {
-  font-size: 32px;
-  margin: 0 0 16px;
-}
-
-.board__team-picker {
-  display: grid;
-  gap: 6px;
-  max-width: 560px;
-  margin-bottom: 16px;
-  font-weight: 600;
-}
-
-.board__team-picker select {
-  padding: 9px 10px;
-  color: var(--text);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font: inherit;
-}
-
-.board__create-team {
-  display: grid;
-  gap: 6px;
-  max-width: 560px;
-  margin-bottom: 16px;
-  font-weight: 600;
-}
-
-.board__create-team > div {
-  display: flex;
-  gap: 8px;
-}
-
-.board__create-team input,
-.board__create-team button {
-  padding: 9px 10px;
-  color: var(--text);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font: inherit;
-}
-
-.board__create-team input {
-  min-width: 0;
-  flex: 1;
-}
-
-.board__create-team button {
-  cursor: pointer;
-}
-
-.board__error {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0 0 16px;
-  color: #b42318;
-}
-
-.board__error button {
-  padding: 6px 10px;
-  color: inherit;
-  background: transparent;
-  border: 1px solid currentColor;
-  border-radius: 6px;
-  cursor: pointer;
-  font: inherit;
-}
-
-/* Umiestni tri stĺpce stavov vedľa seba. */
-.board__columns {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  align-items: start;
-}
-
-/* Nastav stĺpcom pozadie panela a minimálnu výšku. */
-.board-column {
-  background: var(--code-bg);
-  border: 2px solid transparent;
-  border-radius: 8px;
-  padding: 12px;
-  min-height: 240px;
-}
-
-/* Zvýrazni stĺpec, keď je nad ním karta. */
-.board-column--over {
-  border-color: var(--accent-border);
-}
-
-/* Uprav vzhľad nadpisu stĺpca. */
-.board-column h2 {
-  font-size: 18px;
-  margin: 0 0 12px;
-}
-
-/* Zobraz počet úloh menej výrazne ako nadpis. */
-.board-column__count {
-  font-size: 14px;
-  color: var(--text);
-}
-
-/* Ulož karty úloh pod seba s rovnakými medzerami. */
-.board-column__tasks {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* Uprav vzhľad bežnej karty, ktorú možno ťahať. */
-.task-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 10px 12px;
-  cursor: grab;
-  touch-action: manipulation;
-}
-
-/* Uprav vzhľad názvu úlohy. */
-.task-card h3 {
-  font-size: 16px;
-  margin: 0 0 4px;
-  color: var(--text-h);
-}
-
-/* Oddeľ popis úlohy od mena priradenej osoby. */
-.task-card p {
-  font-size: 14px;
-  margin: 0 0 8px;
-}
-
-/* Zvýrazni meno priradenej osoby. */
-.task-card__assignee {
-  font-size: 13px;
-  color: var(--accent);
-}
-
-/* Stlm pôvodnú kartu počas jej presúvania. */
-.task-card--dragging {
-  opacity: 0.4;
-}
-
-/* Pridaj tieň plávajúcej karte počas presúvania. */
-.task-card--overlay {
-  box-shadow: var(--shadow);
-  cursor: grabbing;
-}
-
-.task-card--disabled {
-  cursor: wait;
-}
-
-/* Na úzkych obrazovkách ulož stĺpce pod seba. */
-@media (max-width: 700px) {
-  .board__columns {
-    grid-template-columns: 1fr;
-  }
-}
+.board { min-height: 100%; padding: 28px clamp(16px, 4vw, 48px); color: var(--text); text-align: left; }
+.board__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; max-width: 1180px; margin: 0 auto 28px; }
+.board h1 { margin: 0; color: var(--text-h); font-size: clamp(28px, 4vw, 42px); }
+.board__eyebrow { margin: 0 0 6px; color: var(--accent); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.board__team-id { margin: 7px 0 0; color: var(--text); font-size: 14px; }
+.board__add-button { width: 48px; height: 48px; color: var(--bg); background: var(--accent); border: 0; border-radius: 50%; box-shadow: var(--shadow); cursor: pointer; font-size: 30px; line-height: 1; }
+.board__add-button:disabled { cursor: not-allowed; opacity: .5; }
+.board__columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 1180px; margin: 0 auto; }
+.board-column { min-height: 260px; padding: 14px; background: var(--code-bg); border: 2px solid transparent; border-radius: 12px; }
+.board-column--over { border-color: var(--accent-border); }
+.board-column h2 { margin: 0 0 14px; color: var(--text-h); font-size: 18px; }
+.board-column__count { color: var(--accent); font-size: 14px; }
+.board-column__tasks { display: flex; flex-direction: column; gap: 10px; }
+.task-card { padding: 12px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 9px; cursor: grab; touch-action: manipulation; transition: border-color .15s, transform .15s; }
+.task-card:hover { border-color: var(--accent-border); transform: translateY(-1px); }
+.task-card h3 { margin: 0 0 5px; color: var(--text-h); font-size: 16px; }
+.task-card p { margin: 0 0 8px; font-size: 14px; }
+.task-card__assignee { color: var(--accent); font-size: 13px; }
+.task-card--dragging { opacity: .4; }
+.task-card--overlay { box-shadow: var(--shadow); cursor: grabbing; }
+.task-card--disabled { cursor: wait; opacity: .7; }
+.board__status, .board__empty, .board__pending { max-width: 1180px; margin: 0 auto 18px; }
+.board__pending { color: var(--accent); font-weight: 600; }
+.board__empty { padding: 24px; background: var(--code-bg); border: 1px dashed var(--border); border-radius: 10px; }
+.board__error { display: flex; align-items: center; justify-content: space-between; gap: 12px; max-width: 1180px; margin: 0 auto 18px; padding: 12px 14px; color: #b42318; background: #fff4f2; border-radius: 8px; }
+.board__error button { padding: 6px 10px; color: inherit; background: transparent; border: 1px solid currentColor; border-radius: 6px; cursor: pointer; font: inherit; }
+.board__drawer-backdrop { position: fixed; z-index: 10; inset: 0; display: flex; justify-content: flex-end; background: rgb(0 0 0 / 35%); }
+.board__drawer { width: min(100%, 440px); height: 100%; overflow: auto; padding: 20px; background: var(--bg); box-shadow: -8px 0 24px rgb(0 0 0 / 18%); }
+.task-detail-panel { position: fixed; z-index: 5; right: 20px; bottom: 20px; width: min(360px, calc(100% - 40px)); padding: 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+.task-detail-panel__header { display: flex; align-items: center; justify-content: space-between; }
+.task-detail-panel__header p { margin: 0; color: var(--accent); font-size: 13px; font-weight: 700; text-transform: uppercase; }
+.task-detail-panel__header button { color: var(--text); background: transparent; border: 0; cursor: pointer; font-size: 24px; }
+.task-detail-panel h2 { margin: 12px 0 8px; color: var(--text-h); }
+.task-detail-panel__status { display: inline-block; padding: 4px 9px; color: var(--accent); background: var(--code-bg); border-radius: 999px; font-size: 13px; }
+.task-detail-panel dl { display: grid; gap: 5px; margin: 20px 0; }
+.task-detail-panel dt { color: var(--text); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.task-detail-panel dd { margin: 0 0 8px; }
+.task-detail-panel__note { color: var(--text); font-size: 13px; }
+@media (max-width: 760px) { .board__columns { grid-template-columns: 1fr; } .board { padding: 22px 14px; } .task-detail-panel { right: 14px; bottom: 14px; width: calc(100% - 28px); } }

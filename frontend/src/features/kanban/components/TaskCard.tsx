@@ -20,6 +20,7 @@ export default function TaskCard({ task, isOverlay = false, disabled = false }: 
       ref={setNodeRef}
       {...listeners}
       {...attributes}
+      data-task-id={task.id}
       className={`task-card${isDragging ? ' task-card--dragging' : ''}${isOverlay ? ' task-card--overlay' : ''}${disabled ? ' task-card--disabled' : ''}`}
     >
       <h3>{task.title}</h3>
