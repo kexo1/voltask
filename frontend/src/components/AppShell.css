@@ -1,0 +1,263 @@
+/* Shared shell and navigation. */
+:root {
+  --brand-blue: #0866f5;
+  --brand-blue-dark: #0754c7;
+  --brand-navy: #09285c;
+  --brand-border: #dce5f2;
+  --brand-background: #f5f8ff;
+}
+
+.app-shell {
+  width: 100%;
+  min-height: 100svh;
+  background: var(--brand-background);
+  color: var(--brand-navy);
+  text-align: left;
+}
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 76px;
+  padding: 0 clamp(20px, 5vw, 64px);
+  border-bottom: 1px solid var(--brand-border);
+  background: #fff;
+}
+
+.app-nav__brand {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.app-nav__brand img {
+  display: block;
+  width: 132px;
+  height: auto;
+}
+
+.app-nav__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 3vw, 36px);
+}
+
+.app-nav__link {
+  padding: 10px 0;
+  color: #536783;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.app-nav__link:hover,
+.app-nav__link.is-active {
+  color: var(--brand-blue);
+}
+
+.app-nav__link.is-active {
+  box-shadow: inset 0 -2px var(--brand-blue);
+}
+
+.app-shell__main {
+  width: min(100% - 40px, 1120px);
+  margin: 0 auto;
+  padding: 40px 0 64px;
+}
+
+.app-page {
+  display: grid;
+  gap: 20px;
+}
+
+.app-page h1 {
+  margin: 0;
+  font-size: clamp(30px, 5vw, 42px);
+  letter-spacing: -1px;
+}
+
+.app-page__intro {
+  color: #536783;
+}
+
+.app-card {
+  padding: clamp(20px, 4vw, 32px);
+  border: 1px solid var(--brand-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgb(34 22 50 / 5%);
+}
+
+.app-card__title {
+  margin: 0 0 8px;
+  color: var(--brand-navy);
+  font-size: 21px;
+}
+
+.app-card__text {
+  color: #536783;
+}
+
+.app-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.app-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid var(--brand-blue);
+  border-radius: 8px;
+  background: var(--brand-blue);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.app-button--secondary {
+  background: #fff;
+  color: var(--brand-blue);
+}
+
+.app-button:hover {
+  border-color: var(--brand-blue-dark);
+  background: var(--brand-blue-dark);
+}
+
+.app-button--secondary:hover {
+  color: #fff;
+}
+
+.app-button:focus-visible,
+.app-nav__link:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 3px;
+}
+
+.app-state {
+  display: grid;
+  min-height: 100svh;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.app-state button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--brand-blue);
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.app-page__error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.app-page__team-list {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app-page__team-link {
+  display: block;
+  padding: 16px;
+  border: 1px solid var(--brand-border);
+  border-radius: 10px;
+  color: var(--brand-blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.app-page__team-link:hover {
+  border-color: #9abcf2;
+  background: #f5f8ff;
+}
+
+.team-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.team-form input {
+  flex: 1 1 220px;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--brand-border);
+  border-radius: 8px;
+  color: var(--brand-navy);
+  background: #fff;
+  font: inherit;
+}
+
+.team-form input:focus {
+  outline: 2px solid #9abcf2;
+  outline-offset: 1px;
+}
+
+.team-form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Keep form labels accessible while visually hiding them. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 520px) {
+  .app-nav {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    padding-block: 14px 0;
+  }
+
+  .app-nav__links {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .app-shell__main {
+    width: min(100% - 28px, 1120px);
+    padding-top: 28px;
+  }
+}
