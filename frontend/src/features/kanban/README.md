@@ -62,3 +62,71 @@ npm run dev
 npm run lint
 npm run build
 ```
+
+## Databázová schéma
+
+Kanban používa PostgreSQL databázu spravovanú cez Prisma. Nástenka pracuje
+hlavne s tímami, členstvom v tíme a úlohami. Závislosti medzi úlohami sú
+uložené v spojovacej tabuľke `TaskDependency`.
+
+```mermaid
+erDiagram
+    USER ||--o{ TEAM_MEMBER : "je členom"
+    TEAM ||--o{ TEAM_MEMBER : "má členov"
+    TEAM ||--o{ TASK : "obsahuje"
+    USER ||--o{ TASK : "vytvoril"
+    USER o|--o{ TASK : "rieši"
+    TASK ||--o{ TASK_DEPENDENCY : "závisí od"
+    TASK ||--o{ TASK_DEPENDENCY : "je závislosťou"
+
+    USER {
+        string id PK
+        string email UK
+        string displayName
+        string passwordHash
+        datetime createdAt
+        datetime updatedAt
+    }
+    TEAM {
+        string id PK
+        string name
+        string description
+        datetime createdAt
+        datetime updatedAt
+    }
+    TEAM_MEMBER {
+        string teamId PK, FK
+        string userId PK, FK
+        TeamRole role
+        datetime joinedAt
+    }
+    TASK {
+        string id PK
+        string title
+        string description
+        TaskStatus status
+        string teamId FK
+        string creatorId FK
+        string assigneeId FK
+        datetime createdAt
+        datetime updatedAt
+    }
+    TASK_DEPENDENCY {
+        string taskId PK, FK
+        string dependsOnId PK, FK
+        datetime createdAt
+    }
+```
+
+Vzťahy a mazanie záznamov:
+
+- `TeamMember` je spojovacia tabuľka medzi `User` a `Team`; dvojica
+  `teamId` + `userId` tvorí zložený primárny kľúč.
+- Každá `Task` patrí do jedného tímu a má jedného autora. Tím sa pri zmazaní
+  kaskádovo zbaví svojich úloh.
+- Riešiteľ úlohy je voliteľný; pri zmazaní používateľa sa `assigneeId`
+  nastaví na `NULL`.
+- `TaskDependency` modeluje závislosti medzi úlohami. Zložený kľúč zabraňuje
+  duplicitnej dvojici závislosti.
+
+Zdrojom schémy je [`backend/prisma/schema.prisma`](../../../backend/prisma/schema.prisma).
