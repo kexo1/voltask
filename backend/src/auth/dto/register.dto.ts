@@ -1,6 +1,8 @@
 import { Transform } from 'class-transformer';
 import {
   IsEmail,
+  IsBoolean,
+  IsOptional,
   IsString,
   Length,
   MaxLength,
@@ -24,4 +26,8 @@ export class RegisterDto {
   @MinLength(8)
   @MaxLength(72)
   password!: string;
+
+  @IsOptional()
+  @IsBoolean()
+  stayLoggedIn?: boolean;
 }

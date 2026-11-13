@@ -1,56 +1,98 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
-  Headers,
   Param,
+  Patch,
   Post,
-  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { Throttle } from '@nestjs/throttler';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { CsrfGuard } from '../auth/guards/csrf.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import type { AuthenticatedUser } from '../auth/auth.types';
+import { AddTeamMemberDto } from './dto/add-team-member.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
+import { UpdateTeamDto } from './dto/update-team.dto';
+import { UpdateTeamMemberRoleDto } from './dto/update-team-member-role.dto';
 import { TeamsService } from './teams.service';
 
 @Controller('teams')
+@UseGuards(JwtAuthGuard, CsrfGuard)
 export class TeamsController {
-  constructor(
-    private readonly teamsService: TeamsService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly teamsService: TeamsService) {}
 
   @Get()
-  findAll() {
-    return this.teamsService.findAll();
+  findAll(@CurrentUser() user: AuthenticatedUser) {
+    return this.teamsService.findAll(user.id);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.teamsService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.teamsService.findOne(id, user.id);
   }
 
   @Post()
-  async create(
+  @Throttle({ default: { limit: 5, ttl: 60 * 60_000 } })
+  create(
     @Body() createTeamDto: CreateTeamDto,
-    @Headers('authorization') authorization?: string,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
-    const bearerToken = authorization?.match(/^Bearer\s+(.+)$/i)?.[1];
-    if (!bearerToken) {
-      throw new UnauthorizedException('A valid bearer token is required');
-    }
+    return this.teamsService.create(createTeamDto, user.id);
+  }
 
-    let payload: { sub?: unknown };
-    try {
-      payload = await this.jwtService.verifyAsync<{ sub?: unknown }>(
-        bearerToken,
-      );
-    } catch {
-      throw new UnauthorizedException('A valid bearer token is required');
-    }
+  @Delete(':id')
+  delete(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.teamsService.delete(id, user.id);
+  }
 
-    if (typeof payload.sub !== 'string' || payload.sub.length === 0) {
-      throw new UnauthorizedException('A valid bearer token is required');
-    }
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateTeamDto: UpdateTeamDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.teamsService.update(id, user.id, updateTeamDto);
+  }
 
-    return this.teamsService.create(createTeamDto, payload.sub);
+  @Post(':id/members')
+  addMember(
+    @Param('id') id: string,
+    @Body() addTeamMemberDto: AddTeamMemberDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.teamsService.addMember(id, user.id, addTeamMemberDto);
+  }
+
+  @Delete(':id/members/:userId')
+  removeMember(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.teamsService.removeMember(id, user.id, userId);
+  }
+
+  @Patch(':id/members/:userId/role')
+  updateMemberRole(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+    @Body() updateRoleDto: UpdateTeamMemberRoleDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.teamsService.updateMemberRole(
+      id,
+      user.id,
+      userId,
+      updateRoleDto.role,
+    );
   }
 }
