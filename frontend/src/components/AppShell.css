@@ -1,19 +1,9 @@
-/* Shared shell and navigation. */
+/* ==========================================================================
+   Voltask – obal aplikácie (app shell) a navigácia (AppShell.css)
+   ========================================================================== */
+
 :root {
   color-scheme: light;
-  --brand-blue: #2563eb;
-  --brand-blue-dark: #1d4ed8;
-  --brand-navy: #102a56;
-  --brand-border: #d7e2f1;
-  --brand-background: #fff;
-  --text: #475569;
-  --text-h: #102a56;
-  --bg: #fff;
-  --border: #d7e2f1;
-  --code-bg: #f3f7ff;
-  --accent: #2563eb;
-  --accent-bg: #eff6ff;
-  --accent-border: #93b4f5;
 }
 
 html,
@@ -23,40 +13,43 @@ body,
 }
 
 body {
-  background: #fff;
-  color: var(--text);
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
+/* Prihlasovacia a registračná strana sa renderuje mimo .app-shell, ale patri
+   do tela dokumentu, preto jej základný vzhľad definujeme tu s vyššou
+   špecificitou než v auth.css. */
 html body .auth-page {
-  background: #fff;
-  color: var(--text);
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 html body .auth-page .auth-card {
   border-color: var(--brand-border);
-  background: #fff;
-  box-shadow: 0 16px 42px rgb(16 42 86 / 10%);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-lg);
 }
 
 html body .auth-page .auth-card h1,
 html body .auth-page .auth-form__field {
-  color: var(--text-h);
+  color: var(--color-text-heading);
 }
 
 html body .auth-page .auth-card__intro,
 html body .auth-page .auth-form__remember,
 html body .auth-page .auth-card__switch {
-  color: var(--text);
+  color: var(--color-text);
 }
 
 html body .auth-page .auth-form__field input {
-  border-color: var(--border);
-  background: #fff;
-  color: var(--text-h);
+  border-color: var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-heading);
 }
 
 html body .auth-page .auth-form__field input::placeholder {
-  color: #64748b;
+  color: var(--color-placeholder);
 }
 
 html body .auth-page .auth-form__field input:focus {
@@ -85,11 +78,13 @@ html body .auth-page .auth-card__switch button:hover {
   background: transparent;
 }
 
+/* --- Hlavná obal a horná navigácia ---------------------------------------- */
+
 .app-shell {
   width: 100%;
   min-height: 100svh;
   background: transparent;
-  color: var(--text);
+  color: var(--color-text);
   text-align: left;
 }
 
@@ -105,7 +100,7 @@ html body .auth-page .auth-card__switch button:hover {
   padding: 0 clamp(20px, 5vw, 64px);
   border-bottom: 1px solid var(--brand-border);
   background: rgb(255 255 255 / 96%);
-  box-shadow: 0 6px 20px rgb(16 42 86 / 6%);
+  box-shadow: var(--shadow-nav);
 }
 
 .app-nav__brand {
@@ -121,7 +116,7 @@ html body .auth-page .auth-card__switch button:hover {
   height: 58px;
   border: 1px solid var(--brand-border);
   border-radius: 12px;
-  background: #fff;
+  background: var(--color-bg);
 }
 
 .app-nav__links {
@@ -132,7 +127,7 @@ html body .auth-page .auth-card__switch button:hover {
 
 .app-nav__link {
   padding: 10px 0;
-  color: var(--text);
+  color: var(--color-text);
   font-size: 15px;
   font-weight: 600;
   text-decoration: none;
@@ -150,9 +145,9 @@ html body .auth-page .auth-card__switch button:hover {
 .app-nav__logout {
   min-height: 38px;
   padding: 0 14px;
-  border: 1px solid var(--accent-border);
+  border: 1px solid var(--color-accent-border);
   border-radius: 8px;
-  background: var(--accent-bg);
+  background: var(--color-accent-bg);
   color: var(--brand-blue-dark);
   font: inherit;
   font-size: 14px;
@@ -170,7 +165,7 @@ html body .auth-page .auth-card__switch button:hover {
 }
 
 .app-nav__logout:focus-visible {
-  outline: 2px solid #93b4f5;
+  outline: 2px solid var(--color-accent-border);
   outline-offset: 3px;
 }
 
@@ -179,18 +174,21 @@ html body .auth-page .auth-card__switch button:hover {
   opacity: 0.65;
 }
 
+/* Chybová hláska v navigácii (používa Navbar.tsx). */
 .app-nav__error {
   position: absolute;
   top: calc(100% + 8px);
   right: clamp(16px, 5vw, 64px);
   max-width: min(420px, calc(100vw - 32px));
   padding: 10px 14px;
-  border: 1px solid #fecaca;
+  border: 1px solid var(--color-error-border);
   border-radius: 8px;
-  background: #fff7f7;
-  color: #b42318;
-  box-shadow: 0 8px 24px rgb(16 42 86 / 10%);
+  background: var(--color-error-bg-soft);
+  color: var(--color-error-text);
+  box-shadow: var(--shadow-card);
 }
+
+/* --- Hlavná obsahová oblasť a stránky ------------------------------------- */
 
 .app-shell__main {
   width: min(100% - 40px, 1120px);
@@ -203,7 +201,6 @@ html body .auth-page .auth-card__switch button:hover {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -222,22 +219,22 @@ html body .auth-page .auth-card__switch button:hover {
 
 .app-page h1 {
   margin: 0;
-  color: var(--text-h);
+  color: var(--color-text-heading);
   font-size: clamp(30px, 5vw, 42px);
   letter-spacing: -1px;
 }
 
 .app-page__intro {
-  color: #64748b;
+  color: var(--color-muted);
 }
 
 .app-page__team-name {
   width: fit-content;
   margin: 0 clamp(16px, 4vw, 48px) 0;
   padding: 8px 14px;
-  border: 1px solid var(--accent-border);
+  border: 1px solid var(--color-accent-border);
   border-radius: 999px;
-  background: var(--accent-bg);
+  background: var(--color-accent-bg);
   color: var(--brand-blue-dark);
   font-size: 14px;
   font-weight: 700;
@@ -247,22 +244,24 @@ html body .auth-page .auth-card__switch button:hover {
   gap: 0;
 }
 
+/* --- Karty ----------------------------------------------------------------- */
+
 .app-card {
   padding: clamp(20px, 4vw, 32px);
   border: 1px solid var(--brand-border);
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 12px 32px rgb(16 42 86 / 8%);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-card);
 }
 
 .app-card__title {
   margin: 0 0 8px;
-  color: var(--text-h);
+  color: var(--color-text-heading);
   font-size: 21px;
 }
 
 .app-card__text {
-  color: var(--text);
+  color: var(--color-text);
 }
 
 .app-card__actions {
@@ -271,6 +270,8 @@ html body .auth-page .auth-card__switch button:hover {
   gap: 12px;
   margin-top: 20px;
 }
+
+/* --- Tlačidlá -------------------------------------------------------------- */
 
 .app-button {
   display: inline-flex;
@@ -290,7 +291,7 @@ html body .auth-page .auth-card__switch button:hover {
 }
 
 .app-button--secondary {
-  background: var(--accent-bg);
+  background: var(--color-accent-bg);
   color: var(--brand-blue-dark);
 }
 
@@ -311,6 +312,8 @@ html body .auth-page .auth-card__switch button:hover {
   outline-offset: 3px;
 }
 
+/* --- Stavové stránky (načítavanie, chyba) ---------------------------------- */
+
 .app-state {
   display: grid;
   min-height: 100svh;
@@ -319,7 +322,7 @@ html body .auth-page .auth-card__switch button:hover {
   gap: 16px;
   padding: 24px;
   background: var(--brand-background);
-  color: var(--text);
+  color: var(--color-text);
   text-align: center;
 }
 
@@ -328,7 +331,7 @@ html body .auth-page .auth-card__switch button:hover {
   padding: 0 16px;
   border: 0;
   border-radius: 8px;
-  background-color: #2563eb;
+  background-color: var(--brand-blue);
   color: #fff;
   font: inherit;
   font-weight: 700;
@@ -336,13 +339,15 @@ html body .auth-page .auth-card__switch button:hover {
 }
 
 .app-state > button:hover {
-  background-color: #1d4ed8;
+  background-color: var(--brand-blue-dark);
 }
 
 .app-state > button:focus-visible {
-  outline: 3px solid #93b4f5;
+  outline: 3px solid var(--color-accent-border);
   outline-offset: 3px;
 }
+
+/* --- Zoznam tímov a chybové hlásky ----------------------------------------- */
 
 .app-page__error {
   display: flex;
@@ -351,10 +356,10 @@ html body .auth-page .auth-card__switch button:hover {
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
-  border: 1px solid #fecaca;
+  border: 1px solid var(--color-error-border);
   border-radius: 10px;
-  background: #fff7f7;
-  color: #b42318;
+  background: var(--color-error-bg-soft);
+  color: var(--color-error-text);
 }
 
 .app-page__team-list {
@@ -378,7 +383,7 @@ html body .auth-page .auth-card__switch button:hover {
   border: 1px solid var(--brand-border);
   border-radius: 10px;
   color: var(--brand-blue-dark);
-  background: #fff;
+  background: var(--color-bg);
   font-weight: 700;
   text-decoration: none;
   transition:
@@ -387,18 +392,10 @@ html body .auth-page .auth-card__switch button:hover {
     transform 180ms ease;
 }
 
-.app-button--danger,
-.task-detail-panel__delete {
-  border-color: #fca5a5;
-  background: #fff7f7;
-  color: #b42318;
-}
-
-.app-button--danger:hover,
-.task-detail-panel__delete:hover:not(:disabled) {
-  border-color: #b42318;
-  background: #b42318;
-  color: #fff;
+.app-page__team-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-bg);
 }
 
 .app-page__delete-button {
@@ -407,11 +404,22 @@ html body .auth-page .auth-card__switch button:hover {
   padding-inline: 13px;
 }
 
-.app-page__team-link:hover {
-  transform: translateY(-2px);
-  border-color: var(--accent-border);
-  background: var(--accent-bg);
+/* Tlačidlo na odstránenie (používajú TeamsPage a task-detail-panel__delete). */
+.app-button--danger,
+.task-detail-panel__delete {
+  border-color: var(--color-error-border);
+  background: var(--color-error-bg-soft);
+  color: var(--color-error-text);
 }
+
+.app-button--danger:hover,
+.task-detail-panel__delete:hover:not(:disabled) {
+  border-color: var(--color-error-text);
+  background: var(--color-error-text);
+  color: #fff;
+}
+
+/* --- Tvorba tímu ----------------------------------------------------------- */
 
 .team-form {
   display: flex;
@@ -426,8 +434,8 @@ html body .auth-page .auth-card__switch button:hover {
   padding: 0 12px;
   border: 1px solid var(--brand-border);
   border-radius: 8px;
-  color: var(--text-h);
-  background: #fff;
+  color: var(--color-text-heading);
+  background: var(--color-bg);
   font: inherit;
 }
 
@@ -436,16 +444,23 @@ html body .auth-page .auth-card__switch button:hover {
   outline-offset: 1px;
 }
 
+.team-form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* --- Kanbanová nástenka (prepísaná v obale aplikácie) --------------------- */
+
 .app-shell .board h1 {
-  color: var(--text-h);
+  color: var(--color-text-heading);
 }
 
 .app-shell .board__team-id {
-  color: #475569;
+  color: var(--color-text);
 }
 
 .app-shell .board__status {
-  color: #64748b;
+  color: var(--color-muted);
 }
 
 .app-shell .board__columns {
@@ -455,89 +470,85 @@ html body .auth-page .auth-card__switch button:hover {
 .app-shell .board-column {
   border: 1px solid var(--brand-border);
   background: #f7faff;
-  box-shadow: 0 8px 24px rgb(16 42 86 / 5%);
+  box-shadow: var(--shadow-card);
 }
 
 .app-shell .board-column h2 {
-  color: var(--text-h);
+  color: var(--color-text-heading);
 }
 
 .app-shell .task-card {
   border-color: var(--brand-border);
-  background: #fff;
-  color: var(--text);
+  background: var(--color-bg);
+  color: var(--color-text);
   box-shadow: 0 4px 12px rgb(16 42 86 / 5%);
 }
 
 .app-shell .task-card h3 {
-  color: var(--text-h);
+  color: var(--color-text-heading);
 }
 
 .app-shell .task-card:hover {
-  border-color: var(--accent-border);
+  border-color: var(--color-accent-border);
 }
 
 .app-shell .board__empty {
   border-color: var(--brand-border);
   background: #f7faff;
-  color: var(--text);
+  color: var(--color-text);
 }
 
 .app-shell .board__add-button,
 .app-shell .task-create-form button:not(.task-create-form__close) {
-  background: #2563eb;
+  background: var(--brand-blue);
   box-shadow: 0 6px 24px rgb(37 99 235 / 18%);
 }
 
 .app-shell .board__add-button:hover,
 .app-shell .task-create-form button:not(.task-create-form__close):hover {
-  background: #1d4ed8;
+  background: var(--brand-blue-dark);
 }
 
 .app-shell .task-create-form {
   border-color: var(--brand-border);
-  background: #fff;
-  color: var(--text);
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 .app-shell .task-create-form h2,
 .app-shell .task-create-form label {
-  color: var(--text-h);
+  color: var(--color-text-heading);
 }
 
 .app-shell .task-create-form input,
 .app-shell .task-create-form textarea,
 .app-shell .task-create-form select {
   border-color: var(--brand-border);
-  background: #fff;
-  color: var(--text-h);
+  background: var(--color-bg);
+  color: var(--color-text-heading);
 }
 
 .app-shell .task-detail-panel {
   border-color: var(--brand-border);
-  background: #fff;
-  color: var(--text);
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 .app-shell .task-detail-panel h2 {
-  color: var(--text-h);
+  color: var(--color-text-heading);
 }
 
 .app-shell .task-detail-panel__header button {
-  color: var(--text);
+  color: var(--color-text);
 }
 
 .app-shell .task-detail-panel__status {
-  background: var(--accent-bg);
+  background: var(--color-accent-bg);
   color: var(--brand-blue-dark);
 }
 
-.team-form button:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
-/* Keep form labels accessible while visually hiding them. */
+/* Pomocná trieda: skryje obsah vizuálne, ale ponechá ho prístupný pre
+   čítačky obrazovky (používajú TeamsPage a webová stránka). */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -550,6 +561,7 @@ html body .auth-page .auth-card__switch button:hover {
   border: 0;
 }
 
+/* Mobilná navigácia. */
 @media (max-width: 520px) {
   .app-nav {
     gap: 14px;
