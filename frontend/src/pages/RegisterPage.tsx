@@ -15,7 +15,6 @@ export default function RegisterPage({ onLogin, onSuccess }: RegisterPageProps) 
     event.preventDefault(); setError(''); setIsSubmitting(true)
     try {
       const response = await submitAuthRequest('/api/auth/register', { email, displayName, password })
-      localStorage.setItem('accessToken', response.accessToken)
       onSuccess(response)
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Registrácia sa nepodarila.')

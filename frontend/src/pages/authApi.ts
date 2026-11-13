@@ -1,4 +1,38 @@
-export type AuthResponse = { user: { id: string; email: string; displayName: string; createdAt: string }; accessToken: string }
+export type AuthUser = {
+  id: string
+  email: string
+  displayName: string
+  createdAt: string
+}
+
+export type AuthResponse = { user: AuthUser }
+
+function isAuthUser(value: unknown): value is AuthUser {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    typeof value.id === 'string' &&
+    'email' in value &&
+    typeof value.email === 'string' &&
+    'displayName' in value &&
+    typeof value.displayName === 'string' &&
+    'createdAt' in value &&
+    typeof value.createdAt === 'string'
+  )
+}
+
+function parseAuthUserResponse(value: unknown): AuthUser {
+  if (
+    typeof value !== 'object' ||
+    value === null ||
+    !('user' in value) ||
+    !isAuthUser(value.user)
+  ) {
+    throw new Error('API vrátilo neplatné údaje používateľa.')
+  }
+  return value.user
+}
 
 export async function getAuthError(response: Response): Promise<string> {
   try {
@@ -8,12 +42,29 @@ export async function getAuthError(response: Response): Promise<string> {
       if (Array.isArray(message)) return message.join(', ')
       if (typeof message === 'string') return message
     }
-  } catch { /* Použi všeobecnú správu, ak API nevrátilo JSON. */ }
+  } catch { /* Keep a generic message when the API response is not JSON. */ }
   return 'Požiadavku sa nepodarilo dokončiť. Skúste to znova.'
 }
 
-export async function submitAuthRequest(endpoint: string, payload: Record<string, string>): Promise<AuthResponse> {
-  const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+export async function getCurrentUser(): Promise<AuthUser | null> {
+  const response = await fetch('/api/auth/me', { credentials: 'include' })
+  if (response.status === 401) return null
   if (!response.ok) throw new Error(await getAuthError(response))
-  return (await response.json()) as AuthResponse
+
+  return parseAuthUserResponse(await response.json())
+}
+
+export async function submitAuthRequest(
+  endpoint: string,
+  payload: Record<string, string | boolean>,
+): Promise<AuthResponse> {
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) throw new Error(await getAuthError(response))
+
+  return { user: parseAuthUserResponse(await response.json()) }
 }
