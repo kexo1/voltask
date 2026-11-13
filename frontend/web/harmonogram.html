@@ -435,6 +435,82 @@
                             <td>Vytváranie úloh cez API funkčné a otestované.</td>
                             <td>9. 11. 2026</td>
                         </tr>
+                        <tr class="day-heading">
+                            <th scope="row" colspan="4">13. november 2026</th>
+                        </tr>
+                        <tr>
+                            <td>Martin Polanský (vedúci tímu)</td>
+                            <td>
+                                <p>Autentifikácia cez cookies, používateľ bez tímu a zabezpečenie tímového API.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                        <li>Odstránil automatické vytváranie tímu „Môj tím“ (<code>ensureDefaultTeam</code>) pri registrácii aj prihlásení; nový používateľ má po registrácii nula tímov.</li>
+                                        <li>Presunul autentifikáciu do cookies (HttpOnly, SameSite=Lax, Secure v produkcii) a pridal endpointy <code>POST /api/auth/refresh</code>, <code>POST /api/auth/logout</code>, <code>GET /api/auth/me</code> a <code>PATCH /api/auth/profile</code>.</li>
+                                        <li>Zaviedol krátko platný access JWT a náhodný rotovaný refresh token uložený v databáze iba ako hash; pri <code>stayLoggedIn</code> platí relácia 7 dní neaktivity.</li>
+                                        <li>Pridal spoločný JWT guard a ochranu meniacich endpointov pred CSRF.</li>
+                                        <li>Zabezpečil Teams, Tasks aj WebSocket podľa členstva v tíme.</li>
+                                        <li>Začal vynucovať roly OWNER a MEMBER a pridal <code>DELETE /api/teams/:id</code> iba pre OWNER.</li>
+                                        <li>Spustil Prisma generate a migrácie a backend build cez Docker.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Cookie autentifikácia s obnovou relácie; používateľ môže existovať bez tímu, Teams, Tasks a WebSocket sú chránené podľa členstva a rolí a tím môže zmazať iba OWNER.</td>
+                            <td>13. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Peter Lužák</td>
+                            <td>
+                                <p>Kanban nástenka podľa tímu v adrese s detailom úlohy.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                        <li>Upravil <code>BoardPage</code> tak, aby prijímala povinný prop <code>teamId</code>, načítala iba tento tím a pri jeho zmene načítala nový.</li>
+                                        <li>Vytvorenie úlohy presunul za tlačidlo + do okna alebo bočného panela, takže veľký formulár už nie je stále na stránke.</li>
+                                        <li>Po kliknutí na kartu sa zobrazí detail úlohy v bočnom paneli; je len na čítanie, kým backend nepodporí editáciu.</li>
+                                        <li>Zachoval presúvanie kariet (drag-and-drop) a ukladanie cez API; doplnil stavy načítania, chyby, prázdnej nástenky a čakajúcej zmeny.</li>
+                                        <li>Upravil rozloženie pre rôzne veľkosti obrazovky vo farbách značky Voltask.</li>
+                                        <li>Spustil frontend lint a build cez Docker.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Kanban nástenka napojená na adresu <code>/teams/:teamId/board</code>, s tvorbou úlohy cez tlačidlo + a detailom úlohy v bočnom paneli.</td>
+                            <td>13. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Michal Trebichalský</td>
+                            <td>
+                                <p>Navigácia a routovanie aplikácie.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                        <li>Pridal React Router a spoločný layout v <code>App.tsx</code>.</li>
+                                        <li>Vytvoril menu Prehľad, Tímy a Profil a stránky na adresách <code>/dashboard</code>, <code>/teams</code>, <code>/teams/:teamId/board</code> a <code>/profile</code>; <code>BoardPage</code> sa vykresľuje s propom <code>teamId</code>.</li>
+                                        <li>Pri štarte aplikácie volá <code>/api/auth/me</code> a zobrazuje stav načítania; požiadavky posiela s <code>credentials: &#39;include&#39;</code> a JWT neukladá do localStorage.</li>
+                                        <li>Prehľad aj zoznam tímov fungujú aj bez tímu: zobrazí sa prázdny stav s tlačidlom na vytvorenie tímu a chyba načítania sa odlišuje od prázdneho zoznamu s možnosťou opakovania.</li>
+                                        <li>Spustil frontend lint a build cez Docker.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Funkčná navigácia na dohodnutých adresách, ktorá funguje aj pre používateľa bez tímu.</td>
+                            <td>13. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Juraj Vozárik</td>
+                            <td>
+                                <p>Profilová stránka a rozšírená testovacia matica.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                        <li>Vytvoril <code>ProfilePage</code> a <code>profileApi.ts</code>: zmena zobrazovaného mena cez <code>PATCH /api/auth/profile</code> a avatar ako kruh s iniciálami s označením, že nahratie obrázka ešte nie je dostupné; pri uložení sa zobrazuje skutočný výsledok API.</li>
+                                        <li>Doplnil testovaciu maticu a HTTP požiadavky pre účet bez tímov, prázdny <code>GET /api/teams</code>, anonymný prístup, OWNER/MEMBER a cudzí tím, refresh stránky, <code>stayLoggedIn</code>, refresh cookie, logout, vytvorenie a zmazanie tímu a profilové meno.</li>
+                                        <li>Ako PASS označil iba skutočne vykonané testy, bez reálnych hesiel.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Profilová stránka a doplnená testovacia matica so spísanými výsledkami skutočne vykonaných testov.</td>
+                            <td>13. 11. 2026</td>
+                        </tr>
                     </tbody>
                     <tbody>
                         <tr class="week-heading">
