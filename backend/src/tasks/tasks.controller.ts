@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseEnumPipe,
@@ -52,5 +53,10 @@ export class TasksController {
     @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.tasksService.updateStatus(id, status, user.id);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.tasksService.delete(id, user.id);
   }
 }
