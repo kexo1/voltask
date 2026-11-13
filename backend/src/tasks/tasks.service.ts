@@ -1,56 +1,103 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Prisma } from '../generated/prisma/client';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskStatus } from '../generated/prisma/enums';
 import { PrismaService } from '../database/prisma.service';
+
+const MAX_TASKS_PER_TEAM = 500;
 
 @Injectable()
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findAll(teamId?: string) {
+  findAll(
+    userId: string,
+    teamId?: string,
+    pagination?: { page: number; limit: number },
+  ) {
     return this.prisma.task.findMany({
-      where: teamId === undefined ? undefined : { teamId },
-      orderBy: { createdAt: 'desc' },
+      where: {
+        ...(teamId ? { teamId } : {}),
+        team: { members: { some: { userId } } },
+      },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      ...(pagination
+        ? {
+            skip: (pagination.page - 1) * pagination.limit,
+            take: pagination.limit,
+          }
+        : {}),
     });
   }
 
   async create(createTaskDto: CreateTaskDto, creatorId: string) {
-    const [team, assignee] = await Promise.all([
-      this.prisma.team.findUnique({
-        where: { id: createTaskDto.teamId },
-        select: { id: true },
-      }),
-      createTaskDto.assigneeId
-        ? this.prisma.user.findUnique({
-            where: { id: createTaskDto.assigneeId },
-            select: { id: true },
-          })
-        : Promise.resolve(null),
-    ]);
+    return this.prisma.$transaction(async (transaction) => {
+      await this.lockTeam(transaction, createTaskDto.teamId);
 
-    if (!team) {
-      throw new NotFoundException(`Team ${createTaskDto.teamId} not found`);
-    }
+      const membership = await transaction.teamMember.findUnique({
+        where: {
+          teamId_userId: {
+            teamId: createTaskDto.teamId,
+            userId: creatorId,
+          },
+        },
+        select: { teamId: true },
+      });
 
-    if (createTaskDto.assigneeId && !assignee) {
-      throw new NotFoundException(`Assignee ${createTaskDto.assigneeId} not found`);
-    }
+      if (!membership) {
+        throw new NotFoundException(`Team ${createTaskDto.teamId} not found`);
+      }
 
-    return this.prisma.task.create({
-      data: {
-        title: createTaskDto.title,
-        description: createTaskDto.description || null,
-        status: createTaskDto.status,
-        teamId: createTaskDto.teamId,
-        creatorId,
-        assigneeId: createTaskDto.assigneeId ?? null,
-      },
+      const taskCount = await transaction.task.count({
+        where: {
+          teamId: createTaskDto.teamId,
+        },
+      });
+      if (taskCount >= MAX_TASKS_PER_TEAM) {
+        throw new ConflictException(
+          `A team cannot have more than ${MAX_TASKS_PER_TEAM} tasks`,
+        );
+      }
+
+      if (createTaskDto.assigneeId) {
+        const assigneeMembership = await transaction.teamMember.findUnique({
+          where: {
+            teamId_userId: {
+              teamId: createTaskDto.teamId,
+              userId: createTaskDto.assigneeId,
+            },
+          },
+          select: { userId: true },
+        });
+
+        if (!assigneeMembership) {
+          throw new NotFoundException('Assignee is not a member of this team');
+        }
+      }
+
+      return transaction.task.create({
+        data: {
+          title: createTaskDto.title,
+          description: createTaskDto.description || null,
+          status: createTaskDto.status,
+          teamId: createTaskDto.teamId,
+          creatorId,
+          assigneeId: createTaskDto.assigneeId ?? null,
+        },
+      });
     });
   }
 
-  async updateStatus(id: string, status: TaskStatus) {
-    const task = await this.prisma.task.findUnique({
-      where: { id },
+  async updateStatus(id: string, status: TaskStatus, userId: string) {
+    const task = await this.prisma.task.findFirst({
+      where: {
+        id,
+        team: { members: { some: { userId } } },
+      },
       select: { id: true },
     });
 
@@ -62,5 +109,17 @@ export class TasksService {
       where: { id },
       data: { status },
     });
+  }
+
+  private async lockTeam(
+    transaction: Prisma.TransactionClient,
+    teamId: string,
+  ): Promise<void> {
+    const teams = await transaction.$queryRaw<Array<{ id: string }>>`
+      SELECT "id" FROM "Team" WHERE "id" = ${teamId} FOR UPDATE
+    `;
+    if (teams.length === 0) {
+      throw new NotFoundException(`Team ${teamId} not found`);
+    }
   }
 }

@@ -28,6 +28,21 @@ model User {
   memberships   TeamMember[]
   createdTasks  Task[]       @relation("TaskCreator")
   assignedTasks Task[]       @relation("TaskAssignee")
+  authSessions  AuthSession[]
+}
+
+model AuthSession {
+  id               String   @id @default(cuid())
+  userId           String
+  refreshTokenHash String   @unique
+  rememberMe       Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  lastUsedAt       DateTime @default(now())
+  expiresAt        DateTime
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Team {
