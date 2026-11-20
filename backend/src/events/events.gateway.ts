@@ -11,6 +11,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { PrismaService } from '../database/prisma.service';
 import { ACCESS_COOKIE, readCookie } from '../auth/auth-cookies';
+import { ProjectsService } from '../projects/projects.service';
 
 @Injectable()
 @WebSocketGateway({
@@ -26,6 +27,7 @@ export class EventsGateway {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
+    private readonly projectsService: ProjectsService,
   ) {}
 
   afterInit(server: Server) {
@@ -129,7 +131,32 @@ export class EventsGateway {
     return { joined: teamId };
   }
 
+  @SubscribeMessage('joinProject')
+  async handleJoinProject(
+    @MessageBody() projectId: unknown,
+    @ConnectedSocket() client: Socket,
+  ) {
+    if (typeof projectId !== 'string' || projectId.length === 0) {
+      throw new WsException('A valid project ID is required');
+    }
+
+    const userId = client.data.userId;
+    if (typeof userId !== 'string') {
+      throw new WsException('Authentication is required');
+    }
+    if (!(await this.projectsService.canAccess(projectId, userId))) {
+      throw new WsException('Project not found');
+    }
+
+    await client.join(`project:${projectId}`);
+    return { joined: projectId };
+  }
+
   emitToTeam(teamId: string, event: string, payload: unknown) {
     this.server.to(`team:${teamId}`).emit(event, payload);
+  }
+
+  emitToProject(projectId: string, event: string, payload: unknown) {
+    this.server.to(`project:${projectId}`).emit(event, payload);
   }
 }

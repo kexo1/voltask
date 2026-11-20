@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseEnumPipe,
   Patch,
   Post,
   Query,
@@ -15,9 +14,10 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { CsrfGuard } from '../auth/guards/csrf.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { AuthenticatedUser } from '../auth/auth.types';
-import { TaskStatus } from '../generated/prisma/enums';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { ListTasksQueryDto } from './dto/list-tasks-query.dto';
+import { ProjectContextQueryDto } from './dto/project-context-query.dto';
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
@@ -43,20 +43,29 @@ export class TasksController {
       query.page !== undefined || query.limit !== undefined
         ? { page: query.page ?? 1, limit: query.limit ?? 50 }
         : undefined;
-    return this.tasksService.findAll(user.id, query.teamId, pagination);
+    return this.tasksService.findAll(user.id, query.projectId, pagination);
   }
 
   @Patch(':id/status')
   updateStatus(
     @Param('id') id: string,
-    @Body('status', new ParseEnumPipe(TaskStatus)) status: TaskStatus,
+    @Body() updateTaskStatusDto: UpdateTaskStatusDto,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    return this.tasksService.updateStatus(id, status, user.id);
+    return this.tasksService.updateStatus(
+      id,
+      updateTaskStatusDto.projectId,
+      updateTaskStatusDto.status,
+      user.id,
+    );
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
-    return this.tasksService.delete(id, user.id);
+  delete(
+    @Param('id') id: string,
+    @Query() query: ProjectContextQueryDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.tasksService.delete(id, query.projectId, user.id);
   }
 }

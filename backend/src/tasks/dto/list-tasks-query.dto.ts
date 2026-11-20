@@ -1,10 +1,18 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 
 export class ListTasksQueryDto {
   @IsOptional()
   @IsString()
-  teamId?: string;
+  @IsNotEmpty()
+  projectId?: string;
 
   @IsOptional()
   @Type(() => Number)
