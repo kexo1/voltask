@@ -8,12 +8,14 @@ import { DiscordService } from './notifications/discord.service';
 import { TeamsModule } from './teams/teams.module';
 import { TasksModule } from './tasks/tasks.module';
 import { AuthModule } from './auth/auth.module';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
     DatabaseModule,
     AuthModule,
     TeamsModule,
+    ProjectsModule,
     TasksModule,
     ThrottlerModule.forRoot({
       throttlers: [{ ttl: 60_000, limit: 100 }],

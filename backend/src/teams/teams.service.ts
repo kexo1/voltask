@@ -33,6 +33,7 @@ export class TeamsService {
     });
     const progressByTeam = await this.getProgressByTeam(
       teams.map(({ id }) => id),
+      userId,
     );
 
     return teams.map(({ _count, ...team }) => ({
@@ -54,11 +55,26 @@ export class TeamsService {
             user: { select: { id: true, displayName: true, email: true } },
           },
         },
-        tasks: {
+        projects: {
+          where: {
+            OR: [
+              { members: { some: { userId } } },
+              {
+                team: {
+                  is: {
+                    members: { some: { userId, role: TeamRole.OWNER } },
+                  },
+                },
+              },
+            ],
+          },
           orderBy: { createdAt: 'desc' },
-          include: {
-            assignee: { select: { id: true, displayName: true } },
-            creator: { select: { id: true, displayName: true } },
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            createdAt: true,
+            _count: { select: { members: true, tasks: true } },
           },
         },
       },
@@ -68,7 +84,7 @@ export class TeamsService {
       throw new NotFoundException(`Team "${id}" was not found`);
     }
 
-    const progress = (await this.getProgressByTeam([id])).get(id)!;
+    const progress = (await this.getProgressByTeam([id], userId)).get(id)!;
     return { ...team, progress };
   }
 
@@ -208,20 +224,42 @@ export class TeamsService {
   }
 
   async removeMember(teamId: string, actorId: string, memberId: string) {
-    await this.requireOwner(teamId, actorId);
-    const membership = await this.getMembership(teamId, memberId);
-
-    if (membership.role === TeamRole.OWNER) {
-      const ownerCount = await this.prisma.teamMember.count({
-        where: { teamId, role: TeamRole.OWNER },
+    await this.prisma.$transaction(async (transaction) => {
+      await this.lockTeam(transaction, teamId);
+      await this.requireOwner(teamId, actorId, transaction);
+      const membership = await transaction.teamMember.findUnique({
+        where: { teamId_userId: { teamId, userId: memberId } },
+        select: { role: true },
       });
-      if (ownerCount <= 1) {
-        throw new ConflictException('A team must have at least one owner');
+      if (!membership) {
+        throw new NotFoundException('Team member was not found');
       }
-    }
 
-    await this.prisma.teamMember.delete({
-      where: { teamId_userId: { teamId, userId: memberId } },
+      if (membership.role === TeamRole.OWNER) {
+        const ownerCount = await transaction.teamMember.count({
+          where: { teamId, role: TeamRole.OWNER },
+        });
+        if (ownerCount <= 1) {
+          throw new ConflictException('A team must have at least one owner');
+        }
+      }
+
+      const projects = await transaction.$queryRaw<Array<{ id: string }>>`
+        SELECT "id" FROM "Project" WHERE "teamId" = ${teamId} FOR UPDATE
+      `;
+      const projectIds = projects.map(({ id }) => id);
+      if (projectIds.length > 0) {
+        await transaction.projectMember.deleteMany({
+          where: { projectId: { in: projectIds }, userId: memberId },
+        });
+        await transaction.task.updateMany({
+          where: { projectId: { in: projectIds }, assigneeId: memberId },
+          data: { assigneeId: null },
+        });
+      }
+      await transaction.teamMember.delete({
+        where: { teamId_userId: { teamId, userId: memberId } },
+      });
     });
     return { success: true };
   }
@@ -310,6 +348,7 @@ export class TeamsService {
 
   private async getProgressByTeam(
     teamIds: string[],
+    userId: string,
   ): Promise<Map<string, TeamProgress>> {
     const progressByTeam = new Map(
       teamIds.map((id) => [
@@ -322,13 +361,38 @@ export class TeamsService {
       return progressByTeam;
     }
 
+    const projects = await this.prisma.project.findMany({
+      where: {
+        teamId: { in: teamIds },
+        OR: [
+          { members: { some: { userId } } },
+          {
+            team: {
+              is: { members: { some: { userId, role: TeamRole.OWNER } } },
+            },
+          },
+        ],
+      },
+      select: { id: true, teamId: true },
+    });
+    if (projects.length === 0) {
+      return progressByTeam;
+    }
+
+    const teamIdByProjectId = new Map(
+      projects.map(({ id, teamId }) => [id, teamId]),
+    );
     const taskCounts = await this.prisma.task.groupBy({
-      by: ['teamId', 'status'],
-      where: { teamId: { in: teamIds } },
+      by: ['projectId', 'status'],
+      where: { projectId: { in: projects.map(({ id }) => id) } },
       _count: { _all: true },
     });
 
-    for (const { teamId, status, _count } of taskCounts) {
+    for (const { projectId, status, _count } of taskCounts) {
+      const teamId = teamIdByProjectId.get(projectId);
+      if (!teamId) {
+        continue;
+      }
       const progress = progressByTeam.get(teamId)!;
       const count = _count._all;
       progress.total += count;
