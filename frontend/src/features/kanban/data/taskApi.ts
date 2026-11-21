@@ -13,6 +13,22 @@ export type ProjectTask = {
 
 export function getTasks(projectId: string) {
   return requestWorkspace<ProjectTask[]>(`/tasks?projectId=${encodeURIComponent(projectId)}`)
+async function requestApi(path: string, options: RequestInit = {}): Promise<unknown> {
+  const headers = new Headers(options.headers)
+
+  if (options.body) headers.set('Content-Type', 'application/json')
+
+  const response = await fetch(path, {
+    ...options,
+    headers,
+    credentials: 'include',
+  })
+  if (!response.ok) throw new Error(await getAuthError(response))
+  return response.json()
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
 }
 
 export function createTask(projectId: string, data: TaskCreateData) {
