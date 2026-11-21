@@ -105,7 +105,7 @@ export function connectProjectSocket(
   const scheduleReconnect = () => {
     if (disposed || terminal || reconnectTimer !== undefined) return
 
-    setStatus('disconnected')
+    setStatus(window.navigator.onLine ? 'connecting' : 'disconnected')
     reconnectTimer = setTimeout(() => {
       reconnectTimer = undefined
       if (disposed || terminal) return
