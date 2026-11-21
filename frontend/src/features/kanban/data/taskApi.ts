@@ -8,13 +8,15 @@ export type KanbanTeam = {
 }
 
 async function requestApi(path: string, options: RequestInit = {}): Promise<unknown> {
-  const token = localStorage.getItem('accessToken')
   const headers = new Headers(options.headers)
 
   if (options.body) headers.set('Content-Type', 'application/json')
-  if (token) headers.set('Authorization', `Bearer ${token}`)
 
-  const response = await fetch(path, { ...options, headers })
+  const response = await fetch(path, {
+    ...options,
+    headers,
+    credentials: 'include',
+  })
   if (!response.ok) throw new Error(await getAuthError(response))
   return response.json()
 }
