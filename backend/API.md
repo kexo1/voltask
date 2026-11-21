@@ -209,3 +209,41 @@ session a povolený `Origin`. Klient sa pripojí k projektovej miestnosti udalos
 `joinProject` s payloadom `"clproject1"`. Odpoveď je
 `{ "joined": "clproject1" }`; neprihlásený alebo neoprávnený klient sa do
 miestnosti nedostane. Existujúca udalosť `joinTeam` zostáva podporovaná.
+
+### WebSocket eventy (server → klient)
+
+Po úspešnom DB zápise server emituje tieto eventy do room-u `project:<projectId>`:
+
+#### `task:created`
+
+Emitovaný po vytvorení úlohy. Payload je kompletný objekt úlohy:
+
+```json
+{
+  "id": "cltask1",
+  "title": "Pripraviť návrh",
+  "description": null,
+  "status": "TODO",
+  "createdAt": "2026-11-20T12:10:00.000Z",
+  "updatedAt": "2026-11-20T12:10:00.000Z",
+  "projectId": "clproject1",
+  "creatorId": "cluser1",
+  "assigneeId": null
+}
+```
+
+#### `task:updated`
+
+Emitovaný po zmene stavu úlohy. Payload je kompletný aktualizovaný objekt úlohy
+(rovnaký tvar ako `task:created`).
+
+#### `task:deleted`
+
+Emitovaný po zmazaní úlohy.
+
+```json
+{
+  "projectId": "clproject1",
+  "taskId": "cltask1"
+}
+```

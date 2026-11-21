@@ -103,7 +103,14 @@ export default function TeamsPage() {
     setDeletingTeamId(team.id)
     try {
       await deleteTeamRequest(team.id)
-      setLoadState((state) => state.status === 'ready' ? { status: 'ready', teams: state.teams.filter((item) => item.id !== team.id) } : state)
+      setLoadState((state) =>
+        state.status === 'ready'
+          ? {
+              status: 'ready',
+              teams: state.teams.filter((item) => item.id !== team.id),
+            }
+          : state,
+      )
     } catch (error) {
       setDeleteError(error instanceof Error ? error.message : 'Tim sa nepodarilo odstranit.')
     } finally {

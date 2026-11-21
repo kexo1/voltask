@@ -98,13 +98,15 @@
   outline-offset: 1px;
 }
 
-.auth-form__password-toggle svg {
+.auth-form__password-toggle svg,
+.auth-form__password-toggle img {
   width: 22px;
   height: 22px;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.8;
+  display: block;
 }
 
 .auth-form__field input:focus {
