@@ -589,11 +589,85 @@
                             <th scope="rowgroup" colspan="4"><span class="week-heading-content"><span>5.
                                         týždeň</span><span class="week-date">16. 11. – 22. 11. 2026</span></span></th>
                         </tr>
+                        <tr class="day-heading">
+                            <th scope="row" colspan="4">21. november 2026</th>
+                        </tr>
                         <tr>
-                            <td>Tím</td>
-                            <td>Dokončenie prihlasovania a ochrana API tímov a úloh.</td>
-                            <td>JWT ochrana, kontrola členstva v tíme a zachovanie prihlásenia po obnovení stránky.</td>
-                            <td>Do 22. 11. 2026</td>
+                            <td>Martin Polanský (vedúci tímu)</td>
+                            <td>
+                                <p>Projekty ako hlavný priestor pre úlohy a WebSocket na backende.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Vytvoril vetvu <code>feature/projects-backend-realtime</code> z aktuálneho <code>develop</code>.</li>
+                                    <li>Pridal model Project a projektové členstvá do Prisma schémy a novú pomenovanú migráciu, ktorá existujúce úlohy prenesie k projektom ich pôvodných tímov.</li>
+                                    <li>Pridal endpointy <code>GET/POST /api/projects</code>, <code>GET/PATCH/DELETE /api/projects/:id</code>, správu členov projektu, <code>GET /api/dashboard/summary</code> a task operácie podľa <code>projectId</code>.</li>
+                                    <li>Zachoval pravidlá OWNER a MEMBER; riešiteľ úlohy musí byť členom projektu a predvolený tím ani projekt sa nevytvára.</li>
+                                    <li>Rozšíril <code>EventsGateway</code> o room-y <code>project:&lt;projectId&gt;</code> s overením prihlásenia a prístupu pred vstupom; po úspešnom zápise do databázy posiela <code>task:created</code>, <code>task:updated</code> a <code>task:deleted</code>.</li>
+                                    <li>Spustil Prisma generate a migrácie, backend build a Docker build.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Používateľ bez tímu vytvorí osobný projekt aj úlohu; prístup k projektom a úlohám vynucuje backend a eventy úloh odchádzajú do room-u projektu až po úspešnom zápise do databázy.</td>
+                            <td>21. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Peter Lužák</td>
+                            <td>
+                                <p>Projekty vo frontende: stránka Projekty a nástenka podľa projektu.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Vytvoril vetvu <code>feature/projects-first-workspace-frontend</code>.</li>
+                                    <li>Prečítal API kontrakt od backendu a držal sa ho, bez vymyslených endpointov a testovacích dát.</li>
+                                    <li>Pridal stránku Projekty s odkazom v navigácii, osobnými aj tímovými projektmi (s názvom tímu) a formulárom na vytvorenie projektu s názvom, opisom a voliteľným tímom.</li>
+                                    <li>Pridal adresu <code>/projects/:projectId/board</code>, na ktorej sa úlohy načítavajú podľa <code>projectId</code>; pri tvorbe úlohy sa ako riešitelia ponúkajú iba členovia projektu.</li>
+                                    <li>Prehľad zobrazuje počty tímov, projektov a úloh z dashboard endpointu a používateľovi bez tímu ponúka vytvorenie osobného projektu.</li>
+                                    <li>Vytvorenie tímu zmenil na ikonovú akciu s formulárom a odstránenie tímu na ikonovú akciu s potvrdením, že sa zmažú aj tímové projekty a úlohy.</li>
+                                    <li>Nadpisom nástenky je názov projektu s kontextom tímu alebo označením osobného projektu; loading, prázdny stav, chyba aj úspech sú odlíšené.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Stránka Projekty a nástenka <code>/projects/:projectId/board</code> fungujú aj pre používateľa bez tímu; prehľad ukazuje správne počty.</td>
+                            <td>21. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Michal Trebichalský</td>
+                            <td>
+                                <p>Živá aktualizácia projektovej nástenky cez WebSocket.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Vytvoril vetvu <code>feature/projects-board-realtime</code>.</li>
+                                    <li>Zosúladil s backendom názvy a tvary eventov a s Petrom spôsob načítania projektu, úloh a členov.</li>
+                                    <li>Pripojil Socket.IO klienta s cookie autentifikáciou; tokeny v prehliadači neukladá ani neposiela ručne.</li>
+                                    <li>Po vstupe do room-u projektu spracúva <code>task:created</code>, <code>task:updated</code> a <code>task:deleted</code> priamo v Petrovej nástenke; spracovanie je idempotentné, takže REST odpoveď a event nevytvoria duplicitnú kartu.</li>
+                                    <li>Po opätovnom pripojení sa klient vráti do room-u a zosúladí stav s API; ošetril odpojenie, chybu spojenia, odchod z projektu a obnovu expirovanej cookie bez nekonečných pokusov.</li>
+                                    <li>Pripravil jednoduché rozhranie socket vrstvy pre komponent stavu spojenia.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Zmena úlohy v inom klientovi sa zobrazí bez reloadu a bez duplicitných kariet; po opustení projektu klient eventy jeho room-u nedostáva.</td>
+                            <td>21. 11. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Juraj Vozárik</td>
+                            <td>
+                                <p>Indikátor stavu spojenia a upozornenia na zmeny úloh.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                    <li>Vytvoril vetvu <code>feature/realtime-status-ui</code>.</li>
+                                    <li>Dohodol s Michalom tvar hooku alebo provideru; vlastné Socket.IO spojenie neotvára.</li>
+                                    <li>Pridal do navigácie malý indikátor stavu spojenia (pripája sa, online, odpojené, chyba).</li>
+                                    <li>Pri eventoch úloh zobrazuje nenápadné upozornenia, napríklad „Úloha bola aktualizovaná“, bez citlivých údajov; zmiznú samy, dajú sa zavrieť a neblokujú ovládanie nástenky.</li>
+                                    <li>Zabezpečil aria-live, ovládanie klávesnicou, kontrast a mobilné zobrazenie podľa dizajnových tokenov.</li>
+                                    <li>Upozornenia sa týkajú iba aktívneho projektu a pri odchode z projektu alebo odhlásení sa odbery vyčistia.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Indikátor správne ukazuje stavy spojenia a event úlohy vyvolá prístupné upozornenie bez zmeny dátovej logiky nástenky.</td>
+                            <td>21. 11. 2026</td>
                         </tr>
                     </tbody>
                     <tbody>
