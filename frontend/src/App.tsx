@@ -19,6 +19,10 @@ import ProfilePage from './pages/ProfilePage'
 import RegisterPage from './pages/RegisterPage'
 import TeamsPage from './pages/TeamsPage'
 import { getCurrentUser, type AuthUser } from './pages/authApi'
+import {
+  RealtimeNotifications,
+  RealtimeProvider,
+} from './features/realtime/RealtimeContext'
 
 type AuthState =
   | { status: 'loading' }
@@ -34,6 +38,7 @@ function AppLayout({ onLogout }: { onLogout: () => void }) {
       <div className="app-shell__main" key={location.pathname}>
         <Outlet />
       </div>
+      <RealtimeNotifications />
     </div>
   )
 }
@@ -124,7 +129,8 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
+      <RealtimeProvider authenticated={Boolean(user)}>
+        <Routes>
         <Route element={<RequireAuth user={user} />}>
           <Route element={<AppLayout onLogout={handleLogout} />}>
             <Route path="/dashboard" element={<DashboardPage />} />
@@ -169,7 +175,8 @@ export default function App() {
         />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+        </Routes>
+      </RealtimeProvider>
     </BrowserRouter>
   )
 }

@@ -1,0 +1,101 @@
+.realtime-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.realtime-status__dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--color-muted);
+  box-shadow: 0 0 0 2px var(--color-bg);
+}
+
+.realtime-status--online {
+  color: var(--color-success);
+}
+
+.realtime-status--online .realtime-status__dot {
+  background: var(--color-success);
+}
+
+.realtime-status--error {
+  color: var(--color-error-text);
+}
+
+.realtime-status--error .realtime-status__dot {
+  background: var(--color-error-text);
+}
+
+.realtime-notifications {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 30;
+  width: min(340px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.realtime-notification {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 10px 10px 10px 14px;
+  border: 1px solid var(--brand-border);
+  border-radius: 10px;
+  background: var(--color-bg);
+  color: var(--color-text-heading);
+  box-shadow: var(--shadow-card);
+  font-size: 14px;
+  font-weight: 700;
+  pointer-events: auto;
+}
+
+.realtime-notification__close {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-heading);
+  font: inherit;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.realtime-notification__close:hover {
+  border-color: var(--brand-border);
+  background: var(--color-accent-bg);
+}
+
+.realtime-notification__close:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .realtime-status__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .realtime-notifications {
+    right: 16px;
+    bottom: 16px;
+  }
+}
