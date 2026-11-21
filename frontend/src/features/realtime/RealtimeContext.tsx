@@ -61,6 +61,7 @@ export function RealtimeProvider({
 }) {
   const location = useLocation()
   const [status, setStatus] = useState<RealtimeStatus>('disconnected')
+  const [statusProjectId, setStatusProjectId] = useState<string | null>(null)
   const listenersRef = useRef(new Set<RealtimeListener>())
   const routedProjectId = getActiveProjectId(location.pathname, location.search)
   const projectId =
@@ -77,6 +78,7 @@ export function RealtimeProvider({
     }
 
     const emitStatus = (socketStatus: ProjectConnectionStatus) => {
+      setStatusProjectId(activeProjectId)
       setStatus(
         socketStatus === 'connected'
           ? 'online'
@@ -117,7 +119,11 @@ export function RealtimeProvider({
   return (
     <RealtimeContext.Provider
       value={{
-        status: activeProjectId ? status : 'disconnected',
+        status: !activeProjectId
+          ? 'disconnected'
+          : statusProjectId === activeProjectId
+            ? status
+            : 'connecting',
         activeProjectId,
         subscribe,
       }}
