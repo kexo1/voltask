@@ -14,9 +14,7 @@ export default function Navbar({ onLogout }: { onLogout: () => void }) {
       await logout()
       onLogout()
     } catch (error) {
-      setLogoutError(
-        error instanceof Error ? error.message : 'Odhlásenie sa nepodarilo.',
-      )
+      setLogoutError(error instanceof Error ? error.message : 'Odhlásenie sa nepodarilo.')
     } finally {
       setIsLoggingOut(false)
     }
@@ -33,6 +31,12 @@ export default function Navbar({ onLogout }: { onLogout: () => void }) {
           to="/dashboard"
         >
           Prehľad
+        </NavLink>
+        <NavLink
+          className={({ isActive }) => `app-nav__link${isActive ? ' is-active' : ''}`}
+          to="/projects"
+        >
+          Projekty
         </NavLink>
         <NavLink
           className={({ isActive }) => `app-nav__link${isActive ? ' is-active' : ''}`}

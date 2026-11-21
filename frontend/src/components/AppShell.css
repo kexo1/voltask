@@ -240,8 +240,101 @@ html body .auth-page .auth-card__switch button:hover {
   font-weight: 700;
 }
 
-.app-page--team-board {
-  gap: 0;
+.app-page__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.app-project-list,
+.app-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+.app-project-list {
+  list-style: none;
+}
+
+.app-card,
+.app-page__team-link,
+.board__header h1 {
+  overflow-wrap: anywhere;
+}
+
+.app-project-description {
+  white-space: pre-wrap;
+}
+
+.app-project-list a {
+  color: var(--brand-blue-dark);
+}
+
+.app-summary dd {
+  margin: 8px 0 0;
+  font-size: 1.5rem;
+  color: var(--color-text-heading);
+  font-weight: 700;
+}
+
+.app-dialog {
+  box-sizing: border-box;
+  width: min(calc(100% - 32px), 520px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  color: var(--color-text);
+}
+
+.app-dialog::backdrop {
+  background: color-mix(in srgb, var(--brand-navy) 44%, transparent);
+}
+
+.app-dialog .task-create-form {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.app-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.app-form input,
+.app-form select,
+.app-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-heading);
+  background: var(--color-bg);
+  font: inherit;
+}
+
+.app-page__success {
+  padding: 10px 14px;
+  border: 1px solid var(--color-success-border);
+  border-radius: 8px;
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.app-page__success--with-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
 }
 
 /* --- Karty ----------------------------------------------------------------- */
@@ -290,6 +383,32 @@ html body .auth-page .auth-card__switch button:hover {
   cursor: pointer;
 }
 
+.app-button--back {
+  gap: 8px;
+}
+
+.app-button--back span {
+  font-size: 1.25em;
+  line-height: 1;
+}
+
+.app-button--icon {
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  font-size: 1.4rem;
+}
+
+.app-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.app-shell :is(a, button, input, select, textarea, [role='button']):focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
 .app-button--secondary {
   background: var(--color-accent-bg);
   color: var(--brand-blue-dark);
@@ -310,6 +429,18 @@ html body .auth-page .auth-card__switch button:hover {
 .app-nav__link:focus-visible {
   outline: 2px solid var(--brand-blue);
   outline-offset: 3px;
+}
+
+.app-button--success {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.app-button--success:hover {
+  border-color: var(--color-success);
+  background: var(--color-success);
+  color: var(--color-bg);
 }
 
 /* --- Stavové stránky (načítavanie, chyba) ---------------------------------- */
@@ -419,58 +550,14 @@ html body .auth-page .auth-card__switch button:hover {
   color: #fff;
 }
 
-/* --- Tvorba tímu ----------------------------------------------------------- */
-
-.team-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.team-form input {
-  flex: 1 1 220px;
-  min-height: 42px;
-  padding: 0 12px;
-  border: 1px solid var(--brand-border);
-  border-radius: 8px;
-  color: var(--color-text-heading);
-  background: var(--color-bg);
-  font: inherit;
-}
-
-.team-form input:focus {
-  outline: 2px solid var(--brand-blue);
-  outline-offset: 1px;
-}
-
-.team-form button:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
 /* --- Kanbanová nástenka (prepísaná v obale aplikácie) --------------------- */
 
 .app-shell .board h1 {
   color: var(--color-text-heading);
 }
 
-.app-shell .board__team-id {
-  color: var(--color-text);
-}
-
 .app-shell .board__status {
   color: var(--color-muted);
-}
-
-.app-shell .board__columns {
-  gap: 20px;
-}
-
-.app-shell .board-column {
-  border: 1px solid var(--brand-border);
-  background: #f7faff;
-  box-shadow: var(--shadow-card);
 }
 
 .app-shell .board-column h2 {
@@ -492,19 +579,11 @@ html body .auth-page .auth-card__switch button:hover {
   border-color: var(--color-accent-border);
 }
 
-.app-shell .board__empty {
-  border-color: var(--brand-border);
-  background: #f7faff;
-  color: var(--color-text);
-}
-
-.app-shell .board__add-button,
 .app-shell .task-create-form button:not(.task-create-form__close) {
   background: var(--brand-blue);
   box-shadow: 0 6px 24px rgb(37 99 235 / 18%);
 }
 
-.app-shell .board__add-button:hover,
 .app-shell .task-create-form button:not(.task-create-form__close):hover {
   background: var(--brand-blue-dark);
 }
@@ -542,11 +621,6 @@ html body .auth-page .auth-card__switch button:hover {
   color: var(--color-text);
 }
 
-.app-shell .task-detail-panel__status {
-  background: var(--color-accent-bg);
-  color: var(--brand-blue-dark);
-}
-
 /* Pomocná trieda: skryje obsah vizuálne, ale ponechá ho prístupný pre
    čítačky obrazovky (používajú TeamsPage a webová stránka). */
 .sr-only {
@@ -563,19 +637,21 @@ html body .auth-page .auth-card__switch button:hover {
 
 /* Mobilná navigácia. */
 @media (max-width: 520px) {
-  .app-nav {
-    gap: 14px;
-    min-height: 72px;
-    padding-inline: 16px;
-  }
-
   .app-nav__brand img {
     width: 48px;
     height: 48px;
   }
 
+  .app-nav {
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    min-height: 72px;
+    padding: 8px 16px;
+  }
+
   .app-nav__links {
-    gap: 14px;
+    gap: 4px 12px;
+    flex-wrap: wrap;
   }
 
   .app-nav__link {

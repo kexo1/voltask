@@ -11,8 +11,6 @@ export type Task = {
   description: string | null
   // Stĺpec, v ktorom sa úloha práve zobrazuje.
   status: TaskStatus
-  // ID tímu, ktorému úloha patrí.
-  teamId: string
   // Priradený používateľ alebo null, ak úloha nemá priradenú osobu.
   assignee: { id: string; displayName: string } | null
 }

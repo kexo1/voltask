@@ -11,19 +11,14 @@ import {
 } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import './components/AppShell.css'
-import BoardPage from './pages/BoardPage'
+import ProjectBoardPage from './pages/ProjectBoardPage'
+import ProjectsPage from './pages/ProjectsPage'
 import DashboardPage from './pages/DashboardPage'
 import LoginPage from './pages/LoginPage'
 import ProfilePage from './pages/ProfilePage'
 import RegisterPage from './pages/RegisterPage'
 import TeamsPage from './pages/TeamsPage'
-import { getAuthError, getCurrentUser, type AuthUser } from './pages/authApi'
-
-type TeamLookupState =
-  | { teamId: string; status: 'loading' }
-  | { teamId: string; status: 'ready'; name: string }
-  | { teamId: string; status: 'missing' }
-  | { teamId: string; status: 'error'; message: string }
+import { getCurrentUser, type AuthUser } from './pages/authApi'
 
 type AuthState =
   | { status: 'loading' }
@@ -67,93 +62,10 @@ function RegisterRoute({ onLogin }: { onLogin: (user: AuthUser) => void }) {
   )
 }
 
-function TeamBoardRoute() {
-  const { teamId } = useParams<{ teamId: string }>()
-  const [reloadKey, setReloadKey] = useState(0)
-  const [lookup, setLookup] = useState<TeamLookupState>({
-    teamId: teamId ?? '',
-    status: 'loading',
-  })
-
-  useEffect(() => {
-    if (!teamId) return
-
-    let active = true
-    // Match the route ID to the user's teams before rendering the board.
-    fetch('/api/teams', { credentials: 'include' })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(await getAuthError(response))
-        const teams: unknown = await response.json()
-        if (
-          !Array.isArray(teams) ||
-          teams.some(
-            (team) =>
-              typeof team !== 'object' ||
-              team === null ||
-              !('id' in team) ||
-              typeof team.id !== 'string' ||
-              !('name' in team) ||
-              typeof team.name !== 'string',
-          )
-        ) {
-          throw new Error('API vrátilo neplatný zoznam tímov.')
-        }
-
-        const selectedTeam = teams.find((team) => team.id === teamId)
-        if (!active) return
-        setLookup(
-          selectedTeam
-            ? { teamId, status: 'ready', name: selectedTeam.name }
-            : { teamId, status: 'missing' },
-        )
-      })
-      .catch((error: unknown) => {
-        if (active) {
-          setLookup({
-            teamId,
-            status: 'error',
-            message:
-              error instanceof Error
-                ? error.message
-                : 'Názov tímu sa nepodarilo načítať.',
-          })
-        }
-      })
-
-    return () => {
-      active = false
-    }
-  }, [teamId, reloadKey])
-
-  if (!teamId) return <Navigate to="/teams" replace />
-  if (lookup.teamId !== teamId || lookup.status === 'loading') {
-    return <p className="app-page__intro" role="status">Načítavam tím…</p>
-  }
-  if (lookup.status === 'missing') return <Navigate to="/teams" replace />
-  if (lookup.status === 'error') {
-    return (
-      <section className="app-page">
-        <div className="app-page__error" role="alert">
-          <span>{lookup.message}</span>
-          <button
-            className="app-button app-button--secondary"
-            type="button"
-            onClick={() => {
-              setLookup({ teamId, status: 'loading' })
-              setReloadKey((key) => key + 1)
-            }}
-          >
-            Skúsiť znova
-          </button>
-        </div>
-      </section>
-    )
-  }
-
+function LegacyTeamBoardRoute() {
+  const { teamId } = useParams()
   return (
-    <section className="app-page app-page--team-board">
-      <BoardPage teamId={teamId} teamName={lookup.name} />
-    </section>
+    <Navigate to={teamId ? `/projects?team=${encodeURIComponent(teamId)}` : '/teams'} replace />
   )
 }
 
@@ -171,10 +83,7 @@ export default function App() {
         if (active) {
           setAuthState({
             status: 'error',
-            message:
-              error instanceof Error
-                ? error.message
-                : 'Prihlásenie sa nepodarilo overiť.',
+            message: error instanceof Error ? error.message : 'Prihlásenie sa nepodarilo overiť.',
           })
         }
       })
@@ -184,7 +93,11 @@ export default function App() {
   }, [authCheckKey])
 
   if (authState.status === 'loading') {
-    return <main className="app-state" role="status">Načítavam aplikáciu…</main>
+    return (
+      <main className="app-state" role="status">
+        Načítavam aplikáciu…
+      </main>
+    )
   }
 
   if (authState.status === 'error') {
@@ -215,8 +128,13 @@ export default function App() {
         <Route element={<RequireAuth user={user} />}>
           <Route element={<AppLayout onLogout={handleLogout} />}>
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/teams" element={<TeamsPage />} />
-            <Route path="/teams/:teamId/board" element={<TeamBoardRoute />} />
+            <Route path="/projects" element={user && <ProjectsPage userId={user.id} />} />
+            <Route
+              path="/projects/:projectId/board"
+              element={user && <ProjectBoardPage userId={user.id} />}
+            />
+            <Route path="/teams" element={user && <TeamsPage userId={user.id} />} />
+            <Route path="/teams/:teamId/board" element={<LegacyTeamBoardRoute />} />
             <Route
               path="/profile"
               element={

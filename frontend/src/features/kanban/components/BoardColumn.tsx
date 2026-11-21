@@ -10,7 +10,6 @@ type Props = {
   label: string
   tasks: Task[]
   pendingTaskIds?: Set<string>
-  arrivingTaskIds?: Set<string>
 }
 
 // Render one status column and its tasks.
@@ -19,7 +18,6 @@ export default function BoardColumn({
   label,
   tasks,
   pendingTaskIds = new Set(),
-  arrivingTaskIds = new Set(),
 }: Props) {
   // Use the status as the column drop target ID.
   const { setNodeRef, isOver } = useDroppable({ id: status })
@@ -40,7 +38,6 @@ export default function BoardColumn({
             key={task.id}
             task={task}
             disabled={pendingTaskIds.has(task.id)}
-            isArriving={arrivingTaskIds.has(task.id)}
           />
         ))}
       </div>

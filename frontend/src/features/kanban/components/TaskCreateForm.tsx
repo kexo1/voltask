@@ -1,10 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import './TaskCreateForm.css'
 
-export type TeamMember = {
-  id: string
-  displayName: string
-}
+import type { WorkspaceUser } from '../../../pages/workspaceApi'
 
 export type TaskCreateData = {
   title: string
@@ -13,18 +10,13 @@ export type TaskCreateData = {
 }
 
 type Props = {
-  members: TeamMember[]
+  members: WorkspaceUser[]
   disabled?: boolean
   onSubmit: (data: TaskCreateData) => Promise<void>
   onCancel?: () => void
 }
 
-export default function TaskCreateForm({
-  members,
-  disabled = false,
-  onSubmit,
-  onCancel,
-}: Props) {
+export default function TaskCreateForm({ members, disabled = false, onSubmit, onCancel }: Props) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [assigneeId, setAssigneeId] = useState('')
@@ -33,7 +25,11 @@ export default function TaskCreateForm({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!title.trim()) return
+    if (disabled || isSubmitting) return
+    if (!title.trim()) {
+      setError('Zadajte názov úlohy.')
+      return
+    }
 
     setError('')
     setIsSubmitting(true)
@@ -49,9 +45,7 @@ export default function TaskCreateForm({
       setAssigneeId('')
     } catch (requestError: unknown) {
       setError(
-        requestError instanceof Error
-          ? requestError.message
-          : 'Úlohu sa nepodarilo vytvoriť.',
+        requestError instanceof Error ? requestError.message : 'Úlohu sa nepodarilo vytvoriť.',
       )
     } finally {
       setIsSubmitting(false)
@@ -68,6 +62,7 @@ export default function TaskCreateForm({
             className="task-create-form__close"
             onClick={onCancel}
             aria-label="Zavrieť"
+            disabled={disabled || isSubmitting}
           >
             ×
           </button>
@@ -81,6 +76,7 @@ export default function TaskCreateForm({
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           placeholder="Zadajte názov úlohy"
+          maxLength={200}
           required
           disabled={disabled || isSubmitting}
         />
@@ -92,6 +88,7 @@ export default function TaskCreateForm({
           onChange={(event) => setDescription(event.target.value)}
           placeholder="Voliteľný popis úlohy"
           rows={4}
+          maxLength={5000}
           disabled={disabled || isSubmitting}
         />
 
