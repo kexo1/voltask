@@ -4,58 +4,54 @@
 
 .board {
   min-height: 100%;
-  padding: 28px clamp(16px, 4vw, 48px);
+  padding: 12px clamp(8px, 2vw, 24px) 28px;
   color: var(--color-text);
   text-align: left;
 }
 
 .board__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
   max-width: 1180px;
-  margin: 0 auto 28px;
+  margin: 0 auto 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.board__toolbar,
+.board__navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.board__toolbar {
+  justify-content: space-between;
+}
+
+.board__identity {
+  margin-top: 20px;
 }
 
 .board h1 {
   margin: 0;
   color: var(--color-text-heading);
   font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.15;
 }
 
-.board__eyebrow {
-  margin: 0 0 6px;
-  color: var(--color-accent);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.board__team-id {
-  margin: 7px 0 0;
-  color: var(--color-text);
+.board__team-context {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
   font-size: 14px;
 }
 
-/* Tlačidlo na pridanie novej úlohy. */
 .board__add-button {
-  width: 48px;
-  height: 48px;
-  color: var(--color-bg);
-  background: var(--color-accent);
-  border: 0;
-  border-radius: 50%;
-  box-shadow: var(--shadow);
-  cursor: pointer;
-  font-size: 30px;
-  line-height: 1;
+  gap: 8px;
 }
 
-.board__add-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+.board__add-button span {
+  font-size: 1.35em;
+  line-height: 1;
 }
 
 /* Stĺpce kanbanovej nástenky. */
@@ -71,7 +67,7 @@
   min-height: 260px;
   padding: 14px;
   background: var(--color-code-bg);
-  border: 2px solid transparent;
+  border: 1px solid var(--brand-border);
   border-radius: 12px;
 }
 
@@ -80,13 +76,21 @@
 }
 
 .board-column h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0 0 14px;
   color: var(--color-text-heading);
   font-size: 18px;
 }
 
 .board-column__count {
-  color: var(--color-accent);
+  min-width: 1.6em;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: var(--color-accent-bg);
+  color: var(--brand-blue-dark);
+  text-align: center;
   font-size: 14px;
 }
 
@@ -136,43 +140,23 @@
   cursor: grabbing;
 }
 
-.task-card--arriving {
-  animation: task-arrive 220ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
-}
-
 .task-card--disabled {
   cursor: wait;
 }
 
-@keyframes task-arrive {
-  from {
-    transform: translateY(10px) scale(0.98);
-    opacity: 0.45;
-  }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
 /* Stavové hláska pod nástenkou. */
 .board__status,
-.board__empty,
-.board__pending {
+.board__empty {
   max-width: 1180px;
   margin: 0 auto 18px;
 }
 
-.board__pending {
-  color: var(--color-accent);
-  font-weight: 600;
-}
-
 .board__empty {
-  padding: 24px;
+  padding: 12px 16px;
   background: var(--color-code-bg);
-  border: 1px dashed var(--color-border);
+  border: 1px solid var(--brand-border);
   border-radius: 10px;
+  font-size: 15px;
 }
 
 .board__error {
@@ -198,54 +182,17 @@
   font: inherit;
 }
 
-/* Vysúvacie okno s formulárom na vytvorenie úlohy. */
-.board__drawer-backdrop {
-  position: fixed;
-  z-index: 20;
-  inset: 0;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  box-sizing: border-box;
-  overflow: auto;
-  padding: 110px 20px 32px;
-  background: rgb(71 85 105 / 35%);
-}
-
-.board__drawer {
-  width: min(100%, 520px);
-  max-height: calc(100svh - 142px);
-  overflow: auto;
-  padding: 20px;
-  background: var(--color-code-bg);
-  border: 0;
-  border-radius: 16px;
-  box-shadow: 0 18px 48px rgb(16 42 86 / 20%);
-}
-
-.board__drawer .task-create-form {
-  margin-bottom: 0;
-  border: 0;
-  padding: 17px;
-}
-
-.board__drawer .task-create-form__close {
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border-radius: 6px;
-  line-height: 1;
-}
-
 /* Panel detailu úlohy v pravom dolnom rohu. */
 .task-detail-panel {
   position: fixed;
   z-index: 5;
   right: 20px;
   bottom: 20px;
+  box-sizing: border-box;
   width: min(360px, calc(100% - 40px));
+  max-height: min(620px, calc(100dvh - 40px));
+  overflow: auto;
+  overflow-wrap: anywhere;
   padding: 20px;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
@@ -280,15 +227,6 @@
   color: var(--color-text-heading);
 }
 
-.task-detail-panel__status {
-  display: inline-block;
-  padding: 4px 9px;
-  color: var(--color-accent);
-  background: var(--color-code-bg);
-  border-radius: 999px;
-  font-size: 13px;
-}
-
 .task-detail-panel dl {
   display: grid;
   gap: 5px;
@@ -304,11 +242,6 @@
 
 .task-detail-panel dd {
   margin: 0 0 8px;
-}
-
-.task-detail-panel__note {
-  color: var(--color-text);
-  font-size: 13px;
 }
 
 .task-detail-panel__delete {
@@ -332,24 +265,14 @@
     grid-template-columns: 1fr;
   }
   .board {
-    padding: 22px 14px;
+    padding: 0 0 24px;
   }
-  .board__drawer-backdrop {
-    padding: 94px 14px 20px;
-  }
-  .board__drawer {
-    max-height: calc(100svh - 114px);
-    padding: 18px;
+  .board-column {
+    min-height: 140px;
   }
   .task-detail-panel {
     right: 14px;
     bottom: 14px;
     width: calc(100% - 28px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .task-card--arriving {
-    animation: none;
   }
 }

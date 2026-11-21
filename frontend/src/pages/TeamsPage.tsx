@@ -1,183 +1,158 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { getAuthError } from './authApi'
+import Modal from '../components/Modal'
+import WorkspaceLoad from '../components/WorkspaceLoad'
+import { useWorkspaceData } from './useWorkspaceData'
+import { getTeam, getTeams, requestWorkspace, type Team } from './workspaceApi'
 
-export type TeamSummary = { id: string; name: string }
+async function loadTeams() {
+  const teams = await getTeams()
+  return Promise.all(teams.map((team) => getTeam(team.id)))
+}
 
-function parseTeam(value: unknown): TeamSummary {
-  if (
-    typeof value !== 'object' ||
-    value === null ||
-    !('id' in value) ||
-    typeof value.id !== 'string' ||
-    !('name' in value) ||
-    typeof value.name !== 'string'
-  ) {
-    throw new Error('API vrátilo neplatné údaje tímu.')
+export default function TeamsPage({ userId }: { userId: string }) {
+  const { state, reload } = useWorkspaceData(loadTeams)
+  const [action, setAction] = useState<{ type: 'create' } | { type: 'delete'; team: Team } | null>(
+    null,
+  )
+  const [name, setName] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [busy, setBusy] = useState(false)
+  const isDeleting = action?.type === 'delete'
+  const submitLabel = isDeleting ? 'Odstrániť tím' : 'Vytvoriť tím'
+  const pendingLabel = isDeleting ? 'Odstraňujem…' : 'Vytváram…'
+
+  function open(next: NonNullable<typeof action>) {
+    setName('')
+    setError('')
+    setSuccess('')
+    setAction(next)
   }
-  return { id: value.id, name: value.name }
-}
 
-async function fetchTeams(): Promise<TeamSummary[]> {
-  const response = await fetch('/api/teams', { credentials: 'include' })
-  if (!response.ok) throw new Error(await getAuthError(response))
-  const result: unknown = await response.json()
-  if (!Array.isArray(result)) throw new Error('API vrátilo neplatný zoznam tímov.')
-  return result.map(parseTeam)
-}
-
-async function createTeamRequest(name: string): Promise<TeamSummary> {
-  const response = await fetch('/api/teams', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ name }),
-  })
-  if (!response.ok) throw new Error(await getAuthError(response))
-  return parseTeam(await response.json())
-}
-
-async function deleteTeamRequest(teamId: string): Promise<void> {
-  const response = await fetch(`/api/teams/${encodeURIComponent(teamId)}`, { method: 'DELETE', credentials: 'include' })
-  if (!response.ok) throw new Error(await getAuthError(response))
-}
-
-type LoadState =
-  | { status: 'loading' }
-  | { status: 'ready'; teams: TeamSummary[] }
-  | { status: 'error'; message: string }
-
-export default function TeamsPage() {
-  const [loadKey, setLoadKey] = useState(0)
-  const [loadState, setLoadState] = useState<LoadState>({ status: 'loading' })
-  const [teamName, setTeamName] = useState('')
-  const [createError, setCreateError] = useState('')
-  const [isCreating, setIsCreating] = useState(false)
-  const [deletingTeamId, setDeletingTeamId] = useState<string | null>(null)
-  const [deleteError, setDeleteError] = useState('')
-
-  useEffect(() => {
-    let active = true
-    fetchTeams()
-      .then((teams) => {
-        if (active) setLoadState({ status: 'ready', teams })
-      })
-      .catch((error: unknown) => {
-        if (active) {
-          setLoadState({
-            status: 'error',
-            message: error instanceof Error ? error.message : 'Tímy sa nepodarilo načítať.',
-          })
-        }
-      })
-    return () => {
-      active = false
-    }
-  }, [loadKey])
-
-  async function handleCreateTeam(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const name = teamName.trim()
-    if (!name || isCreating) return
-
-    setCreateError('')
-    setIsCreating(true)
-    try {
-      const team = await createTeamRequest(name)
-      setLoadState((state) =>
-        state.status === 'ready'
-          ? { status: 'ready', teams: [...state.teams, team] }
-          : { status: 'ready', teams: [team] },
-      )
-      setTeamName('')
-    } catch (error) {
-      setCreateError(error instanceof Error ? error.message : 'Tím sa nepodarilo vytvoriť.')
-    } finally {
-      setIsCreating(false)
+    if (!action || busy) return
+    if (action.type === 'create' && !name.trim()) {
+      setError('Zadajte názov tímu.')
+      return
     }
-  }
 
-  async function handleDeleteTeam(team: TeamSummary) {
-    if (deletingTeamId || !window.confirm(`Naozaj chcete odstranit tim "${team.name}"?`)) return
-    setDeleteError('')
-    setDeletingTeamId(team.id)
+    setBusy(true)
+    setError('')
     try {
-      await deleteTeamRequest(team.id)
-      setLoadState((state) =>
-        state.status === 'ready'
-          ? {
-              status: 'ready',
-              teams: state.teams.filter((item) => item.id !== team.id),
-            }
-          : state,
-      )
+      if (action.type === 'create') {
+        const team = await requestWorkspace<Team>('/teams', {
+          method: 'POST',
+          body: JSON.stringify({ name: name.trim() }),
+        })
+        setSuccess(`Tím „${team.name}“ bol vytvorený.`)
+      } else {
+        await requestWorkspace(`/teams/${encodeURIComponent(action.team.id)}`, { method: 'DELETE' })
+        setSuccess(`Tím „${action.team.name}“ bol odstránený.`)
+      }
+      setAction(null)
+      reload()
     } catch (error) {
-      setDeleteError(error instanceof Error ? error.message : 'Tim sa nepodarilo odstranit.')
+      setError(error instanceof Error ? error.message : 'Zmenu tímu sa nepodarilo uložiť.')
     } finally {
-      setDeletingTeamId(null)
+      setBusy(false)
     }
   }
 
   return (
     <section className="app-page">
-      <h1>Tímy</h1>
-      <p className="app-page__intro">Prehľad tímov, ktorých ste členom.</p>
-      {loadState.status === 'loading' && <p role="status">Načítavam tímy…</p>}
-      {loadState.status === 'error' && (
-        <div className="app-page__error" role="alert">
-          <span>{loadState.message}</span>
-          <button
-            className="app-button app-button--secondary"
-            type="button"
-            onClick={() => {
-              setLoadState({ status: 'loading' })
-              setLoadKey((key) => key + 1)
-            }}
-          >
-            Skúsiť znova
-          </button>
-        </div>
+      <div className="app-page__heading">
+        <h1>Tímy</h1>
+        <button
+          className="app-button app-button--icon"
+          type="button"
+          aria-label="Vytvoriť tím"
+          onClick={() => open({ type: 'create' })}
+        >
+          <span aria-hidden="true">+</span>
+        </button>
+      </div>
+      {success && (
+        <p className="app-page__success" role="status">
+          {success}
+        </p>
       )}
-      {loadState.status === 'ready' && loadState.teams.length === 0 && (
-        <section className="app-card">
-          <h2 className="app-card__title">Zatiaľ nemáte žiadny tím</h2>
-          <p className="app-card__text">Vytvorte tím a začnite plánovať spoločnú prácu.</p>
-        </section>
-      )}
-      {loadState.status === 'ready' && loadState.teams.length > 0 && (
-        <ul className="app-page__team-list">
-          {loadState.teams.map((team) => (
-            <li key={team.id} className="app-page__team-item">
-              <Link className="app-page__team-link" to={`/teams/${encodeURIComponent(team.id)}/board`}>
-                {team.name}
-              </Link>
-              <button className="app-button app-button--danger app-page__delete-button" type="button" onClick={() => void handleDeleteTeam(team)} disabled={deletingTeamId !== null} aria-label={`Odstranit tim ${team.name}`}>
-                {deletingTeamId === team.id ? 'Odstranujem...' : 'Odstranit'}
+      {state.status === 'loading' && <WorkspaceLoad onRetry={reload} />}
+      {state.status === 'error' && <WorkspaceLoad message={state.message} onRetry={reload} />}
+      {state.status === 'ready' &&
+        (state.data.length ? (
+          <ul className="app-page__team-list">
+            {state.data.map((team) => (
+              <li key={team.id} className="app-page__team-item">
+                <Link
+                  className="app-page__team-link"
+                  to={`/projects?team=${encodeURIComponent(team.id)}`}
+                >
+                  {team.name}
+                </Link>
+                {team.members.some(({ role, user }) => role === 'OWNER' && user.id === userId) && (
+                  <button
+                    className="app-button app-button--icon app-button--danger"
+                    type="button"
+                    aria-label={`Odstrániť tím ${team.name}`}
+                    onClick={() => open({ type: 'delete', team })}
+                  >
+                    <span aria-hidden="true">🗑︎</span>
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>Zatiaľ nie ste členom žiadneho tímu.</p>
+        ))}
+      {action && (
+        <Modal labelId="team-action-title" busy={busy} onClose={() => setAction(null)}>
+          <h2 id="team-action-title" className="app-card__title">
+            {action.type === 'create' ? 'Vytvoriť tím' : `Odstrániť tím „${action.team.name}“?`}
+          </h2>
+          <form className="app-form" onSubmit={submit}>
+            {action.type === 'create' ? (
+              <>
+                <label htmlFor="team-name">Názov tímu</label>
+                <input
+                  id="team-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  maxLength={80}
+                  required
+                  disabled={busy}
+                />
+              </>
+            ) : (
+              <p>Spolu s tímom sa natrvalo odstránia všetky jeho projekty a úlohy.</p>
+            )}
+            {error && (
+              <p className="app-page__error" role="alert">
+                {error}
+              </p>
+            )}
+            <div className="app-card__actions">
+              <button
+                className="app-button app-button--secondary"
+                type="button"
+                onClick={() => setAction(null)}
+                disabled={busy}
+              >
+                Zrušiť
               </button>
-            </li>
-          ))}
-        </ul>
+              <button
+                className={isDeleting ? 'app-button app-button--danger' : 'app-button'}
+                type="submit"
+                disabled={busy}
+              >
+                {busy ? pendingLabel : submitLabel}
+              </button>
+            </div>
+          </form>
+        </Modal>
       )}
-      {deleteError && <p className="app-page__error" role="alert">{deleteError}</p>}
-      <section className="app-card">
-        <h2 className="app-card__title">Vytvoriť tím</h2>
-        <form className="team-form" onSubmit={handleCreateTeam}>
-          <label className="sr-only" htmlFor="team-name">Názov tímu</label>
-          <input
-            id="team-name"
-            value={teamName}
-            onChange={(event) => setTeamName(event.target.value)}
-            placeholder="Názov tímu"
-            maxLength={80}
-            required
-            disabled={isCreating}
-          />
-          <button className="app-button" type="submit" disabled={isCreating}>
-            {isCreating ? 'Vytváram…' : 'Vytvoriť tím'}
-          </button>
-        </form>
-        {createError && <p className="app-page__error" role="alert">{createError}</p>}
-      </section>
     </section>
   )
 }
