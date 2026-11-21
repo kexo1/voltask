@@ -8,6 +8,7 @@ import { Prisma } from '../generated/prisma/client';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskStatus } from '../generated/prisma/enums';
 import { PrismaService } from '../database/prisma.service';
+import { EventsGateway } from '../events/events.gateway';
 import { ProjectsService } from '../projects/projects.service';
 
 const MAX_TASKS_PER_PROJECT = 500;
@@ -17,6 +18,7 @@ export class TasksService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly projectsService: ProjectsService,
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   async findAll(
@@ -50,7 +52,7 @@ export class TasksService {
   }
 
   async create(createTaskDto: CreateTaskDto, creatorId: string) {
-    return this.prisma.$transaction(async (transaction) => {
+    const task = await this.prisma.$transaction(async (transaction) => {
       await this.lockProject(transaction, createTaskDto.projectId);
       await this.projectsService.requireAccess(
         createTaskDto.projectId,
@@ -96,6 +98,14 @@ export class TasksService {
         },
       });
     });
+
+    this.eventsGateway.emitToProject(
+      task.projectId,
+      'task:created',
+      task,
+    );
+
+    return task;
   }
 
   async updateStatus(
@@ -114,10 +124,18 @@ export class TasksService {
       throw new NotFoundException(`Task "${id}" was not found`);
     }
 
-    return this.prisma.task.update({
+    const updatedTask = await this.prisma.task.update({
       where: { id, projectId },
       data: { status },
     });
+
+    this.eventsGateway.emitToProject(
+      updatedTask.projectId,
+      'task:updated',
+      updatedTask,
+    );
+
+    return updatedTask;
   }
 
   async delete(id: string, projectId: string, userId: string) {
@@ -130,6 +148,12 @@ export class TasksService {
       throw new NotFoundException(`Task "${id}" was not found`);
     }
     await this.prisma.task.delete({ where: { id } });
+
+    this.eventsGateway.emitToProject(projectId, 'task:deleted', {
+      projectId,
+      taskId: id,
+    });
+
     return { success: true };
   }
 
