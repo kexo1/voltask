@@ -145,7 +145,11 @@ const statusLabels: Record<RealtimeStatus, string> = {
 }
 
 export function RealtimeStatusIndicator() {
-  const { status } = useRealtime()
+  const { status, activeProjectId } = useRealtime()
+
+  if (!activeProjectId) {
+    return null
+  }
 
   return (
     <span
