@@ -1,0 +1,671 @@
+/* ==========================================================================
+   Voltask – obal aplikácie (app shell) a navigácia (AppShell.css)
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Prihlasovacia a registračná strana sa renderuje mimo .app-shell, ale patri
+   do tela dokumentu, preto jej základný vzhľad definujeme tu s vyššou
+   špecificitou než v auth.css. */
+html body .auth-page {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+html body .auth-page .auth-card {
+  border-color: var(--brand-border);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-lg);
+}
+
+html body .auth-page .auth-card h1,
+html body .auth-page .auth-form__field {
+  color: var(--color-text-heading);
+}
+
+html body .auth-page .auth-card__intro,
+html body .auth-page .auth-form__remember,
+html body .auth-page .auth-card__switch {
+  color: var(--color-text);
+}
+
+html body .auth-page .auth-form__field input {
+  border-color: var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-heading);
+}
+
+html body .auth-page .auth-form__field input::placeholder {
+  color: var(--color-placeholder);
+}
+
+html body .auth-page .auth-form__field input:focus {
+  outline-color: var(--brand-blue);
+}
+
+html body .auth-page .auth-form__submit {
+  background: var(--brand-blue);
+  box-shadow: 0 6px 20px rgb(37 99 235 / 18%);
+}
+
+html body .auth-page .auth-form__submit:hover {
+  background: var(--brand-blue-dark);
+}
+
+html body .auth-page .auth-card__switch button {
+  color: var(--brand-blue);
+}
+
+html body .auth-page .auth-card__switch button:hover {
+  color: var(--brand-blue-dark);
+}
+
+#root {
+  border-inline: 0;
+  background: transparent;
+}
+
+/* --- Hlavná obal a horná navigácia ---------------------------------------- */
+
+.app-shell {
+  width: 100%;
+  min-height: 100svh;
+  background: transparent;
+  color: var(--color-text);
+  text-align: left;
+}
+
+.app-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+  min-height: 78px;
+  padding: 0 clamp(20px, 5vw, 64px);
+  border-bottom: 1px solid var(--brand-border);
+  background: rgb(255 255 255 / 96%);
+  box-shadow: var(--shadow-nav);
+}
+
+.app-nav__brand {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin-right: auto;
+}
+
+.app-nav__brand img {
+  display: block;
+  width: 58px;
+  height: 58px;
+  border: 1px solid var(--brand-border);
+  border-radius: 12px;
+  background: var(--color-bg);
+}
+
+.app-nav__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 3vw, 36px);
+}
+
+.app-nav__link {
+  padding: 10px 0;
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.app-nav__link:hover,
+.app-nav__link.is-active {
+  color: var(--brand-blue-dark);
+}
+
+.app-nav__link.is-active {
+  box-shadow: inset 0 -2px var(--brand-blue);
+}
+
+.app-nav__logout {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--color-accent-border);
+  border-radius: 8px;
+  background: var(--color-accent-bg);
+  color: var(--brand-blue-dark);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+.app-nav__logout:hover:not(:disabled) {
+  border-color: var(--brand-blue);
+  background: var(--brand-blue-dark);
+  color: #fff;
+}
+
+.app-nav__logout:focus-visible {
+  outline: 2px solid var(--color-accent-border);
+  outline-offset: 3px;
+}
+
+.app-nav__logout:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+/* Chybová hláska v navigácii (používa Navbar.tsx). */
+.app-nav__error {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: clamp(16px, 5vw, 64px);
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 10px 14px;
+  border: 1px solid var(--color-error-border);
+  border-radius: 8px;
+  background: var(--color-error-bg-soft);
+  color: var(--color-error-text);
+  box-shadow: var(--shadow-card);
+}
+
+/* --- Hlavná obsahová oblasť a stránky ------------------------------------- */
+
+.app-shell__main {
+  width: min(100% - 40px, 1120px);
+  margin: 0 auto;
+  padding: 40px 0 64px;
+  animation: page-enter 240ms ease-out both;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell__main {
+    animation: none;
+  }
+}
+
+.app-page {
+  display: grid;
+  gap: 20px;
+}
+
+.app-page h1 {
+  margin: 0;
+  color: var(--color-text-heading);
+  font-size: clamp(30px, 5vw, 42px);
+  letter-spacing: -1px;
+}
+
+.app-page__intro {
+  color: var(--color-muted);
+}
+
+.app-page__team-name {
+  width: fit-content;
+  margin: 0 clamp(16px, 4vw, 48px) 0;
+  padding: 8px 14px;
+  border: 1px solid var(--color-accent-border);
+  border-radius: 999px;
+  background: var(--color-accent-bg);
+  color: var(--brand-blue-dark);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.app-page__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.app-project-list,
+.app-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+.app-project-list {
+  list-style: none;
+}
+
+.app-card,
+.app-page__team-link,
+.board__header h1 {
+  overflow-wrap: anywhere;
+}
+
+.app-project-description {
+  white-space: pre-wrap;
+}
+
+.app-project-list a {
+  color: var(--brand-blue-dark);
+}
+
+.app-summary dd {
+  margin: 8px 0 0;
+  font-size: 1.5rem;
+  color: var(--color-text-heading);
+  font-weight: 700;
+}
+
+.app-dialog {
+  box-sizing: border-box;
+  width: min(calc(100% - 32px), 520px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  color: var(--color-text);
+}
+
+.app-dialog::backdrop {
+  background: color-mix(in srgb, var(--brand-navy) 44%, transparent);
+}
+
+.app-dialog .task-create-form {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.app-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.app-form input,
+.app-form select,
+.app-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-heading);
+  background: var(--color-bg);
+  font: inherit;
+}
+
+.app-page__success {
+  padding: 10px 14px;
+  border: 1px solid var(--color-success-border);
+  border-radius: 8px;
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.app-page__success--with-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+
+/* --- Karty ----------------------------------------------------------------- */
+
+.app-card {
+  padding: clamp(20px, 4vw, 32px);
+  border: 1px solid var(--brand-border);
+  border-radius: 16px;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-card);
+}
+
+.app-card__title {
+  margin: 0 0 8px;
+  color: var(--color-text-heading);
+  font-size: 21px;
+}
+
+.app-card__text {
+  color: var(--color-text);
+}
+
+.app-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* --- Tlačidlá -------------------------------------------------------------- */
+
+.app-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid var(--brand-blue);
+  border-radius: 8px;
+  background: var(--brand-blue);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.app-button--back {
+  gap: 8px;
+}
+
+.app-button--back span {
+  font-size: 1.25em;
+  line-height: 1;
+}
+
+.app-button--icon {
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  font-size: 1.4rem;
+}
+
+.app-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.app-shell :is(a, button, input, select, textarea, [role='button']):focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.app-button--secondary {
+  background: var(--color-accent-bg);
+  color: var(--brand-blue-dark);
+}
+
+.app-button:hover {
+  border-color: var(--brand-blue-dark);
+  background: var(--brand-blue-dark);
+}
+
+.app-button--secondary:hover {
+  border-color: var(--brand-blue-dark);
+  background: var(--brand-blue-dark);
+  color: #fff;
+}
+
+.app-button:focus-visible,
+.app-nav__link:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 3px;
+}
+
+.app-button--success {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.app-button--success:hover {
+  border-color: var(--color-success);
+  background: var(--color-success);
+  color: var(--color-bg);
+}
+
+/* --- Stavové stránky (načítavanie, chyba) ---------------------------------- */
+
+.app-state {
+  display: grid;
+  min-height: 100svh;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: var(--brand-background);
+  color: var(--color-text);
+  text-align: center;
+}
+
+.app-state > button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--brand-blue);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.app-state > button:hover {
+  background-color: var(--brand-blue-dark);
+}
+
+.app-state > button:focus-visible {
+  outline: 3px solid var(--color-accent-border);
+  outline-offset: 3px;
+}
+
+/* --- Zoznam tímov a chybové hlásky ----------------------------------------- */
+
+.app-page__error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-error-border);
+  border-radius: 10px;
+  background: var(--color-error-bg-soft);
+  color: var(--color-error-text);
+}
+
+.app-page__team-list {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app-page__team-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-page__team-link {
+  flex: 1;
+  display: block;
+  padding: 16px;
+  border: 1px solid var(--brand-border);
+  border-radius: 10px;
+  color: var(--brand-blue-dark);
+  background: var(--color-bg);
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.app-page__team-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-bg);
+}
+
+.app-page__delete-button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding-inline: 13px;
+}
+
+/* Tlačidlo na odstránenie (používajú TeamsPage a task-detail-panel__delete). */
+.app-button--danger,
+.task-detail-panel__delete {
+  border-color: var(--color-error-border);
+  background: var(--color-error-bg-soft);
+  color: var(--color-error-text);
+}
+
+.app-button--danger:hover,
+.task-detail-panel__delete:hover:not(:disabled) {
+  border-color: var(--color-error-text);
+  background: var(--color-error-text);
+  color: #fff;
+}
+
+/* --- Kanbanová nástenka (prepísaná v obale aplikácie) --------------------- */
+
+.app-shell .board h1 {
+  color: var(--color-text-heading);
+}
+
+.app-shell .board__status {
+  color: var(--color-muted);
+}
+
+.app-shell .board-column h2 {
+  color: var(--color-text-heading);
+}
+
+.app-shell .task-card {
+  border-color: var(--brand-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  box-shadow: 0 4px 12px rgb(16 42 86 / 5%);
+}
+
+.app-shell .task-card h3 {
+  color: var(--color-text-heading);
+}
+
+.app-shell .task-card:hover {
+  border-color: var(--color-accent-border);
+}
+
+.app-shell .task-create-form button:not(.task-create-form__close) {
+  background: var(--brand-blue);
+  box-shadow: 0 6px 24px rgb(37 99 235 / 18%);
+}
+
+.app-shell .task-create-form button:not(.task-create-form__close):hover {
+  background: var(--brand-blue-dark);
+}
+
+.app-shell .task-create-form {
+  border-color: var(--brand-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.app-shell .task-create-form h2,
+.app-shell .task-create-form label {
+  color: var(--color-text-heading);
+}
+
+.app-shell .task-create-form input,
+.app-shell .task-create-form textarea,
+.app-shell .task-create-form select {
+  border-color: var(--brand-border);
+  background: var(--color-bg);
+  color: var(--color-text-heading);
+}
+
+.app-shell .task-detail-panel {
+  border-color: var(--brand-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.app-shell .task-detail-panel h2 {
+  color: var(--color-text-heading);
+}
+
+.app-shell .task-detail-panel__header button {
+  color: var(--color-text);
+}
+
+/* Pomocná trieda: skryje obsah vizuálne, ale ponechá ho prístupný pre
+   čítačky obrazovky (používajú TeamsPage a webová stránka). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Mobilná navigácia. */
+@media (max-width: 520px) {
+  .app-nav__brand img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .app-nav {
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    min-height: 72px;
+    padding: 8px 16px;
+  }
+
+  .app-nav__links {
+    gap: 4px 12px;
+    flex-wrap: wrap;
+  }
+
+  .app-nav__link {
+    font-size: 13px;
+  }
+
+  .app-nav__logout {
+    min-height: 34px;
+    padding-inline: 9px;
+    font-size: 12px;
+  }
+
+  .app-shell__main {
+    width: min(100% - 28px, 1120px);
+    padding-top: 28px;
+  }
+}

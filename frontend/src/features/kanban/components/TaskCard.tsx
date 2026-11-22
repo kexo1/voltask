@@ -9,18 +9,26 @@ type Props = { task: Task; isOverlay?: boolean; disabled?: boolean }
 // Render the task data and enable dragging.
 export default function TaskCard({ task, isOverlay = false, disabled = false }: Props) {
   // Disable dragging for the overlay and while a status update is pending.
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+  const { listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
     disabled: isOverlay || disabled,
   })
 
-  // Render the card with styles for dragging and the overlay.
+  const classes = ['task-card']
+  if (isDragging) classes.push('task-card--dragging')
+  if (isOverlay) classes.push('task-card--overlay')
+  if (disabled) classes.push('task-card--disabled')
+
   return (
     <div
       ref={setNodeRef}
       {...listeners}
-      {...attributes}
-      className={`task-card${isDragging ? ' task-card--dragging' : ''}${isOverlay ? ' task-card--overlay' : ''}${disabled ? ' task-card--disabled' : ''}`}
+      role={isOverlay ? undefined : 'button'}
+      tabIndex={isOverlay ? undefined : 0}
+      aria-hidden={isOverlay || undefined}
+      aria-label={isOverlay ? undefined : `Otvoriť detail úlohy ${task.title}`}
+      data-task-id={task.id}
+      className={classes.join(' ')}
     >
       <h3>{task.title}</h3>
       {/* Show the description only when one is available. */}

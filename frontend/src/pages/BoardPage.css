@@ -1,70 +1,175 @@
-/* Nastav odsadenie a zarovnanie obsahu nástenky doľava. */
+/* ==========================================================================
+   Voltask – kanbanová nástenka (BoardPage.css)
+   ========================================================================== */
+
 .board {
-  padding: 16px;
+  min-height: 100%;
+  padding: 12px clamp(8px, 2vw, 24px) 28px;
+  color: var(--color-text);
   text-align: left;
 }
 
-/* Zmenši nadpis nástenky oproti hlavnému nadpisu stránky. */
-.board h1 {
-  font-size: 32px;
-  margin: 0 0 16px;
+.board__header {
+  max-width: 1180px;
+  margin: 0 auto 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--brand-border);
 }
 
-.board__team-picker {
-  display: grid;
-  gap: 6px;
-  max-width: 560px;
-  margin-bottom: 16px;
-  font-weight: 600;
-}
-
-.board__team-picker select {
-  padding: 9px 10px;
-  color: var(--text);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font: inherit;
-}
-
-.board__create-team {
-  display: grid;
-  gap: 6px;
-  max-width: 560px;
-  margin-bottom: 16px;
-  font-weight: 600;
-}
-
-.board__create-team > div {
+.board__toolbar,
+.board__navigation {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.board__toolbar {
+  justify-content: space-between;
+}
+
+.board__identity {
+  margin-top: 20px;
+}
+
+.board h1 {
+  margin: 0;
+  color: var(--color-text-heading);
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.15;
+}
+
+.board__team-context {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+
+.board__add-button {
   gap: 8px;
 }
 
-.board__create-team input,
-.board__create-team button {
-  padding: 9px 10px;
-  color: var(--text);
-  background: var(--bg);
-  border: 1px solid var(--border);
+.board__add-button span {
+  font-size: 1.35em;
+  line-height: 1;
+}
+
+/* Stĺpce kanbanovej nástenky. */
+.board__columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.board-column {
+  min-height: 260px;
+  padding: 14px;
+  background: var(--color-code-bg);
+  border: 1px solid var(--brand-border);
+  border-radius: 12px;
+}
+
+.board-column--over {
+  border-color: var(--color-accent-border);
+}
+
+.board-column h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  color: var(--color-text-heading);
+  font-size: 18px;
+}
+
+.board-column__count {
+  min-width: 1.6em;
+  padding: 0 4px;
   border-radius: 6px;
-  font: inherit;
+  background: var(--color-accent-bg);
+  color: var(--brand-blue-dark);
+  text-align: center;
+  font-size: 14px;
 }
 
-.board__create-team input {
-  min-width: 0;
-  flex: 1;
+.board-column__tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.board__create-team button {
-  cursor: pointer;
+/* Karta úlohy. */
+.task-card {
+  padding: 12px 14px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  cursor: grab;
+  touch-action: manipulation;
+  transition: border-color 0.15s;
+}
+
+.task-card:hover {
+  border-color: var(--color-accent-border);
+}
+
+.task-card h3 {
+  margin: 0 0 5px;
+  color: var(--color-text-heading);
+  font-size: 16px;
+}
+
+.task-card p {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.task-card__assignee {
+  color: var(--color-accent);
+  font-size: 13px;
+}
+
+.task-card--dragging {
+  opacity: 0.4;
+}
+
+.task-card--overlay {
+  box-shadow: var(--shadow);
+  cursor: grabbing;
+}
+
+.task-card--disabled {
+  cursor: wait;
+}
+
+/* Stavové hláska pod nástenkou. */
+.board__status,
+.board__empty {
+  max-width: 1180px;
+  margin: 0 auto 18px;
+}
+
+.board__empty {
+  padding: 12px 16px;
+  background: var(--color-code-bg);
+  border: 1px solid var(--brand-border);
+  border-radius: 10px;
+  font-size: 15px;
 }
 
 .board__error {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  margin: 0 0 16px;
-  color: #b42318;
+  max-width: 1180px;
+  margin: 0 auto 18px;
+  padding: 12px 14px;
+  color: var(--color-error);
+  background: #fff4f2;
+  border-radius: 8px;
 }
 
 .board__error button {
@@ -77,94 +182,97 @@
   font: inherit;
 }
 
-/* Umiestni tri stĺpce stavov vedľa seba. */
-.board__columns {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  align-items: start;
+/* Panel detailu úlohy v pravom dolnom rohu. */
+.task-detail-panel {
+  position: fixed;
+  z-index: 5;
+  right: 20px;
+  bottom: 20px;
+  box-sizing: border-box;
+  width: min(360px, calc(100% - 40px));
+  max-height: min(620px, calc(100dvh - 40px));
+  overflow: auto;
+  overflow-wrap: anywhere;
+  padding: 20px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
 }
 
-/* Nastav stĺpcom pozadie panela a minimálnu výšku. */
-.board-column {
-  background: var(--code-bg);
-  border: 2px solid transparent;
-  border-radius: 8px;
-  padding: 12px;
-  min-height: 240px;
-}
-
-/* Zvýrazni stĺpec, keď je nad ním karta. */
-.board-column--over {
-  border-color: var(--accent-border);
-}
-
-/* Uprav vzhľad nadpisu stĺpca. */
-.board-column h2 {
-  font-size: 18px;
-  margin: 0 0 12px;
-}
-
-/* Zobraz počet úloh menej výrazne ako nadpis. */
-.board-column__count {
-  font-size: 14px;
-  color: var(--text);
-}
-
-/* Ulož karty úloh pod seba s rovnakými medzerami. */
-.board-column__tasks {
+.task-detail-panel__header {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
 }
 
-/* Uprav vzhľad bežnej karty, ktorú možno ťahať. */
-.task-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 10px 12px;
-  cursor: grab;
-  touch-action: manipulation;
+.task-detail-panel__header p {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-/* Uprav vzhľad názvu úlohy. */
-.task-card h3 {
-  font-size: 16px;
-  margin: 0 0 4px;
-  color: var(--text-h);
+.task-detail-panel__header button {
+  color: var(--color-text);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 24px;
 }
 
-/* Oddeľ popis úlohy od mena priradenej osoby. */
-.task-card p {
-  font-size: 14px;
+.task-detail-panel h2 {
+  margin: 12px 0 8px;
+  color: var(--color-text-heading);
+}
+
+.task-detail-panel dl {
+  display: grid;
+  gap: 5px;
+  margin: 20px 0;
+}
+
+.task-detail-panel dt {
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.task-detail-panel dd {
   margin: 0 0 8px;
 }
 
-/* Zvýrazni meno priradenej osoby. */
-.task-card__assignee {
-  font-size: 13px;
-  color: var(--accent);
+.task-detail-panel__delete {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--color-error-border);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 
-/* Stlm pôvodnú kartu počas jej presúvania. */
-.task-card--dragging {
-  opacity: 0.4;
-}
-
-/* Pridaj tieň plávajúcej karte počas presúvania. */
-.task-card--overlay {
-  box-shadow: var(--shadow);
-  cursor: grabbing;
-}
-
-.task-card--disabled {
+.task-detail-panel__delete:disabled {
   cursor: wait;
+  opacity: 0.65;
 }
 
-/* Na úzkych obrazovkách ulož stĺpce pod seba. */
-@media (max-width: 700px) {
+@media (max-width: 760px) {
   .board__columns {
     grid-template-columns: 1fr;
+  }
+  .board {
+    padding: 0 0 24px;
+  }
+  .board-column {
+    min-height: 140px;
+  }
+  .task-detail-panel {
+    right: 14px;
+    bottom: 14px;
+    width: calc(100% - 28px);
   }
 }

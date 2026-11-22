@@ -1,66 +1,171 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Prisma } from '../generated/prisma/client';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskStatus } from '../generated/prisma/enums';
 import { PrismaService } from '../database/prisma.service';
+import { EventsGateway } from '../events/events.gateway';
+import { ProjectsService } from '../projects/projects.service';
+
+const MAX_TASKS_PER_PROJECT = 500;
 
 @Injectable()
 export class TasksService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly projectsService: ProjectsService,
+    private readonly eventsGateway: EventsGateway,
+  ) {}
 
-  findAll(teamId?: string) {
+  async findAll(
+    userId: string,
+    projectId?: string,
+    pagination?: { page: number; limit: number },
+  ) {
+    let projectIds: string[];
+    if (projectId) {
+      await this.projectsService.requireAccess(projectId, userId);
+      projectIds = [projectId];
+    } else {
+      projectIds = await this.projectsService.findAccessibleProjectIds(userId);
+    }
+    if (projectIds.length === 0) {
+      return [];
+    }
+
     return this.prisma.task.findMany({
-      where: teamId === undefined ? undefined : { teamId },
-      orderBy: { createdAt: 'desc' },
+      where: {
+        projectId: { in: projectIds },
+      },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      ...(pagination
+        ? {
+            skip: (pagination.page - 1) * pagination.limit,
+            take: pagination.limit,
+          }
+        : {}),
     });
   }
 
   async create(createTaskDto: CreateTaskDto, creatorId: string) {
-    const [team, assignee] = await Promise.all([
-      this.prisma.team.findUnique({
-        where: { id: createTaskDto.teamId },
-        select: { id: true },
-      }),
-      createTaskDto.assigneeId
-        ? this.prisma.user.findUnique({
-            where: { id: createTaskDto.assigneeId },
-            select: { id: true },
-          })
-        : Promise.resolve(null),
-    ]);
-
-    if (!team) {
-      throw new NotFoundException(`Team ${createTaskDto.teamId} not found`);
-    }
-
-    if (createTaskDto.assigneeId && !assignee) {
-      throw new NotFoundException(`Assignee ${createTaskDto.assigneeId} not found`);
-    }
-
-    return this.prisma.task.create({
-      data: {
-        title: createTaskDto.title,
-        description: createTaskDto.description || null,
-        status: createTaskDto.status,
-        teamId: createTaskDto.teamId,
+    const task = await this.prisma.$transaction(async (transaction) => {
+      await this.lockProject(transaction, createTaskDto.projectId);
+      await this.projectsService.requireAccess(
+        createTaskDto.projectId,
         creatorId,
-        assigneeId: createTaskDto.assigneeId ?? null,
-      },
+        transaction,
+      );
+
+      const taskCount = await transaction.task.count({
+        where: { projectId: createTaskDto.projectId },
+      });
+      if (taskCount >= MAX_TASKS_PER_PROJECT) {
+        throw new ConflictException(
+          `A project cannot have more than ${MAX_TASKS_PER_PROJECT} tasks`,
+        );
+      }
+
+      if (createTaskDto.assigneeId) {
+        const assigneeMembership = await transaction.projectMember.findUnique({
+          where: {
+            projectId_userId: {
+              projectId: createTaskDto.projectId,
+              userId: createTaskDto.assigneeId,
+            },
+          },
+          select: { userId: true },
+        });
+
+        if (!assigneeMembership) {
+          throw new BadRequestException(
+            'Assignee must be a member of this project',
+          );
+        }
+      }
+
+      return transaction.task.create({
+        data: {
+          title: createTaskDto.title,
+          description: createTaskDto.description || null,
+          status: createTaskDto.status,
+          projectId: createTaskDto.projectId,
+          creatorId,
+          assigneeId: createTaskDto.assigneeId ?? null,
+        },
+      });
     });
+
+    this.eventsGateway.emitToProject(
+      task.projectId,
+      'task:created',
+      task,
+    );
+
+    return task;
   }
 
-  async updateStatus(id: string, status: TaskStatus) {
-    const task = await this.prisma.task.findUnique({
-      where: { id },
+  async updateStatus(
+    id: string,
+    projectId: string,
+    status: TaskStatus,
+    userId: string,
+  ) {
+    await this.projectsService.requireAccess(projectId, userId);
+    const task = await this.prisma.task.findFirst({
+      where: { id, projectId },
       select: { id: true },
     });
 
     if (!task) {
-      throw new NotFoundException(`Task ${id} not found`);
+      throw new NotFoundException(`Task "${id}" was not found`);
     }
 
-    return this.prisma.task.update({
-      where: { id },
+    const updatedTask = await this.prisma.task.update({
+      where: { id, projectId },
       data: { status },
     });
+
+    this.eventsGateway.emitToProject(
+      updatedTask.projectId,
+      'task:updated',
+      updatedTask,
+    );
+
+    return updatedTask;
+  }
+
+  async delete(id: string, projectId: string, userId: string) {
+    await this.projectsService.requireAccess(projectId, userId);
+    const task = await this.prisma.task.findFirst({
+      where: { id, projectId },
+      select: { id: true },
+    });
+    if (!task) {
+      throw new NotFoundException(`Task "${id}" was not found`);
+    }
+    await this.prisma.task.delete({ where: { id } });
+
+    this.eventsGateway.emitToProject(projectId, 'task:deleted', {
+      projectId,
+      taskId: id,
+    });
+
+    return { success: true };
+  }
+
+  private async lockProject(
+    transaction: Prisma.TransactionClient,
+    projectId: string,
+  ): Promise<void> {
+    const projects = await transaction.$queryRaw<Array<{ id: string }>>`
+      SELECT "id" FROM "Project" WHERE "id" = ${projectId} FOR UPDATE
+    `;
+    if (projects.length === 0) {
+      throw new NotFoundException(`Project "${projectId}" was not found`);
+    }
   }
 }

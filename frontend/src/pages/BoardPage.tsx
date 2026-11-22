@@ -1,5 +1,16 @@
-import { useEffect, useState, type FormEvent } from 'react'
-// Import drag-and-drop tools and event types.
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import Modal from '../components/Modal'
+import ProjectMembers from '../components/ProjectMembers'
+import ProjectsBackLink from '../components/ProjectsBackLink'
+import {
+  createTask,
+  deleteTask,
+  getTasks,
+  updateTaskStatus,
+  type ProjectTask,
+} from '../features/kanban/data/taskApi'
+import type { Project, ProjectMember } from './workspaceApi'
 import {
   DndContext,
   DragOverlay,
@@ -12,182 +23,139 @@ import {
 } from '@dnd-kit/core'
 import BoardColumn from '../features/kanban/components/BoardColumn'
 import TaskCard from '../features/kanban/components/TaskCard'
-import TaskCreateForm, {
-  type TaskCreateData,
-  type TeamMember,
-} from '../features/kanban/components/TaskCreateForm'
-import {
-  createTeam,
-  createTask,
-  getTeamMembers,
-  getTasks,
-  getTeams,
-  updateTaskStatus,
-  type KanbanTeam,
-} from '../features/kanban/data/taskApi'
-import { COLUMNS, type Task } from '../features/kanban/types/task'
-import './BoardPage.css'
+import TaskCreateForm, { type TaskCreateData } from '../features/kanban/components/TaskCreateForm'
+import { COLUMNS, type Task, type TaskStatus } from '../features/kanban/types/task'
+import TaskDetailPanel from '../features/kanban/components/TaskDetailPanel'
 
-type LoadState =
-  | { key: number; status: 'loading' | 'ready' }
-  | { key: number; status: 'error'; error: string }
+type Props = { project: Project; userId: string }
 
-type TaskLoadState =
-  | { teamId: string; key: number; status: 'loading' | 'ready' }
-  | { teamId: string; key: number; status: 'error'; error: string }
-
-export default function BoardPage() {
-  const [teams, setTeams] = useState<KanbanTeam[]>([])
-  const [selectedTeamId, setSelectedTeamId] = useState('')
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [teamLoad, setTeamLoad] = useState<LoadState>({
-    key: 0,
-    status: 'loading',
-  })
-  const [taskLoad, setTaskLoad] = useState<TaskLoadState>({
-    teamId: '',
-    key: 0,
-    status: 'loading',
-  })
-  const [boardError, setBoardError] = useState('')
+export default function BoardPage({ project, userId }: Props) {
+  const projectId = project.id
+  const [members, setMembers] = useState(project.members)
+  const [tasks, setTasks] = useState<ProjectTask[]>([])
+  const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [reloadKey, setReloadKey] = useState(0)
-  const [members, setMembers] = useState<TeamMember[]>([])
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   const [pendingTaskIds, setPendingTaskIds] = useState<Set<string>>(new Set())
-  const [isCreatingTask, setIsCreatingTask] = useState(false)
-  const [teamName, setTeamName] = useState('')
-  const [isCreatingTeam, setIsCreatingTeam] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
-
-  const selectedTeam = teams.find((team) => team.id === selectedTeamId) ?? null
-  const isLoadingTeams =
-    teamLoad.key !== reloadKey || teamLoad.status === 'loading'
-  const isLoadingTasks =
-    Boolean(selectedTeamId) &&
-    (taskLoad.teamId !== selectedTeamId ||
-      taskLoad.key !== reloadKey ||
-      taskLoad.status === 'loading')
-  const loadError =
-    teamLoad.key === reloadKey && teamLoad.status === 'error'
-      ? teamLoad.error
-      : taskLoad.teamId === selectedTeamId &&
-          taskLoad.key === reloadKey &&
-          taskLoad.status === 'error'
-        ? taskLoad.error
-        : ''
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
+  const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null)
+  const suppressClickAfterDrag = useRef(false)
+  const taskTrigger = useRef<HTMLElement | null>(null)
+  const addButton = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    let isCurrent = true
+    let current = true
 
-    getTeams()
-      .then((loadedTeams) => {
-        if (!isCurrent) return
-        setTeams(loadedTeams)
-        setSelectedTeamId((current) =>
-          loadedTeams.some((team) => team.id === current)
-            ? current
-            : loadedTeams[0]?.id ?? '',
-        )
-        setTeamLoad({ key: reloadKey, status: 'ready' })
-      })
-      .catch((error: unknown) => {
-        if (isCurrent) {
-          setTeamLoad({
-            key: reloadKey,
-            status: 'error',
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Timy sa nepodarilo nacitat.',
-          })
-        }
-      })
-
-    return () => {
-      isCurrent = false
-    }
-  }, [reloadKey])
-
-  useEffect(() => {
-    if (!selectedTeamId) return
-
-    let isCurrent = true
-
-    getTeamMembers(selectedTeamId)
-      .then(async (loadedMembers) => {
-        if (!isCurrent) return
-        const loadedTasks = await getTasks(selectedTeamId, loadedMembers)
-        if (!isCurrent) return
-        setMembers(loadedMembers)
+    getTasks(projectId)
+      .then((loadedTasks) => {
+        if (!current) return
         setTasks(loadedTasks)
-        setTaskLoad({ teamId: selectedTeamId, key: reloadKey, status: 'ready' })
+        setLoadState('ready')
       })
-      .catch((error: unknown) => {
-        if (isCurrent) {
-          setTaskLoad({
-            teamId: selectedTeamId,
-            key: reloadKey,
-            status: 'error',
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Ulohy sa nepodarilo nacitat.',
-          })
+      .catch((loadError: unknown) => {
+        if (current) {
+          setLoadState('error')
+          setError(
+            loadError instanceof Error ? loadError.message : 'Nástenku sa nepodarilo načítať.',
+          )
         }
       })
 
     return () => {
-      isCurrent = false
+      current = false
     }
-  }, [selectedTeamId, reloadKey])
+  }, [projectId, reloadKey])
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 200, tolerance: 5 },
-    }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
   )
 
-  const activeTask = tasks.find((t) => t.id === activeId) ?? null
+  const users = members.map(({ user }) => user)
+  const usersById = new Map(users.map((user) => [user.id, user]))
+  const boardTasks: Task[] = tasks.map((task) => ({
+    ...task,
+    assignee: task.assigneeId ? (usersById.get(task.assigneeId) ?? null) : null,
+  }))
+  const activeTask = boardTasks.find((task) => task.id === activeId) ?? null
+  const selectedTask = boardTasks.find((task) => task.id === selectedTaskId) ?? null
+
+  function handleMembersChange(next: ProjectMember[], removedUserId?: string) {
+    setMembers(next)
+    if (removedUserId) {
+      setTasks((current) =>
+        current.map((task) =>
+          task.assigneeId === removedUserId ? { ...task, assigneeId: null } : task,
+        ),
+      )
+    }
+  }
 
   function handleDragStart(event: DragStartEvent) {
+    suppressClickAfterDrag.current = true
     setActiveId(String(event.active.id))
+  }
+
+  function openTaskDetail(card: HTMLElement) {
+    const taskId = card.dataset.taskId
+    if (!taskId) return
+
+    setError('')
+    taskTrigger.current = card
+    setSelectedTaskId(taskId)
   }
 
   async function handleDragEnd(event: DragEndEvent) {
     setActiveId(null)
-    if (!event.over) return
+    window.setTimeout(() => {
+      suppressClickAfterDrag.current = false
+    }, 500)
 
     const taskId = String(event.active.id)
     const newStatus = COLUMNS.find(({ status }) => status === event.over?.id)?.status
-    const previousTask = tasks.find((task) => task.id === taskId)
-    if (!newStatus || !previousTask || previousTask.status === newStatus) return
+    if (newStatus) await changeTaskStatus(taskId, newStatus)
+  }
 
-    setBoardError('')
-    setPendingTaskIds((current) => new Set(current).add(taskId))
+  async function changeTaskStatus(taskId: string, newStatus: TaskStatus) {
+    const previousTask = tasks.find((task) => task.id === taskId)
+
+    if (
+      !previousTask ||
+      previousTask.status === newStatus ||
+      pendingTaskIds.has(taskId) ||
+      deletingTaskId === taskId
+    ) {
+      return
+    }
+
+    setError('')
+    setPendingTaskIds((ids) => new Set(ids).add(taskId))
+
     setTasks((current) =>
-      current.map((task) =>
-        task.id === taskId ? { ...task, status: newStatus } : task,
-      ),
+      current.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)),
     )
 
     try {
-      await updateTaskStatus(taskId, newStatus)
-    } catch (error) {
+      const saved = await updateTaskStatus(projectId, taskId, newStatus)
+      if (saved.status !== newStatus) {
+        setTasks((current) =>
+          current.map((task) => (task.id === taskId ? { ...task, status: saved.status } : task)),
+        )
+      }
+    } catch (saveError: unknown) {
       setTasks((current) =>
         current.map((task) =>
-          task.id === taskId
-            ? { ...task, status: previousTask.status }
-            : task,
+          task.id === taskId ? { ...task, status: previousTask.status } : task,
         ),
       )
-      setBoardError(
-        error instanceof Error
-          ? error.message
-          : 'Stav ulohy sa nepodarilo ulozit.',
-      )
+      setError(saveError instanceof Error ? saveError.message : 'Stav úlohy sa nepodarilo uložiť.')
     } finally {
-      setPendingTaskIds((current) => {
-        const next = new Set(current)
+      setPendingTaskIds((ids) => {
+        const next = new Set(ids)
         next.delete(taskId)
         return next
       })
@@ -195,135 +163,193 @@ export default function BoardPage() {
   }
 
   async function handleCreateTask(data: TaskCreateData) {
-    if (!selectedTeam) throw new Error('Najprv vyberte tim.')
-
-    setBoardError('')
-    setIsCreatingTask(true)
+    setIsCreating(true)
+    setError('')
+    setSuccess('')
     try {
-      const task = await createTask(selectedTeam.id, members, data)
-      setTasks((previous) => [task, ...previous])
+      const created = await createTask(projectId, data)
+      setTasks((current) => [created, ...current])
+      setIsCreateOpen(false)
     } finally {
-      setIsCreatingTask(false)
+      setIsCreating(false)
     }
   }
 
-  async function handleCreateTeam(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const name = teamName.trim()
-    if (!name) return
+  async function handleDeleteTask() {
+    if (
+      !selectedTask ||
+      deletingTaskId ||
+      pendingTaskIds.has(selectedTask.id) ||
+      !window.confirm(`Naozaj chcete odstrániť úlohu "${selectedTask.title}"?`)
+    ) {
+      return
+    }
 
-    setBoardError('')
-    setIsCreatingTeam(true)
+    const taskId = selectedTask.id
+    setDeletingTaskId(taskId)
+    setError('')
+    setSuccess('')
+
     try {
-      const team = await createTeam(name)
-      setTeams((current) => [...current, team])
-      setSelectedTeamId(team.id)
-      setTasks([])
-      setMembers([])
-      setTeamName('')
-    } catch (error) {
-      setBoardError(
-        error instanceof Error ? error.message : 'Tím sa nepodarilo vytvoriť.',
+      await deleteTask(projectId, taskId)
+      setTasks((current) => current.filter((task) => task.id !== taskId))
+      setSelectedTaskId(null)
+      addButton.current?.focus()
+      setSuccess('Úloha bola odstránená.')
+    } catch (deleteError: unknown) {
+      setError(
+        deleteError instanceof Error ? deleteError.message : 'Úlohu sa nepodarilo odstrániť.',
       )
     } finally {
-      setIsCreatingTeam(false)
+      setDeletingTaskId(null)
     }
   }
 
   return (
-    <main className="board">
-      <h1>Kanban nástenka</h1>
-      <label className="board__team-picker" htmlFor="board-team">
-        Tím
-        <select
-          id="board-team"
-          value={selectedTeamId}
-          onChange={(event) => {
-            setSelectedTeamId(event.target.value)
-            setTasks([])
-            setMembers([])
-            setActiveId(null)
-            setBoardError('')
-          }}
-          disabled={
-            isLoadingTeams ||
-            isCreatingTeam ||
-            isCreatingTask ||
-            pendingTaskIds.size > 0 ||
-            teams.length === 0
-          }
-        >
-          {teams.map((team) => (
-            <option key={team.id} value={team.id}>
-              {team.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      {loadError && (
-        <div className="board__error" role="alert">
-          <span>{loadError}</span>
-          <button type="button" onClick={() => setReloadKey((key) => key + 1)}>
-            Skúsiť znova
-          </button>
-        </div>
-      )}
-      {boardError && <p className="board__error" role="alert">{boardError}</p>}
-      {isLoadingTeams && <p role="status">Načítavam tímy…</p>}
-      {!isLoadingTeams && !loadError && teams.length === 0 && (
-        <p>Nie ste členom žiadneho tímu.</p>
-      )}
-      <form className="board__create-team" onSubmit={handleCreateTeam}>
-        <label htmlFor="new-team-name">Vytvoriť tím</label>
-        <div>
-          <input
-            id="new-team-name"
-            value={teamName}
-            onChange={(event) => setTeamName(event.target.value)}
-            placeholder="Názov tímu"
-            maxLength={80}
-            required
-            disabled={isLoadingTeams || isCreatingTeam}
-          />
-          <button type="submit" disabled={isLoadingTeams || isCreatingTeam}>
-            {isCreatingTeam ? 'Vytváram…' : 'Vytvoriť tím'}
-          </button>
-        </div>
-      </form>
-      <TaskCreateForm
-        members={members}
-        disabled={
-          isLoadingTeams ||
-          isLoadingTasks ||
-          isCreatingTeam ||
-          isCreatingTask ||
-          !selectedTeam ||
-          Boolean(loadError)
-        }
-        onSubmit={handleCreateTask}
-      />
-      {isLoadingTasks && <p role="status">Načítavam úlohy…</p>}
-      <DndContext
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        onDragCancel={() => setActiveId(null)}
-      >
-        <div className="board__columns">
-          {COLUMNS.map(({ status, label }) => (
-            <BoardColumn
-              key={status}
-              status={status}
-              label={label}
-              tasks={tasks.filter((t) => t.status === status)}
-              pendingTaskIds={pendingTaskIds}
+    <>
+      <header className="board__header">
+        <div className="board__toolbar">
+          <div className="board__navigation">
+            <ProjectsBackLink />
+            <ProjectMembers
+              project={project}
+              userId={userId}
+              members={members}
+              onChange={handleMembersChange}
             />
-          ))}
+          </div>
+          <button
+            ref={addButton}
+            className="app-button board__add-button"
+            type="button"
+            onClick={() => setIsCreateOpen(true)}
+            disabled={loadState !== 'ready'}
+          >
+            <span aria-hidden="true">+</span>
+            Pridať úlohu
+          </button>
         </div>
-        <DragOverlay>
-          {activeTask && <TaskCard task={activeTask} isOverlay />}
-        </DragOverlay>
-      </DndContext>
-    </main>
+        <div className="board__identity">
+          <h1>{project.name}</h1>
+          {project.team && <p className="board__team-context">Tím: {project.team.name}</p>}
+        </div>
+      </header>
+
+      {success && (
+        <p className="app-page__success" role="status">
+          {success}
+        </p>
+      )}
+
+      {loadState === 'loading' && (
+        <p className="board__status" role="status">
+          Načítavam nástenku…
+        </p>
+      )}
+
+      {error && !selectedTask && (
+        <div className="board__error" role="alert">
+          <span>{error}</span>
+          <button
+            type="button"
+            disabled={pendingTaskIds.size > 0 || deletingTaskId !== null}
+            onClick={() => {
+              setSelectedTaskId(null)
+              setLoadState('loading')
+              setError('')
+              setReloadKey((key) => key + 1)
+            }}
+          >
+            {loadState === 'error' ? 'Skúsiť znova' : 'Obnoviť úlohy'}
+          </button>
+        </div>
+      )}
+
+      {loadState === 'ready' && tasks.length === 0 && (
+        <p className="board__empty">V projekte zatiaľ nie sú žiadne úlohy.</p>
+      )}
+
+      {isCreateOpen && (
+        <Modal
+          labelId="task-create-form-title"
+          busy={isCreating}
+          onClose={() => setIsCreateOpen(false)}
+        >
+          <TaskCreateForm
+            members={users}
+            disabled={isCreating}
+            onSubmit={handleCreateTask}
+            onCancel={() => setIsCreateOpen(false)}
+          />
+        </Modal>
+      )}
+
+      {loadState === 'ready' && (
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={() => {
+            setActiveId(null)
+            suppressClickAfterDrag.current = false
+          }}
+        >
+          <div
+            className="board__columns"
+            onKeyDown={(event) => {
+              if (event.key !== 'Enter' && event.key !== ' ') return
+              const card = (event.target as HTMLElement).closest<HTMLElement>('[data-task-id]')
+              if (card) {
+                event.preventDefault()
+                openTaskDetail(card)
+              }
+            }}
+            onClick={(event) => {
+              if (suppressClickAfterDrag.current) {
+                suppressClickAfterDrag.current = false
+                return
+              }
+              const card = (event.target as HTMLElement).closest<HTMLElement>('[data-task-id]')
+              if (card) openTaskDetail(card)
+            }}
+          >
+            {COLUMNS.map(({ status, label }) => (
+              <BoardColumn
+                key={status}
+                status={status}
+                label={label}
+                tasks={boardTasks.filter((task) => task.status === status)}
+                pendingTaskIds={pendingTaskIds}
+              />
+            ))}
+          </div>
+
+          {createPortal(
+            <DragOverlay dropAnimation={null}>
+              {activeTask && <TaskCard task={activeTask} isOverlay />}
+            </DragOverlay>,
+            document.body,
+          )}
+        </DndContext>
+      )}
+
+      <TaskDetailPanel
+        task={selectedTask}
+        error={error}
+        onClose={() => {
+          setError('')
+          setSelectedTaskId(null)
+          const trigger = taskTrigger.current
+          if (trigger?.isConnected) trigger.focus()
+          else addButton.current?.focus()
+        }}
+        onDelete={() => void handleDeleteTask()}
+        isDeleting={deletingTaskId !== null}
+        isSaving={selectedTask ? pendingTaskIds.has(selectedTask.id) : false}
+        onStatusChange={(status) => {
+          if (selectedTask) void changeTaskStatus(selectedTask.id, status)
+        }}
+      />
+    </>
   )
 }

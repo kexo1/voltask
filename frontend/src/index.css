@@ -1,121 +1,150 @@
-/* Definuj globálne farby, písma a vykresľovanie textu. */
+/* ==========================================================================
+   Voltask – globálny dizajnový systém a základné štýly (index.css)
+   ========================================================================== */
+
+/* --- Farby, sieny a písma (svetlý režim) --------------------------------- */
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* Farby textu */
+  --color-text: #475569;
+  --color-text-heading: #102a56;
+  --color-muted: #64748b;
+  --color-placeholder: #64748b;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* Pozadie a ramceky */
+  --color-bg: #ffffff;
+  --color-border: #d7e2f1;
+  --color-code-bg: #f3f7ff;
 
-  font: 18px/145% var(--sans);
+  /* Akcentová farba (tlačidlá, odkazy, zvýraznenia) */
+  --color-accent: #2563eb;
+  --color-accent-bg: #eff6ff;
+  --color-accent-border: #93b4f5;
+
+  /* Spätná väzba (chyby, úspech, focus prvkov) */
+  --color-error: #b42318;
+  --color-error-text: #9b1c1c;
+  --color-error-bg: #fee2e2;
+  --color-error-bg-soft: #fff7f7;
+  --color-error-border: #fecaca;
+  --color-success: #166534;
+  --color-success-bg: #f0fdf4;
+  --color-success-border: #bbf7d0;
+  --color-focus: #0866f5;
+  --color-focus-hover: #0754c7;
+
+  /* Prihlasovacia stranka (drzi sa separátne kvôli presnej farbe) */
+  --color-auth-heading: #09285c;
+  --color-auth-toggle: #35527c;
+  --color-auth-toggle-bg: #e7f0ff;
+  --color-auth-toggle-hover: #1456c0;
+
+  /* Brandová modrá (navigácia a akčné tlačidlá) */
+  --brand-blue: #2563eb;
+  --brand-blue-dark: #1d4ed8;
+  --brand-navy: #102a56;
+  --brand-border: #d7e2f1;
+  --brand-background: #ffffff;
+
+  /* Tiene */
+  --shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --shadow-nav: 0 6px 20px rgb(16 42 86 / 6%);
+  --shadow-card: 0 12px 32px rgb(16 42 86 / 8%);
+  --shadow-lg: 0 16px 42px rgb(16 42 86 / 10%);
+
+  /* Písma */
+  --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, Consolas, monospace;
+
+  /* Základné vykresľovanie textu */
+  font: 18px/145% var(--font-sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
+  color-scheme: light;
+  color: var(--color-text);
+  background: var(--color-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
 
-  @media (max-width: 1024px) {
+/* Väčší text na desktopu, menší na tabletoch a mobiloch. */
+@media (max-width: 1024px) {
+  :root {
     font-size: 16px;
   }
 }
 
-/* Zmeň globálnu farebnú paletu, keď zariadenie používa tmavý režim. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-/* Vycentruj aplikáciu a nastav jej minimálnu výšku na výšku obrazovky. */
+/* --- Koreň aplikácie -------------------------------------------------------
+   Centruje obsah, nastaví maximálnu šírku a vertikálne rozloženie.
+   -------------------------------------------------------------------------- */
 #root {
   width: 1126px;
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
-  border-inline: 1px solid var(--border);
+  border-inline: 1px solid var(--color-border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 }
 
-/* Odstráň predvolený okraj elementu body v prehliadači. */
+/* Odstráni predvolený okraj tela v prehliadači. */
 body {
   margin: 0;
 }
 
-/* Nastav zvolené písmo a farbu pre nadpisy prvej a druhej úrovne. */
+/* Nadpisy prvého a druhého radu. */
 h1,
 h2 {
-  font-family: var(--heading);
+  font-family: var(--font-heading);
   font-weight: 500;
-  color: var(--text-h);
+  color: var(--color-text-heading);
 }
 
-/* Nastav veľkosť hlavného nadpisu a prispôsob jeho odsadenie šírke obrazovky. */
+/* Hlavný nadpis. */
 h1 {
   font-size: 56px;
   letter-spacing: -1.68px;
   margin: 32px 0;
-  @media (max-width: 1024px) {
+}
+
+@media (max-width: 1024px) {
+  h1 {
     font-size: 36px;
     margin: 20px 0;
   }
 }
-/* Nastav veľkosť nadpisu druhej úrovne a prispôsob ju šírke obrazovky. */
+
+/* Nadpis druhého radu. */
 h2 {
   font-size: 24px;
   line-height: 118%;
   letter-spacing: -0.24px;
   margin: 0 0 8px;
-  @media (max-width: 1024px) {
+}
+
+@media (max-width: 1024px) {
+  h2 {
     font-size: 20px;
   }
 }
-/* Odstráň predvolený okraj odseku v prehliadači. */
+
+/* Odsek bez predvolených okrajov. */
 p {
   margin: 0;
 }
 
-/* Nastav písmo pre ukážky kódu a počítadlá. */
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-/* Uprav vzhľad krátkych ukážok kódu v texte. */
+/* Inline kód a jeho pozadie. */
 code {
+  font-family: var(--font-mono);
   font-size: 15px;
   line-height: 135%;
   padding: 4px 8px;
-  background: var(--code-bg);
+  background: var(--color-code-bg);
+  color: var(--color-text-heading);
+  border-radius: 4px;
+  display: inline-flex;
 }

@@ -64,3 +64,114 @@ Content-Type: application/json
   "email": "another@example.com",
   "displayName": "Test User"
 }
+
+
+### AUTH-07: Účet bez tímov po registrácii a prihlásení
+# Použi nový testovací email a fake heslo, potom over, že GET /api/teams vráti [].
+POST http://localhost:3000/api/auth/register
+Origin: http://localhost:5173
+Content-Type: application/json
+
+{
+  "email": "matrix-owner@example.test",
+  "displayName": "Matrix Owner",
+  "password": "MatrixPass-2026!",
+  "stayLoggedIn": true
+}
+
+
+### AUTH-08: Prázdny GET /api/teams
+GET http://localhost:3000/api/teams
+
+
+### AUTH-09: Anonymný prístup k chráneným endpointom
+GET http://localhost:3000/api/auth/me
+
+###
+
+GET http://localhost:3000/api/teams
+
+
+### AUTH-10: Vytvorenie tímu a OWNER/MEMBER prístup
+# Po vytvorení tímu dosaď jeho id do premenných teamId a ownerId.
+POST http://localhost:3000/api/teams
+Origin: http://localhost:5173
+Content-Type: application/json
+
+{
+  "name": "Matrix Team",
+  "description": "Temporary test team"
+}
+
+###
+
+GET http://localhost:3000/api/teams/{{teamId}}
+
+###
+
+POST http://localhost:3000/api/teams/{{teamId}}/members
+Origin: http://localhost:5173
+Content-Type: application/json
+
+{
+  "email": "matrix-member@example.test"
+}
+
+###
+
+GET http://localhost:3000/api/teams/{{teamId}}
+
+###
+
+PATCH http://localhost:3000/api/teams/{{teamId}}/members/{{ownerId}}/role
+Origin: http://localhost:5173
+Content-Type: application/json
+
+{
+  "role": "MEMBER"
+}
+
+
+### AUTH-11: Pokus o prístup k cudziemu tímu
+GET http://localhost:3000/api/teams/{{foreignTeamId}}
+
+
+### AUTH-12: Profilové meno
+PATCH http://localhost:3000/api/auth/profile
+Origin: http://localhost:5173
+Content-Type: application/json
+
+{
+  "displayName": "Matrix Owner Updated"
+}
+
+###
+
+GET http://localhost:3000/api/auth/me
+
+
+### AUTH-13: Refresh stránky a stayLoggedIn
+GET http://localhost:3000/api/auth/me
+
+
+### AUTH-14: Refresh cookie
+POST http://localhost:3000/api/auth/refresh
+Origin: http://localhost:5173
+
+
+### AUTH-15: Zmazanie tímu
+DELETE http://localhost:3000/api/teams/{{teamId}}
+Origin: http://localhost:5173
+
+###
+
+GET http://localhost:3000/api/teams/{{teamId}}
+
+
+### AUTH-16: Logout
+POST http://localhost:3000/api/auth/logout
+Origin: http://localhost:5173
+
+###
+
+GET http://localhost:3000/api/auth/me
