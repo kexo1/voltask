@@ -590,6 +590,27 @@
                                         týždeň</span><span class="week-date">16. 11. – 22. 11. 2026</span></span></th>
                         </tr>
                         <tr class="day-heading">
+                            <th scope="row" colspan="4">20. november 2026</th>
+                        </tr>
+                        <tr>
+                            <td>Matúš Tóth</td>
+                            <td>
+                                <p>Implementácia backendu projektového modulu a migrácia úloh na projekty.</p>
+                                <details class="task-details">
+                                    <summary>Podrobný postup</summary>
+                                    <ol class="task-steps">
+                                        <li>Vytvoril modely <code>Project</code> a <code>ProjectMember</code> a upravil úlohy tak, aby namiesto <code>teamId</code> používali povinné <code>projectId</code>.</li>
+                                        <li>Pripravil migráciu existujúcich dát, ktorá vytvorí pre každý tím všeobecný projekt, presunie doň pôvodné úlohy a vytvorí členstvá projektu.</li>
+                                        <li>Implementoval API pre vytváranie, načítanie, úpravu a mazanie projektov, správu členov a získavanie súhrnu dashboardu.</li>
+                                        <li>Doplnil kontrolu oprávnení pre osobné a tímové projekty a upravil task endpointy tak, aby kontrolovali prístup k projektu.</li>
+                                        <li>Rozšíril WebSocket o <code>joinProject</code>, ktorý pred pripojením do projektovej miestnosti overuje prihlásenie a oprávnenia používateľa.</li>
+                                        <li>Overil migráciu, API, zostavenie projektu a Docker image. Všetky vykonané kontroly prešli.</li>
+                                    </ol>
+                                </details>
+                            </td>
+                            <td>Backendový projektový modul implementovaný, existujúce dáta bezpečne migrované a API otestované. Live Socket.IO test a úprava frontendu na používanie <code>projectId</code> zostávajú nedokončené.</td>
+                            <td>20. 11. 2026</td>
+                        <tr class="day-heading">
                             <th scope="row" colspan="4">21. november 2026</th>
                         </tr>
                         <tr>
