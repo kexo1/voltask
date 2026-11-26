@@ -44,7 +44,7 @@ export class AuthService {
 
   async register(registerDto: RegisterDto, response: AuthHttpResponse) {
     if (Buffer.byteLength(registerDto.password, 'utf8') > 72) {
-      throw new BadRequestException('Password must be at most 72 bytes');
+      throw new BadRequestException('Heslo môže mať najviac 72 bajtov');
     }
 
     const passwordHash = await hash(registerDto.password, 12);
@@ -96,7 +96,7 @@ export class AuthService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new ConflictException('An account with this email already exists');
+        throw new ConflictException('Účet s touto e-mailovou adresou už existuje');
       }
 
       throw error;
@@ -105,7 +105,7 @@ export class AuthService {
 
   async login(loginDto: LoginDto, response: AuthHttpResponse) {
     if (Buffer.byteLength(loginDto.password, 'utf8') > 72) {
-      throw new BadRequestException('Password must be at most 72 bytes');
+      throw new BadRequestException('Heslo môže mať najviac 72 bajtov');
     }
 
     const user = await this.prisma.user.findUnique({
@@ -114,7 +114,7 @@ export class AuthService {
     });
 
     if (!user || !(await compare(loginDto.password, user.passwordHash))) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Nesprávny e-mail alebo heslo');
     }
 
     const { passwordHash: _passwordHash, ...userResponse } = user;
@@ -130,7 +130,7 @@ export class AuthService {
     const refreshToken = readCookie(cookieHeader, REFRESH_COOKIE);
     if (!refreshToken) {
       clearAuthCookies(response);
-      throw new UnauthorizedException('Authentication session has expired');
+      throw new UnauthorizedException('Platnosť prihlasovacej relácie vypršala');
     }
 
     const oldTokenHash = hashRefreshToken(refreshToken);
@@ -147,7 +147,7 @@ export class AuthService {
         });
       }
       clearAuthCookies(response);
-      throw new UnauthorizedException('Authentication session has expired');
+      throw new UnauthorizedException('Platnosť prihlasovacej relácie vypršala');
     }
 
     const newRefreshToken = randomBytes(32).toString('base64url');
@@ -168,7 +168,7 @@ export class AuthService {
 
     if (updated.count !== 1) {
       clearAuthCookies(response);
-      throw new UnauthorizedException('Authentication session has expired');
+      throw new UnauthorizedException('Platnosť prihlasovacej relácie vypršala');
     }
 
     await this.setAuthCookies(
@@ -201,7 +201,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Authentication is required');
+      throw new UnauthorizedException('Vyžaduje sa prihlásenie');
     }
 
     return { user };

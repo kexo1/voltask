@@ -20,14 +20,14 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const token = readCookie(request.headers.cookie, ACCESS_COOKIE);
     if (!token) {
-      throw new UnauthorizedException('Authentication is required');
+      throw new UnauthorizedException('Vyžaduje sa prihlásenie');
     }
 
     let payload: { sub?: unknown; email?: unknown; sid?: unknown };
     try {
       payload = await this.jwtService.verifyAsync(token);
     } catch {
-      throw new UnauthorizedException('Authentication is required');
+      throw new UnauthorizedException('Vyžaduje sa prihlásenie');
     }
 
     if (
@@ -36,7 +36,7 @@ export class JwtAuthGuard implements CanActivate {
       typeof payload.email !== 'string' ||
       typeof payload.sid !== 'string'
     ) {
-      throw new UnauthorizedException('Authentication is required');
+      throw new UnauthorizedException('Vyžaduje sa prihlásenie');
     }
 
     const session = await this.prisma.authSession.findFirst({
@@ -48,7 +48,7 @@ export class JwtAuthGuard implements CanActivate {
       select: { user: { select: { id: true, email: true } } },
     });
     if (!session || session.user.email !== payload.email) {
-      throw new UnauthorizedException('Authentication is required');
+      throw new UnauthorizedException('Vyžaduje sa prihlásenie');
     }
 
     request.user = session.user;

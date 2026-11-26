@@ -52,7 +52,7 @@ export class EventsGateway {
         ACCESS_COOKIE,
       );
       if (!token) {
-        next(new Error('Authentication is required'));
+        next(new Error('Vyžaduje sa prihlásenie'));
         return;
       }
 
@@ -64,7 +64,7 @@ export class EventsGateway {
           sid?: unknown;
         }>(token);
       } catch {
-        next(new Error('Authentication is required'));
+        next(new Error('Vyžaduje sa prihlásenie'));
         return;
       }
 
@@ -73,7 +73,7 @@ export class EventsGateway {
         typeof payload.email !== 'string' ||
         typeof payload.sid !== 'string'
       ) {
-        next(new Error('Authentication is required'));
+        next(new Error('Vyžaduje sa prihlásenie'));
         return;
       }
 
@@ -96,7 +96,7 @@ export class EventsGateway {
         return;
       }
       if (!session || session.user.email !== payload.email) {
-        next(new Error('Authentication is required'));
+        next(new Error('Vyžaduje sa prihlásenie'));
         return;
       }
 
@@ -116,7 +116,7 @@ export class EventsGateway {
 
     const userId = client.data.userId;
     if (typeof userId !== 'string') {
-      throw new WsException('Authentication is required');
+      throw new WsException('Vyžaduje sa prihlásenie');
     }
 
     const membership = await this.prisma.teamMember.findUnique({
@@ -142,7 +142,7 @@ export class EventsGateway {
 
     const userId = client.data.userId;
     if (typeof userId !== 'string') {
-      throw new WsException('Authentication is required');
+      throw new WsException('Vyžaduje sa prihlásenie');
     }
     if (!(await this.projectsService.canAccess(projectId, userId))) {
       throw new WsException('Project not found');
