@@ -217,6 +217,7 @@ export function RealtimeNotifications() {
     <div className="realtime-notifications">
       <div className="realtime-notification" role="status" aria-live="polite">
         <span>{notification.message}</span>
+        {/* Tlacidlo na zatvorenie upozornenia (x je len vizualny symbol tlacidla)*/}
         <button
           type="button"
           className="realtime-notification__close"
