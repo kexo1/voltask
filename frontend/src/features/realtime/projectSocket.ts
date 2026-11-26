@@ -31,7 +31,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 // Rozpozna chybu autentifikacie, pri ktorej treba obnovit cookie session.
 function isAuthenticationError(error: Error): boolean {
-  return /authentication is required|unauthorized|\b401\b/i.test(error.message)
+  return /authentication is required|vyžaduje sa prihlásenie|unauthorized|\b401\b/i.test(
+    error.message,
+  )
 }
 
 // Obnovi session cez cookie; token sa necita ani neposiela z JavaScriptu.
@@ -42,7 +44,7 @@ async function refreshSession(): Promise<void> {
   })
 
   if (!response.ok) {
-    throw new Error('Authentication refresh failed.')
+    throw new Error('Obnovenie prihlásenia zlyhalo.')
   }
 }
 
@@ -52,7 +54,7 @@ export function connectProjectSocket(
   handlers: ProjectSocketHandlers,
 ): ProjectSocketConnection {
   if (!projectId.trim()) {
-    throw new Error('A project ID is required to connect.')
+    throw new Error('Na pripojenie je potrebné ID projektu.')
   }
 
   // Cookie autentifikacia sa odosiela browserom; reconnect riadi tato vrstva.
