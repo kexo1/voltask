@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { ACCESS_TOKEN_TTL_SECONDS } from './auth.constants';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { CsrfGuard } from './guards/csrf.guard';
@@ -16,7 +17,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
         return {
           secret,
-          signOptions: { expiresIn: 900 },
+          signOptions: { expiresIn: ACCESS_TOKEN_TTL_SECONDS },
         };
       },
     }),

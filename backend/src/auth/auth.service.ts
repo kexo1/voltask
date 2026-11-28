@@ -3,12 +3,22 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcryptjs';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../database/prisma.service';
+import {
+  ACCESS_TOKEN_TTL_SECONDS,
+  BCRYPT_SALT_ROUNDS,
+  BROWSER_SESSION_MAX_AGE_MS,
+  MAX_PASSWORD_BYTES,
+  REFRESH_TOKEN_MAX_AGE_MS,
+  TOKEN_RANDOM_BYTES_LENGTH,
+} from './auth.constants';
 import {
   clearAuthCookies,
   readCookie,
@@ -27,9 +37,8 @@ const userResponseSelect = {
   createdAt: true,
 } as const;
 
-const REMEMBER_SESSION_MS = 7 * 24 * 60 * 60 * 1000;
-const BROWSER_SESSION_MS = 24 * 60 * 60 * 1000;
-const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
+const DUMMY_BCRYPT_HASH =
+  '$2a$12$e8wNuU5L9d9zGZ0j8ZkY4ee7rU8yE1x1v7Gq7mJ8mY7vU6i5o4p3a';
 
 function hashRefreshToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
@@ -37,26 +46,31 @@ function hashRefreshToken(token: string): string {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
   ) {}
 
   async register(registerDto: RegisterDto, response: AuthHttpResponse) {
-    if (Buffer.byteLength(registerDto.password, 'utf8') > 72) {
-      throw new BadRequestException('Heslo môže mať najviac 72 bajtov');
+    if (Buffer.byteLength(registerDto.password, 'utf8') > MAX_PASSWORD_BYTES) {
+      throw new BadRequestException(
+        `Heslo môže mať najviac ${MAX_PASSWORD_BYTES} bajtov`,
+      );
     }
 
-    const passwordHash = await hash(registerDto.password, 12);
+    const passwordHash = await hash(
+      registerDto.password,
+      BCRYPT_SALT_ROUNDS,
+    );
 
     try {
-      const refreshToken = randomBytes(32).toString('base64url');
+      const refreshToken = randomBytes(TOKEN_RANDOM_BYTES_LENGTH).toString(
+        'base64url',
+      );
       const rememberMe = registerDto.stayLoggedIn ?? false;
       const now = new Date();
-
-      await this.prisma.authSession.deleteMany({
-        where: { expiresAt: { lte: now } },
-      });
 
       const { user, sessionId } = await this.prisma.$transaction(
         async (transaction) => {
@@ -104,8 +118,10 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto, response: AuthHttpResponse) {
-    if (Buffer.byteLength(loginDto.password, 'utf8') > 72) {
-      throw new BadRequestException('Heslo môže mať najviac 72 bajtov');
+    if (Buffer.byteLength(loginDto.password, 'utf8') > MAX_PASSWORD_BYTES) {
+      throw new BadRequestException(
+        `Heslo môže mať najviac ${MAX_PASSWORD_BYTES} bajtov`,
+      );
     }
 
     const user = await this.prisma.user.findUnique({
@@ -113,7 +129,10 @@ export class AuthService {
       select: { ...userResponseSelect, passwordHash: true },
     });
 
-    if (!user || !(await compare(loginDto.password, user.passwordHash))) {
+    const hashToVerify = user ? user.passwordHash : DUMMY_BCRYPT_HASH;
+    const isPasswordValid = await compare(loginDto.password, hashToVerify);
+
+    if (!user || !isPasswordValid) {
       throw new UnauthorizedException('Nesprávny e-mail alebo heslo');
     }
 
@@ -150,7 +169,9 @@ export class AuthService {
       throw new UnauthorizedException('Platnosť prihlasovacej relácie vypršala');
     }
 
-    const newRefreshToken = randomBytes(32).toString('base64url');
+    const newRefreshToken = randomBytes(TOKEN_RANDOM_BYTES_LENGTH).toString(
+      'base64url',
+    );
     const newTokenHash = hashRefreshToken(newRefreshToken);
     const nextExpiresAt = this.getSessionExpiry(session.rememberMe, now);
     const updated = await this.prisma.authSession.updateMany({
@@ -222,12 +243,10 @@ export class AuthService {
     rememberMe: boolean,
     response: AuthHttpResponse,
   ): Promise<void> {
-    const refreshToken = randomBytes(32).toString('base64url');
+    const refreshToken = randomBytes(TOKEN_RANDOM_BYTES_LENGTH).toString(
+      'base64url',
+    );
     const now = new Date();
-
-    await this.prisma.authSession.deleteMany({
-      where: { expiresAt: { lte: now } },
-    });
 
     const session = await this.prisma.authSession.create({
       data: {
@@ -248,6 +267,16 @@ export class AuthService {
     );
   }
 
+  @Cron(CronExpression.EVERY_HOUR)
+  async purgeExpiredSessions(): Promise<void> {
+    const result = await this.prisma.authSession.deleteMany({
+      where: { expiresAt: { lte: new Date() } },
+    });
+    if (result.count > 0) {
+      this.logger.log(`Odstránených ${result.count} expirovaných relácií.`);
+    }
+  }
+
   private async setAuthCookies(
     user: AuthUserResponse,
     sessionId: string,
@@ -265,7 +294,8 @@ export class AuthService {
 
   private getSessionExpiry(rememberMe: boolean, now: Date): Date {
     return new Date(
-      now.getTime() + (rememberMe ? REMEMBER_SESSION_MS : BROWSER_SESSION_MS),
+      now.getTime() +
+        (rememberMe ? REFRESH_TOKEN_MAX_AGE_MS : BROWSER_SESSION_MAX_AGE_MS),
     );
   }
 }

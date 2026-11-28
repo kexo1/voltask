@@ -224,6 +224,12 @@ export class TeamsService {
   }
 
   async removeMember(teamId: string, actorId: string, memberId: string) {
+    if (actorId === memberId) {
+      throw new BadRequestException(
+        'Vlastník tímu nemôže odstrániť sám seba z tímu.',
+      );
+    }
+
     await this.prisma.$transaction(async (transaction) => {
       await this.lockTeam(transaction, teamId);
       await this.requireOwner(teamId, actorId, transaction);

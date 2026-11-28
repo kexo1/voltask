@@ -20,13 +20,15 @@ import { ProjectContextQueryDto } from './dto/project-context-query.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { TasksService } from './tasks.service';
 
+const TASK_CREATION_THROTTLE_WINDOW_MS = 60_000;
+
 @Controller('tasks')
 @UseGuards(JwtAuthGuard, CsrfGuard)
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  @Throttle({ default: { limit: 30, ttl: 60_000 } })
+  @Throttle({ default: { limit: 30, ttl: TASK_CREATION_THROTTLE_WINDOW_MS } })
   create(
     @Body() createTaskDto: CreateTaskDto,
     @CurrentUser() user: AuthenticatedUser,

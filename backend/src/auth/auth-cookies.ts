@@ -1,10 +1,12 @@
 import type { AuthHttpResponse } from './auth.types';
+import {
+  ACCESS_TOKEN_MAX_AGE_MS,
+  REFRESH_TOKEN_MAX_AGE_MS,
+} from './auth.constants';
 
 export const ACCESS_COOKIE = 'voltask_access';
 export const REFRESH_COOKIE = 'voltask_refresh';
 
-const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000;
-const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 const COOKIE_SECURE = process.env.NODE_ENV === 'production';
 
 export function readCookie(
@@ -40,12 +42,12 @@ export function setAuthCookies(
   response.cookie(ACCESS_COOKIE, accessToken, {
     ...sharedOptions,
     path: '/',
-    maxAge: ACCESS_TOKEN_MAX_AGE,
+    maxAge: ACCESS_TOKEN_MAX_AGE_MS,
   });
   response.cookie(REFRESH_COOKIE, refreshToken, {
     ...sharedOptions,
     path: '/api/auth',
-    ...(rememberMe ? { maxAge: REFRESH_TOKEN_MAX_AGE } : {}),
+    ...(rememberMe ? { maxAge: REFRESH_TOKEN_MAX_AGE_MS } : {}),
   });
 }
 
