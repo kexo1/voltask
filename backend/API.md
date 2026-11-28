@@ -153,11 +153,10 @@ Odpoveď úlohy:
 
 `projectId` je voliteľný. Ak chýba, vráti úlohy zo všetkých projektov
 dostupných používateľovi. Ak je zadaný, vráti iba úlohy daného dostupného
-projektu. Voliteľná paginácia povoľuje `page` od 1 do 1000 a `limit` od 1 do
-100; pri zadaní jedného z nich sa druhý predvolí na `1` alebo `50`. Bez
-paginácie sa vrátia všetky dostupné úlohy.
+projektu. Paginácia je povinná na úrovni servera: `page` (1 až 1000, predvolene `1`)
+a `limit` (1 až 100, predvolene `50`).
 
-Response `200`: pole objektov úloh uvedeného tvaru.
+Response `200`: pole objektov úloh uvedeného tvaru (vrátane `dependencies` a `dependents`).
 
 ### `POST /api/tasks`
 
@@ -180,6 +179,26 @@ Request:
 `description`, `status` a `assigneeId` sú voliteľné; predvolený stav je `TODO`.
 Response `201` je vytvorená úloha uvedeného tvaru.
 
+### `PATCH /api/tasks/:id`
+
+Upraví údaje existujúcej úlohy (`title`, `description`, `status`, `assigneeId`)
+v danom projekte. Vyžaduje sa `projectId` a aspoň jedno menené pole. Ak je
+`assigneeId` neprázdny reťazec, používateľ musí byť členom projektu.
+
+Request:
+
+```json
+{
+  "projectId": "clproject1",
+  "title": "Upravený názov",
+  "description": "Nový popis",
+  "assigneeId": "cluser2"
+}
+```
+
+Response `200` je aktualizovaná úloha vrátane závislostí. Po uložení server
+emituje WebSocket event `task:updated`.
+
 ### `PATCH /api/tasks/:id/status`
 
 Zmení stav úlohy v danom projekte. Požaduje sa kontext `projectId`.
@@ -192,6 +211,25 @@ Request:
 
 Povolené stavy: `TODO`, `IN_PROGRESS`, `DONE`. Response `200` je aktualizovaná
 úloha uvedeného tvaru.
+
+### `POST /api/tasks/:id/dependencies`
+
+Pridá závislosť úlohy `:id` na inú úlohu `dependsOnId` v tom istom projekte.
+Overuje existenciu oboch úloh v projekte, zakazuje seba-závislosť aj vytvorenie
+cyklu v grafe závislostí.
+
+Request:
+
+```json
+{ "projectId": "clproject1", "dependsOnId": "cltask0" }
+```
+
+Response `201` je aktualizovaná úloha vrátane `dependencies` a `dependents`.
+
+### `DELETE /api/tasks/:id/dependencies/:dependsOnId?projectId=clproject1`
+
+Odstráni závislosť medzi úlohami v danom projekte. Response `200` je
+aktualizovaná úloha.
 
 ### `DELETE /api/tasks/:id?projectId=clproject1`
 

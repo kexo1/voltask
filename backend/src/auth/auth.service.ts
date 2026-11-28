@@ -159,12 +159,29 @@ export class AuthService {
       include: { user: { select: userResponseSelect } },
     });
 
-    if (!session || session.expiresAt <= now) {
-      if (session) {
+    if (!session) {
+      const reusedToken = await this.prisma.usedRefreshToken.findUnique({
+        where: { tokenHash: oldTokenHash },
+        select: { sessionId: true },
+      });
+
+      if (reusedToken) {
         await this.prisma.authSession.deleteMany({
-          where: { id: session.id, refreshTokenHash: oldTokenHash },
+          where: { id: reusedToken.sessionId },
         });
+        this.logger.warn(
+          `Detegované opakované použitie refresh tokenu pre reláciu ${reusedToken.sessionId}. Relácia bola zrušená.`,
+        );
       }
+
+      clearAuthCookies(response);
+      throw new UnauthorizedException('Platnosť prihlasovacej relácie vypršala');
+    }
+
+    if (session.expiresAt <= now) {
+      await this.prisma.authSession.deleteMany({
+        where: { id: session.id, refreshTokenHash: oldTokenHash },
+      });
       clearAuthCookies(response);
       throw new UnauthorizedException('Platnosť prihlasovacej relácie vypršala');
     }
@@ -174,20 +191,39 @@ export class AuthService {
     );
     const newTokenHash = hashRefreshToken(newRefreshToken);
     const nextExpiresAt = this.getSessionExpiry(session.rememberMe, now);
-    const updated = await this.prisma.authSession.updateMany({
-      where: {
-        id: session.id,
-        refreshTokenHash: oldTokenHash,
-        expiresAt: { gt: now },
-      },
-      data: {
-        refreshTokenHash: newTokenHash,
-        lastUsedAt: now,
-        expiresAt: nextExpiresAt,
-      },
+
+    const rotated = await this.prisma.$transaction(async (transaction) => {
+      const updated = await transaction.authSession.updateMany({
+        where: {
+          id: session.id,
+          refreshTokenHash: oldTokenHash,
+          expiresAt: { gt: now },
+        },
+        data: {
+          refreshTokenHash: newTokenHash,
+          lastUsedAt: now,
+          expiresAt: nextExpiresAt,
+        },
+      });
+
+      if (updated.count !== 1) {
+        return false;
+      }
+
+      await transaction.usedRefreshToken.create({
+        data: {
+          sessionId: session.id,
+          tokenHash: oldTokenHash,
+        },
+      });
+
+      return true;
     });
 
-    if (updated.count !== 1) {
+    if (!rotated) {
+      await this.prisma.authSession.deleteMany({
+        where: { id: session.id },
+      });
       clearAuthCookies(response);
       throw new UnauthorizedException('Platnosť prihlasovacej relácie vypršala');
     }

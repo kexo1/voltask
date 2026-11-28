@@ -14,10 +14,12 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { CsrfGuard } from '../auth/guards/csrf.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { AuthenticatedUser } from '../auth/auth.types';
+import { AddTaskDependencyDto } from './dto/add-task-dependency.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { ListTasksQueryDto } from './dto/list-tasks-query.dto';
 import { ProjectContextQueryDto } from './dto/project-context-query.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 import { TasksService } from './tasks.service';
 
 const TASK_CREATION_THROTTLE_WINDOW_MS = 60_000;
@@ -41,11 +43,20 @@ export class TasksController {
     @CurrentUser() user: AuthenticatedUser,
     @Query() query: ListTasksQueryDto,
   ) {
-    const pagination =
-      query.page !== undefined || query.limit !== undefined
-        ? { page: query.page ?? 1, limit: query.limit ?? 50 }
-        : undefined;
+    const pagination = {
+      page: query.page ?? 1,
+      limit: query.limit ?? 50,
+    };
     return this.tasksService.findAll(user.id, query.projectId, pagination);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateTaskDto: UpdateTaskDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.tasksService.update(id, updateTaskDto, user.id);
   }
 
   @Patch(':id/status')
@@ -58,6 +69,35 @@ export class TasksController {
       id,
       updateTaskStatusDto.projectId,
       updateTaskStatusDto.status,
+      user.id,
+    );
+  }
+
+  @Post(':id/dependencies')
+  addDependency(
+    @Param('id') id: string,
+    @Body() addTaskDependencyDto: AddTaskDependencyDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.tasksService.addDependency(
+      id,
+      addTaskDependencyDto.projectId,
+      addTaskDependencyDto.dependsOnId,
+      user.id,
+    );
+  }
+
+  @Delete(':id/dependencies/:dependsOnId')
+  removeDependency(
+    @Param('id') id: string,
+    @Param('dependsOnId') dependsOnId: string,
+    @Query() query: ProjectContextQueryDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.tasksService.removeDependency(
+      id,
+      query.projectId,
+      dependsOnId,
       user.id,
     );
   }
