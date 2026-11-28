@@ -56,23 +56,6 @@ html body .auth-page .auth-form__field input:focus {
   outline-color: var(--brand-blue);
 }
 
-html body .auth-page .auth-form__submit {
-  background: var(--brand-blue);
-  box-shadow: 0 6px 20px rgb(37 99 235 / 18%);
-}
-
-html body .auth-page .auth-form__submit:hover {
-  background: var(--brand-blue-dark);
-}
-
-html body .auth-page .auth-card__switch button {
-  color: var(--brand-blue);
-}
-
-html body .auth-page .auth-card__switch button:hover {
-  color: var(--brand-blue-dark);
-}
-
 #root {
   border-inline: 0;
   background: transparent;
@@ -140,38 +123,6 @@ html body .auth-page .auth-card__switch button:hover {
 
 .app-nav__link.is-active {
   box-shadow: inset 0 -2px var(--brand-blue);
-}
-
-.app-nav__logout {
-  min-height: 38px;
-  padding: 0 14px;
-  border: 1px solid var(--color-accent-border);
-  border-radius: 8px;
-  background: var(--color-accent-bg);
-  color: var(--brand-blue-dark);
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background 180ms ease,
-    border-color 180ms ease;
-}
-
-.app-nav__logout:hover:not(:disabled) {
-  border-color: var(--brand-blue);
-  background: var(--brand-blue-dark);
-  color: #fff;
-}
-
-.app-nav__logout:focus-visible {
-  outline: 2px solid var(--color-accent-border);
-  outline-offset: 3px;
-}
-
-.app-nav__logout:disabled {
-  cursor: wait;
-  opacity: 0.65;
 }
 
 /* Chybová hláska v navigácii (používa Navbar.tsx). */
@@ -368,6 +319,7 @@ html body .auth-page .auth-card__switch button:hover {
 
 .app-button {
   display: inline-flex;
+  gap: 8px;
   align-items: center;
   justify-content: center;
   min-height: 42px;
@@ -383,20 +335,28 @@ html body .auth-page .auth-card__switch button:hover {
   cursor: pointer;
 }
 
-.app-button--back {
-  gap: 8px;
-}
-
-.app-button--back span {
-  font-size: 1.25em;
-  line-height: 1;
+.app-icon {
+  flex: 0 0 1em;
+  inline-size: 1em;
+  block-size: 1em;
+  font-size: 18px;
+  background-color: currentColor;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
 }
 
 .app-button--icon {
-  width: 44px;
-  min-height: 44px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
   padding: 0;
-  font-size: 1.4rem;
+  border-color: transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text);
 }
 
 .app-button:disabled {
@@ -409,38 +369,38 @@ html body .auth-page .auth-card__switch button:hover {
   outline-offset: 3px;
 }
 
+.app-button:not(:disabled):hover {
+  border-color: var(--brand-blue-dark);
+  background: var(--brand-blue-dark);
+}
+
 .app-button--secondary {
-  background: var(--color-accent-bg);
-  color: var(--brand-blue-dark);
+  border-color: var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-heading);
 }
 
-.app-button:hover {
-  border-color: var(--brand-blue-dark);
-  background: var(--brand-blue-dark);
+.app-button--secondary:not(:disabled):hover,
+.app-button--icon:not(:disabled):hover {
+  border-color: var(--color-border);
+  background: var(--color-code-bg);
 }
 
-.app-button--secondary:hover {
-  border-color: var(--brand-blue-dark);
-  background: var(--brand-blue-dark);
+.app-button--danger {
+  border-color: var(--color-error-text);
+  background: var(--color-error-text);
   color: #fff;
+}
+
+.app-button--danger:not(:disabled):hover {
+  border-color: var(--color-error);
+  background: var(--color-error);
 }
 
 .app-button:focus-visible,
 .app-nav__link:focus-visible {
   outline: 2px solid var(--brand-blue);
   outline-offset: 3px;
-}
-
-.app-button--success {
-  border-color: var(--color-success);
-  background: var(--color-success-bg);
-  color: var(--color-success);
-}
-
-.app-button--success:hover {
-  border-color: var(--color-success);
-  background: var(--color-success);
-  color: var(--color-bg);
 }
 
 /* --- Stavové stránky (načítavanie, chyba) ---------------------------------- */
@@ -455,27 +415,6 @@ html body .auth-page .auth-card__switch button:hover {
   background: var(--brand-background);
   color: var(--color-text);
   text-align: center;
-}
-
-.app-state > button {
-  min-height: 40px;
-  padding: 0 16px;
-  border: 0;
-  border-radius: 8px;
-  background-color: var(--brand-blue);
-  color: #fff;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.app-state > button:hover {
-  background-color: var(--brand-blue-dark);
-}
-
-.app-state > button:focus-visible {
-  outline: 3px solid var(--color-accent-border);
-  outline-offset: 3px;
 }
 
 /* --- Zoznam tímov a chybové hlásky ----------------------------------------- */
@@ -535,21 +474,6 @@ html body .auth-page .auth-card__switch button:hover {
   padding-inline: 13px;
 }
 
-/* Tlačidlo na odstránenie (používajú TeamsPage a task-detail-panel__delete). */
-.app-button--danger,
-.task-detail-panel__delete {
-  border-color: var(--color-error-border);
-  background: var(--color-error-bg-soft);
-  color: var(--color-error-text);
-}
-
-.app-button--danger:hover,
-.task-detail-panel__delete:hover:not(:disabled) {
-  border-color: var(--color-error-text);
-  background: var(--color-error-text);
-  color: #fff;
-}
-
 /* --- Kanbanová nástenka (prepísaná v obale aplikácie) --------------------- */
 
 .app-shell .board h1 {
@@ -579,15 +503,6 @@ html body .auth-page .auth-card__switch button:hover {
   border-color: var(--color-accent-border);
 }
 
-.app-shell .task-create-form button:not(.task-create-form__close) {
-  background: var(--brand-blue);
-  box-shadow: 0 6px 24px rgb(37 99 235 / 18%);
-}
-
-.app-shell .task-create-form button:not(.task-create-form__close):hover {
-  background: var(--brand-blue-dark);
-}
-
 .app-shell .task-create-form {
   border-color: var(--brand-border);
   background: var(--color-bg);
@@ -615,10 +530,6 @@ html body .auth-page .auth-card__switch button:hover {
 
 .app-shell .task-detail-panel h2 {
   color: var(--color-text-heading);
-}
-
-.app-shell .task-detail-panel__header button {
-  color: var(--color-text);
 }
 
 /* Pomocná trieda: skryje obsah vizuálne, ale ponechá ho prístupný pre

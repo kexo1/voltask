@@ -53,7 +53,7 @@ export default function Navbar({ onLogout }: { onLogout: () => void }) {
           Profil
         </NavLink>
         <button
-          className="app-nav__logout"
+          className="app-button app-button--secondary app-nav__logout"
           type="button"
           onClick={handleLogout}
           disabled={isLoggingOut}

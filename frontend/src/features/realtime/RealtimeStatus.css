@@ -60,31 +60,6 @@
   pointer-events: auto;
 }
 
-.realtime-notification__close {
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--color-text-heading);
-  font: inherit;
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.realtime-notification__close:hover {
-  border-color: var(--brand-border);
-  background: var(--color-accent-bg);
-}
-
-.realtime-notification__close:focus-visible {
-  outline: 2px solid var(--brand-blue);
-  outline-offset: 2px;
-}
-
 @media (max-width: 520px) {
   .realtime-status__label {
     position: absolute;

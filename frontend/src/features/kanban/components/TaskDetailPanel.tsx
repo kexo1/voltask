@@ -1,3 +1,7 @@
+import closeIcon from '../../../assets/icons/close.svg'
+import editIcon from '../../../assets/icons/edit.svg'
+import trashIcon from '../../../assets/icons/trash.svg'
+import AppIcon from '../../../components/AppIcon'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { COLUMNS, type Task, type TaskStatus } from '../types/task'
 import type { TaskUpdateData } from '../data/taskApi'
@@ -100,8 +104,15 @@ export default function TaskDetailPanel({
     >
       <div className="task-detail-panel__header">
         <p>Detail úlohy</p>
-        <button ref={closeButton} type="button" onClick={onClose} aria-label="Zavrieť detail">
-          ×
+        <button
+          ref={closeButton}
+          className="app-button app-button--icon"
+          type="button"
+          onClick={onClose}
+          aria-label="Zavrieť detail"
+          title="Zavrieť detail"
+        >
+          <AppIcon src={closeIcon} />
         </button>
       </div>
 
@@ -192,6 +203,7 @@ export default function TaskDetailPanel({
             onClick={startEditing}
             disabled={isDeleting || isSaving}
           >
+            <AppIcon src={editIcon} />
             Upraviť úlohu
           </button>
         </>
@@ -210,11 +222,13 @@ export default function TaskDetailPanel({
                 </span>
                 <button
                   type="button"
+                  className="app-button app-button--icon app-button--danger"
                   onClick={() => void onRemoveDependency(dep.dependsOnId)}
                   disabled={isDeleting || isSaving}
                   aria-label={`Odstrániť závislosť ${dep.dependsOn.title}`}
+                  title={`Odstrániť závislosť ${dep.dependsOn.title}`}
                 >
-                  ×
+                  <AppIcon src={trashIcon} />
                 </button>
               </li>
             ))}
@@ -254,7 +268,7 @@ export default function TaskDetailPanel({
         </p>
       )}
       <button
-        className="task-detail-panel__delete"
+        className="app-button app-button--danger task-detail-panel__delete"
         type="button"
         onClick={onDelete}
         disabled={isDeleting || isSaving}

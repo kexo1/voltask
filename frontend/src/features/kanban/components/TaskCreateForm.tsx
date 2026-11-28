@@ -1,3 +1,5 @@
+import closeIcon from '../../../assets/icons/close.svg'
+import AppIcon from '../../../components/AppIcon'
 import { useState, type FormEvent } from 'react'
 import './TaskCreateForm.css'
 
@@ -59,12 +61,13 @@ export default function TaskCreateForm({ members, disabled = false, onSubmit, on
         {onCancel && (
           <button
             type="button"
-            className="task-create-form__close"
+            className="app-button app-button--icon"
             onClick={onCancel}
-            aria-label="Zavrieť"
+            aria-label="Zavrieť formulár"
+            title="Zavrieť formulár"
             disabled={disabled || isSubmitting}
           >
-            ×
+            <AppIcon src={closeIcon} />
           </button>
         )}
       </div>
@@ -113,7 +116,7 @@ export default function TaskCreateForm({ members, disabled = false, onSubmit, on
           </p>
         )}
 
-        <button type="submit" disabled={disabled || isSubmitting}>
+        <button className="app-button" type="submit" disabled={disabled || isSubmitting}>
           {isSubmitting ? 'Ukladám…' : 'Vytvoriť úlohu'}
         </button>
       </form>

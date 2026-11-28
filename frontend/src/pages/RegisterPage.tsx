@@ -86,14 +86,14 @@ export default function RegisterPage({ onLogin, onSuccess }: RegisterPageProps) 
             </p>
           )}
 
-          <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
+          <button className="app-button" type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Registrácia…' : 'Zaregistrovať sa'}
           </button>
         </form>
 
         <p className="auth-card__switch">
           Už máte účet?{' '}
-          <button type="button" onClick={onLogin}>
+          <button className="app-button app-button--secondary" type="button" onClick={onLogin}>
             Prihláste sa
           </button>
         </p>

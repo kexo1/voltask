@@ -1,3 +1,6 @@
+import plusIcon from '../../../assets/icons/plus.svg'
+import AppIcon from '../../../components/AppIcon'
+import type { Ref } from 'react'
 // Import the hook that makes the column a drop target.
 import { useDroppable } from '@dnd-kit/core'
 // Import task types and the task card component.
@@ -10,6 +13,8 @@ type Props = {
   label: string
   tasks: Task[]
   pendingTaskIds?: Set<string>
+  addButtonRef?: Ref<HTMLButtonElement>
+  onAddTask: () => void
 }
 
 // Render one status column and its tasks.
@@ -18,6 +23,8 @@ export default function BoardColumn({
   label,
   tasks,
   pendingTaskIds = new Set(),
+  addButtonRef,
+  onAddTask,
 }: Props) {
   // Use the status as the column drop target ID.
   const { setNodeRef, isOver } = useDroppable({ id: status })
@@ -31,6 +38,10 @@ export default function BoardColumn({
       <h2>
         {label} <span className="board-column__count">{tasks.length}</span>
       </h2>
+      <button ref={addButtonRef} className="app-button" type="button" onClick={onAddTask}>
+        <AppIcon src={plusIcon} />
+        Pridať úlohu
+      </button>
       <div className="board-column__tasks">
         {/* Render every task in this column. */}
         {tasks.map((task) => (
