@@ -4,11 +4,15 @@ import Modal from '../components/Modal'
 import ProjectMembers from '../components/ProjectMembers'
 import ProjectsBackLink from '../components/ProjectsBackLink'
 import {
+  addTaskDependency,
   createTask,
   deleteTask,
   getTasks,
+  removeTaskDependency,
+  updateTask,
   updateTaskStatus,
   type ProjectTask,
+  type TaskUpdateData,
 } from '../features/kanban/data/taskApi'
 import type { Project, ProjectMember } from './workspaceApi'
 import {
@@ -175,6 +179,73 @@ export default function BoardPage({ project, userId }: Props) {
     }
   }
 
+  async function handleUpdateTask(taskId: string, data: TaskUpdateData) {
+    setError('')
+    setSuccess('')
+    setPendingTaskIds((ids) => new Set(ids).add(taskId))
+
+    try {
+      const updated = await updateTask(projectId, taskId, data)
+      setTasks((current) => current.map((task) => (task.id === taskId ? updated : task)))
+      setSuccess('Úloha bola aktualizovaná.')
+    } catch (updateError: unknown) {
+      setError(
+        updateError instanceof Error ? updateError.message : 'Úlohu sa nepodarilo upraviť.',
+      )
+      throw updateError
+    } finally {
+      setPendingTaskIds((ids) => {
+        const next = new Set(ids)
+        next.delete(taskId)
+        return next
+      })
+    }
+  }
+
+  async function handleAddDependency(taskId: string, dependsOnId: string) {
+    setError('')
+    setSuccess('')
+    setPendingTaskIds((ids) => new Set(ids).add(taskId))
+
+    try {
+      const updated = await addTaskDependency(projectId, taskId, dependsOnId)
+      setTasks((current) => current.map((task) => (task.id === taskId ? updated : task)))
+      setSuccess('Závislosť bola pridaná.')
+    } catch (depError: unknown) {
+      setError(
+        depError instanceof Error ? depError.message : 'Závislosť sa nepodarilo pridať.',
+      )
+    } finally {
+      setPendingTaskIds((ids) => {
+        const next = new Set(ids)
+        next.delete(taskId)
+        return next
+      })
+    }
+  }
+
+  async function handleRemoveDependency(taskId: string, dependsOnId: string) {
+    setError('')
+    setSuccess('')
+    setPendingTaskIds((ids) => new Set(ids).add(taskId))
+
+    try {
+      const updated = await removeTaskDependency(projectId, taskId, dependsOnId)
+      setTasks((current) => current.map((task) => (task.id === taskId ? updated : task)))
+      setSuccess('Závislosť bola odstránená.')
+    } catch (depError: unknown) {
+      setError(
+        depError instanceof Error ? depError.message : 'Závislosť sa nepodarilo odstrániť.',
+      )
+    } finally {
+      setPendingTaskIds((ids) => {
+        const next = new Set(ids)
+        next.delete(taskId)
+        return next
+      })
+    }
+  }
+
   async function handleDeleteTask() {
     if (
       !selectedTask ||
@@ -335,6 +406,8 @@ export default function BoardPage({ project, userId }: Props) {
 
       <TaskDetailPanel
         task={selectedTask}
+        members={users}
+        allTasks={boardTasks}
         error={error}
         onClose={() => {
           setError('')
@@ -349,6 +422,15 @@ export default function BoardPage({ project, userId }: Props) {
         onStatusChange={(status) => {
           if (selectedTask) void changeTaskStatus(selectedTask.id, status)
         }}
+        onUpdateTask={(data) =>
+          selectedTask ? handleUpdateTask(selectedTask.id, data) : Promise.resolve()
+        }
+        onAddDependency={(dependsOnId) =>
+          selectedTask ? handleAddDependency(selectedTask.id, dependsOnId) : Promise.resolve()
+        }
+        onRemoveDependency={(dependsOnId) =>
+          selectedTask ? handleRemoveDependency(selectedTask.id, dependsOnId) : Promise.resolve()
+        }
       />
     </>
   )

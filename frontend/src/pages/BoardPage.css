@@ -244,6 +244,58 @@
   margin: 0 0 8px;
 }
 
+.task-detail-panel__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.task-detail-panel__dependencies {
+  margin: 18px 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+
+.task-detail-panel__dependencies h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--color-text-heading);
+}
+
+.task-detail-panel__note {
+  margin: 0 0 10px;
+  color: var(--color-text);
+  font-size: 13px;
+}
+
+.task-detail-panel__dependency-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.task-detail-panel__dependency-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.task-detail-panel__dependency-list button {
+  background: transparent;
+  border: 0;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
 .task-detail-panel__delete {
   width: 100%;
   min-height: 40px;

@@ -1,3 +1,4 @@
+import { apiFetch } from '../shared/api/apiFetch'
 import { getAuthError } from './authApi'
 
 export type Team = { id: string; name: string }
@@ -18,10 +19,7 @@ export type Project = {
 export type DashboardSummary = { teamCount: number; projectCount: number; taskCount: number }
 
 export async function requestWorkspace<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const headers = new Headers(options.headers)
-  if (options.body) headers.set('Content-Type', 'application/json')
-
-  const response = await fetch(`/api${path}`, { ...options, headers, credentials: 'include' })
+  const response = await apiFetch(`/api${path}`, options)
   if (!response.ok) throw new Error(await getAuthError(response))
   return response.json() as Promise<T>
 }
