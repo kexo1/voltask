@@ -6,10 +6,10 @@ import { PrismaService } from '../src/database/prisma.service';
 import { createTestApp } from './setup-app';
 
 const origin = 'http://localhost:5173';
-const password = 'SecurePassword123!';
+const password = 'BezpecneHeslo123!';
 
 function cookieHeader(cookies: unknown): string {
-  // Pri dalsich poziadavkach posielame len par nazov=hodnota, nie atributy Set-Cookie.
+  // Pri ďalších požiadavkách posielame iba dvojice názov=hodnota, nie atribúty Set-Cookie.
   const values = Array.isArray(cookies)
     ? cookies.filter((value): value is string => typeof value === 'string')
     : [];
@@ -17,24 +17,24 @@ function cookieHeader(cookies: unknown): string {
   return values.map((value) => value.split(';')[0]).join('; ');
 }
 
-describe('Auth & Permissions E2E', () => {
+describe('E2E: Autentifikácia a oprávnenia', () => {
   let app: INestApplication;
   let prisma: PrismaService;
 
   const owner = {
-    email: `owner_${Date.now()}@voltask.test`,
+    email: `vlastnik_${Date.now()}@voltask.test`,
     password,
-    displayName: 'Test Owner',
+    displayName: 'Testovací vlastník',
   };
   const member = {
-    email: `member_${Date.now()}@voltask.test`,
+    email: `clen_${Date.now()}@voltask.test`,
     password,
-    displayName: 'Test Member',
+    displayName: 'Testovací člen',
   };
   const foreign = {
-    email: `foreign_${Date.now()}@voltask.test`,
+    email: `cudzi_${Date.now()}@voltask.test`,
     password,
-    displayName: 'Foreign Owner',
+    displayName: 'Vlastník cudzieho tímu',
   };
 
   let ownerCookies = '';
@@ -47,7 +47,7 @@ describe('Auth & Permissions E2E', () => {
   beforeAll(async () => {
     app = await createTestApp();
     prisma = app.get(PrismaService);
-    // Testy vymazu data v tychto tabulkach, preto pouzivaj len samostatnu testovaciu DB.
+    // Testy vymažú dáta z týchto tabuliek, preto používaj iba samostatnú testovaciu databázu.
     await prisma.project.deleteMany();
     await prisma.team.deleteMany();
     await prisma.user.deleteMany();
@@ -64,7 +64,7 @@ describe('Auth & Permissions E2E', () => {
     }
   });
 
-  it('AUTH-01: registers a new owner', async () => {
+  it('AUTH-01: úspešne zaregistruje nového používateľa', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/auth/register')
       .set('Origin', origin)
@@ -78,7 +78,7 @@ describe('Auth & Permissions E2E', () => {
     ownerId = response.body.user.id;
   });
 
-  it('AUTH-02: rejects a duplicate email', async () => {
+  it('AUTH-02: odmietne duplicitnú e-mailovú adresu', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/auth/register')
       .set('Origin', origin)
@@ -87,7 +87,7 @@ describe('Auth & Permissions E2E', () => {
     expect(response.status).toBe(409);
   });
 
-  it('AUTH-05: rejects an invalid email', async () => {
+  it('AUTH-05: odmietne neplatnú e-mailovú adresu', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/auth/register')
       .set('Origin', origin)
@@ -96,25 +96,25 @@ describe('Auth & Permissions E2E', () => {
     expect(response.status).toBe(400);
   });
 
-  it('AUTH-06: rejects registration without a password', async () => {
+  it('AUTH-06: odmietne registráciu bez hesla', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/auth/register')
       .set('Origin', origin)
-      .send({ email: `nopassword_${Date.now()}@voltask.test`, displayName: 'No Password' });
+      .send({ email: `bez_hesla_${Date.now()}@voltask.test`, displayName: 'Používateľ bez hesla' });
 
     expect(response.status).toBe(400);
   });
 
-  it('AUTH-04: rejects a wrong password', async () => {
+  it('AUTH-04: odmietne nesprávne heslo', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/auth/login')
       .set('Origin', origin)
-      .send({ email: owner.email, password: 'WrongPassword999!' });
+      .send({ email: owner.email, password: 'NespravneHeslo999!' });
 
     expect(response.status).toBe(401);
   });
 
-  it('AUTH-03: logs in successfully', async () => {
+  it('AUTH-03: úspešne prihlási používateľa', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/auth/login')
       .set('Origin', origin)
@@ -125,7 +125,7 @@ describe('Auth & Permissions E2E', () => {
     ownerCookies = cookieHeader(response.headers['set-cookie']);
   });
 
-  it('AUTH-09: rejects anonymous access to protected endpoints', async () => {
+  it('AUTH-09: odmietne anonymný prístup k chráneným endpointom', async () => {
     const meResponse = await request(app.getHttpServer()).get('/api/auth/me');
     const teamsResponse = await request(app.getHttpServer()).get('/api/teams');
 
@@ -133,7 +133,7 @@ describe('Auth & Permissions E2E', () => {
     expect(teamsResponse.status).toBe(401);
   });
 
-  it('AUTH-07 and AUTH-08: returns an empty team list', async () => {
+  it('AUTH-07 a AUTH-08: vráti prázdny zoznam tímov', async () => {
     const response = await request(app.getHttpServer())
       .get('/api/teams')
       .set('Cookie', ownerCookies);
@@ -142,8 +142,8 @@ describe('Auth & Permissions E2E', () => {
     expect(response.body).toEqual([]);
   });
 
-  it('AUTH-12: updates and reads the profile', async () => {
-    const updatedName = 'Test Owner Updated';
+  it('AUTH-12: zmení a načíta profilové meno', async () => {
+    const updatedName = 'Aktualizovaný vlastník';
     const patchResponse = await request(app.getHttpServer())
       .patch('/api/auth/profile')
       .set('Origin', origin)
@@ -160,7 +160,7 @@ describe('Auth & Permissions E2E', () => {
     expect(meResponse.body.user.displayName).toBe(updatedName);
   });
 
-  it('AUTH-14 and AUTH-13: refreshes the session and stays logged in', async () => {
+  it('AUTH-14 a AUTH-13: obnoví reláciu a zachová prihlásenie', async () => {
     const refreshResponse = await request(app.getHttpServer())
       .post('/api/auth/refresh')
       .set('Origin', origin)
@@ -177,9 +177,9 @@ describe('Auth & Permissions E2E', () => {
     expect(meResponse.status).toBe(200);
   });
 
-  it('creates member and foreign accounts for permission tests', async () => {
+  it('vytvorí účty člena a cudzieho používateľa na testovanie oprávnení', async () => {
     for (const account of [member, foreign]) {
-      // Pomocne ucty vytvorime priamo, aby sme nevycerpali limit registracnych poziadaviek.
+      // Pomocné účty vytvoríme priamo, aby sme nevyčerpali limit registračných požiadaviek.
       await prisma.user.create({
         data: {
           email: account.email,
@@ -202,12 +202,12 @@ describe('Auth & Permissions E2E', () => {
     }
   });
 
-  it('AUTH-10: owner creates a team and member has limited access', async () => {
+  it('AUTH-10: vlastník vytvorí tím a člen má obmedzené oprávnenia', async () => {
     const createResponse = await request(app.getHttpServer())
       .post('/api/teams')
       .set('Origin', origin)
       .set('Cookie', ownerCookies)
-      .send({ name: 'Matrix Team', description: 'Temporary test team' });
+      .send({ name: 'Testovací tím', description: 'Dočasný tím na testovanie' });
 
     expect(createResponse.status).toBe(201);
     teamId = createResponse.body.id;
@@ -238,12 +238,12 @@ describe('Auth & Permissions E2E', () => {
     expect(roleResponse.status).toBe(403);
   });
 
-  it('AUTH-11: rejects access to foreign teams and projects', async () => {
+  it('AUTH-11: odmietne prístup k cudziemu tímu a projektu', async () => {
     const foreignTeamResponse = await request(app.getHttpServer())
       .post('/api/teams')
       .set('Origin', origin)
       .set('Cookie', foreignCookies)
-      .send({ name: 'Foreign Team', description: 'Forbidden team' });
+      .send({ name: 'Cudzí tím', description: 'Tím iného používateľa' });
     expect(foreignTeamResponse.status).toBe(201);
     foreignTeamId = foreignTeamResponse.body.id;
 
@@ -256,7 +256,7 @@ describe('Auth & Permissions E2E', () => {
       .post('/api/projects')
       .set('Origin', origin)
       .set('Cookie', foreignCookies)
-      .send({ name: 'Foreign Project', description: 'Forbidden project' });
+      .send({ name: 'Cudzí projekt', description: 'Projekt iného používateľa' });
     expect([201, 200]).toContain(foreignProjectResponse.status);
 
     const projectResponse = await request(app.getHttpServer())
@@ -265,7 +265,7 @@ describe('Auth & Permissions E2E', () => {
     expect([403, 404]).toContain(projectResponse.status);
   });
 
-  it('AUTH-15: creates and deletes a team', async () => {
+  it('AUTH-15: vytvorí a odstráni tím', async () => {
     const deleteResponse = await request(app.getHttpServer())
       .delete(`/api/teams/${teamId}`)
       .set('Origin', origin)
@@ -278,7 +278,7 @@ describe('Auth & Permissions E2E', () => {
     expect(getResponse.status).toBe(404);
   });
 
-  it('AUTH-16: logs out and invalidates the session', async () => {
+  it('AUTH-16: odhlási používateľa a zneplatní reláciu', async () => {
     const logoutResponse = await request(app.getHttpServer())
       .post('/api/auth/logout')
       .set('Origin', origin)

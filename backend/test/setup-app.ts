@@ -8,7 +8,7 @@ export async function createTestApp(): Promise<INestApplication> {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   })
-    // Testy maju vlastnu postupnost poziadaviek, nezavislu od produkcnych rate limitov.
+    // Testy majú vlastné poradie požiadaviek nezávislé od produkčných limitov.
     .overrideProvider(APP_GUARD)
     .useValue({ canActivate: () => true })
     .overrideGuard(ThrottlerGuard)

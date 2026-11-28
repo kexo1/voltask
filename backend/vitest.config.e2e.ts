@@ -7,7 +7,7 @@ export default defineConfig({
     globals: false,
     testTimeout: 20000,
     hookTimeout: 20000,
-    // Testy zdielaju databazu a session stav, preto ich spustame sekvencne.
+    // Testy zdieľajú databázu a stav relácie, preto ich spúšťame postupne.
     pool: 'forks',
     maxWorkers: 1,
     fileParallelism: false,
