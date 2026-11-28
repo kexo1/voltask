@@ -16,8 +16,25 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ucm
+          POSTGRES_PASSWORD: ucm_local_password
+          POSTGRES_DB: ucm_tasks
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
       DATABASE_URL: postgresql://ucm:ucm_local_password@localhost:5432/ucm_tasks?schema=public
+      JWT_SECRET: super_secret_test_jwt_key_with_at_least_32_bytes_length!!
+      FRONTEND_URL: http://localhost:5173
+      NODE_ENV: test
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -29,7 +46,9 @@ jobs:
       - run: npm run lint
       - run: npm run db:generate
       - run: npx prisma validate
+      - run: npx prisma migrate deploy
       - run: npm run build
+      - run: npm run test:e2e
 
   frontend:
     name: Frontend

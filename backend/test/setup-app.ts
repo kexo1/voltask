@@ -1,0 +1,29 @@
+import { ValidationPipe, type INestApplication } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { AppModule } from '../src/app.module';
+
+export async function createTestApp(): Promise<INestApplication> {
+  const moduleFixture: TestingModule = await Test.createTestingModule({
+    imports: [AppModule],
+  })
+    // Testy maju vlastnu postupnost poziadaviek, nezavislu od produkcnych rate limitov.
+    .overrideProvider(APP_GUARD)
+    .useValue({ canActivate: () => true })
+    .overrideGuard(ThrottlerGuard)
+    .useValue({ canActivate: () => true })
+    .compile();
+
+  const app = moduleFixture.createNestApplication();
+  app.setGlobalPrefix('api');
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+  await app.init();
+  return app;
+}
