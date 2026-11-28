@@ -1,9 +1,11 @@
+import backIcon from '../assets/icons/back.svg'
+import AppIcon from './AppIcon'
 import { Link } from 'react-router-dom'
 
 export default function ProjectsBackLink() {
   return (
-    <Link className="app-button app-button--secondary app-button--back" to="/projects">
-      <span aria-hidden="true">←</span>
+    <Link className="app-button app-button--secondary" to="/projects">
+      <AppIcon src={backIcon} />
       Všetky projekty
     </Link>
   )

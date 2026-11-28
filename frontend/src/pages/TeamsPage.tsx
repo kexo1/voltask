@@ -1,3 +1,6 @@
+import plusIcon from '../assets/icons/plus.svg'
+import trashIcon from '../assets/icons/trash.svg'
+import AppIcon from '../components/AppIcon'
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import Modal from '../components/Modal'
@@ -65,12 +68,12 @@ export default function TeamsPage({ userId }: { userId: string }) {
       <div className="app-page__heading">
         <h1>Tímy</h1>
         <button
-          className="app-button app-button--icon"
+          className="app-button"
           type="button"
-          aria-label="Vytvoriť tím"
           onClick={() => open({ type: 'create' })}
         >
-          <span aria-hidden="true">+</span>
+          <AppIcon src={plusIcon} />
+          Vytvoriť tím
         </button>
       </div>
       {success && (
@@ -96,9 +99,10 @@ export default function TeamsPage({ userId }: { userId: string }) {
                     className="app-button app-button--icon app-button--danger"
                     type="button"
                     aria-label={`Odstrániť tím ${team.name}`}
+                    title={`Odstrániť tím ${team.name}`}
                     onClick={() => open({ type: 'delete', team })}
                   >
-                    <span aria-hidden="true">🗑︎</span>
+                    <AppIcon src={trashIcon} />
                   </button>
                 )}
               </li>

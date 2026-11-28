@@ -44,7 +44,7 @@ export default function BoardPage({ project, userId }: Props) {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   const [pendingTaskIds, setPendingTaskIds] = useState<Set<string>>(new Set())
   const [activeId, setActiveId] = useState<string | null>(null)
-  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [createStatus, setCreateStatus] = useState<TaskStatus | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null)
   const suppressClickAfterDrag = useRef(false)
@@ -167,13 +167,14 @@ export default function BoardPage({ project, userId }: Props) {
   }
 
   async function handleCreateTask(data: TaskCreateData) {
+    if (!createStatus) return
     setIsCreating(true)
     setError('')
     setSuccess('')
     try {
-      const created = await createTask(projectId, data)
+      const created = await createTask(projectId, { ...data, status: createStatus })
       setTasks((current) => [created, ...current])
-      setIsCreateOpen(false)
+      setCreateStatus(null)
     } finally {
       setIsCreating(false)
     }
@@ -289,16 +290,6 @@ export default function BoardPage({ project, userId }: Props) {
               onChange={handleMembersChange}
             />
           </div>
-          <button
-            ref={addButton}
-            className="app-button board__add-button"
-            type="button"
-            onClick={() => setIsCreateOpen(true)}
-            disabled={loadState !== 'ready'}
-          >
-            <span aria-hidden="true">+</span>
-            Pridať úlohu
-          </button>
         </div>
         <div className="board__identity">
           <h1>{project.name}</h1>
@@ -322,6 +313,7 @@ export default function BoardPage({ project, userId }: Props) {
         <div className="board__error" role="alert">
           <span>{error}</span>
           <button
+            className="app-button app-button--secondary"
             type="button"
             disabled={pendingTaskIds.size > 0 || deletingTaskId !== null}
             onClick={() => {
@@ -340,17 +332,17 @@ export default function BoardPage({ project, userId }: Props) {
         <p className="board__empty">V projekte zatiaľ nie sú žiadne úlohy.</p>
       )}
 
-      {isCreateOpen && (
+      {createStatus && (
         <Modal
           labelId="task-create-form-title"
           busy={isCreating}
-          onClose={() => setIsCreateOpen(false)}
+          onClose={() => setCreateStatus(null)}
         >
           <TaskCreateForm
             members={users}
             disabled={isCreating}
             onSubmit={handleCreateTask}
-            onCancel={() => setIsCreateOpen(false)}
+            onCancel={() => setCreateStatus(null)}
           />
         </Modal>
       )}
@@ -391,6 +383,8 @@ export default function BoardPage({ project, userId }: Props) {
                 label={label}
                 tasks={boardTasks.filter((task) => task.status === status)}
                 pendingTaskIds={pendingTaskIds}
+                addButtonRef={status === COLUMNS[0].status ? addButton : undefined}
+                onAddTask={() => setCreateStatus(status)}
               />
             ))}
           </div>

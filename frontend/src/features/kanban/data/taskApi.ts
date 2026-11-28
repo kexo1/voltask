@@ -33,7 +33,7 @@ export function getTasks(projectId: string, page = 1, limit = 100) {
   return requestWorkspace<ProjectTask[]>(`/tasks?${params.toString()}`)
 }
 
-export function createTask(projectId: string, data: TaskCreateData) {
+export function createTask(projectId: string, data: TaskCreateData & { status?: TaskStatus }) {
   return requestWorkspace<ProjectTask>('/tasks', {
     method: 'POST',
     body: JSON.stringify({ ...data, projectId }),
