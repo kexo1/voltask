@@ -7,6 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { MAX_PASSWORD_BYTES } from '../auth.constants';
 
 export class LoginDto {
   @Transform(({ value }) =>
@@ -18,7 +19,7 @@ export class LoginDto {
 
   @IsString()
   @MinLength(1)
-  @MaxLength(72)
+  @MaxLength(MAX_PASSWORD_BYTES)
   password!: string;
 
   @IsOptional()

@@ -8,6 +8,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { MAX_PASSWORD_BYTES } from '../auth.constants';
 
 export class RegisterDto {
   @Transform(({ value }) =>
@@ -24,7 +25,7 @@ export class RegisterDto {
 
   @IsString()
   @MinLength(8)
-  @MaxLength(72)
+  @MaxLength(MAX_PASSWORD_BYTES)
   password!: string;
 
   @IsOptional()
