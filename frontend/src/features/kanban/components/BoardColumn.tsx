@@ -38,10 +38,6 @@ export default function BoardColumn({
       <h2>
         {label} <span className="board-column__count">{tasks.length}</span>
       </h2>
-      <button ref={addButtonRef} className="app-button" type="button" onClick={onAddTask}>
-        <AppIcon src={plusIcon} />
-        Pridať úlohu
-      </button>
       <div className="board-column__tasks">
         {/* Render every task in this column. */}
         {tasks.map((task) => (
@@ -52,6 +48,20 @@ export default function BoardColumn({
           />
         ))}
       </div>
+      {!tasks.length && (
+        <p className="board-column__empty">Presuňte sem úlohu</p>
+      )}
+      {status !== 'DONE' && (
+        <button
+          ref={addButtonRef}
+          className="app-button app-button--secondary"
+          type="button"
+          onClick={onAddTask}
+        >
+          <AppIcon src={plusIcon} />
+          Pridať úlohu
+        </button>
+      )}
     </section>
   )
 }

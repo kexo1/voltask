@@ -70,6 +70,27 @@
   font-weight: 600;
 }
 
+.profile-form__label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+}
+
+.profile-form__field-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.profile-form__field-note .app-icon {
+  font-size: 14px;
+}
+
 .profile-form__field input {
   width: 100%;
   min-height: 42px;

@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
+import { useNavigate } from 'react-router-dom'
 import Modal from '../components/Modal'
+import OverflowMenu from '../components/OverflowMenu'
 import ProjectMembers from '../components/ProjectMembers'
 import ProjectsBackLink from '../components/ProjectsBackLink'
+import WorkspaceLoad from '../components/WorkspaceLoad'
 import {
   addTaskDependency,
   createTask,
@@ -14,7 +17,8 @@ import {
   type ProjectTask,
   type TaskUpdateData,
 } from '../features/kanban/data/taskApi'
-import type { Project, ProjectMember } from './workspaceApi'
+import { deleteProject, getTeam, type Project, type ProjectMember } from './workspaceApi'
+import { useWorkspaceData } from './useWorkspaceData'
 import {
   DndContext,
   DragOverlay,
@@ -35,6 +39,13 @@ type Props = { project: Project; userId: string }
 
 export default function BoardPage({ project, userId }: Props) {
   const projectId = project.id
+  const navigate = useNavigate()
+  const teamId = project.team?.id
+  const loadTeam = useCallback(
+    () => (teamId ? getTeam(teamId) : Promise.resolve(null)),
+    [teamId],
+  )
+  const { state: teamState, reload: reloadTeam } = useWorkspaceData(loadTeam)
   const [members, setMembers] = useState(project.members)
   const [tasks, setTasks] = useState<ProjectTask[]>([])
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading')
@@ -47,6 +58,9 @@ export default function BoardPage({ project, userId }: Props) {
   const [createStatus, setCreateStatus] = useState<TaskStatus | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null)
+  const [deleteProjectOpen, setDeleteProjectOpen] = useState(false)
+  const [isDeletingProject, setIsDeletingProject] = useState(false)
+  const [deleteProjectError, setDeleteProjectError] = useState('')
   const suppressClickAfterDrag = useRef(false)
   const taskTrigger = useRef<HTMLElement | null>(null)
   const addButton = useRef<HTMLButtonElement>(null)
@@ -87,6 +101,12 @@ export default function BoardPage({ project, userId }: Props) {
   }))
   const activeTask = boardTasks.find((task) => task.id === activeId) ?? null
   const selectedTask = boardTasks.find((task) => task.id === selectedTaskId) ?? null
+  const canDeleteProject = project.team
+    ? teamState.status === 'ready' &&
+      teamState.data?.members.some(
+        ({ role, user }) => role === 'OWNER' && user.id === userId,
+      )
+    : project.ownerId === userId
 
   function handleMembersChange(next: ProjectMember[], removedUserId?: string) {
     setMembers(next)
@@ -277,6 +297,28 @@ export default function BoardPage({ project, userId }: Props) {
     }
   }
 
+  async function handleDeleteProject(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (isDeletingProject) return
+
+    setIsDeletingProject(true)
+    setDeleteProjectError('')
+    try {
+      await deleteProject(projectId)
+      const returnPath = project.team
+        ? `/projects?team=${encodeURIComponent(project.team.id)}`
+        : '/projects'
+      navigate(returnPath, { replace: true })
+    } catch (deleteError: unknown) {
+      setDeleteProjectError(
+        deleteError instanceof Error
+          ? deleteError.message
+          : 'Projekt sa nepodarilo odstrániť.',
+      )
+      setIsDeletingProject(false)
+    }
+  }
+
   return (
     <>
       <header className="board__header">
@@ -290,12 +332,30 @@ export default function BoardPage({ project, userId }: Props) {
               onChange={handleMembersChange}
             />
           </div>
+          {canDeleteProject && (
+            <OverflowMenu label="Ďalšie možnosti projektu">
+              <button
+                className="app-overflow-menu__item app-overflow-menu__item--danger"
+                type="button"
+                onClick={() => {
+                  setDeleteProjectError('')
+                  setDeleteProjectOpen(true)
+                }}
+              >
+                Odstrániť projekt
+              </button>
+            </OverflowMenu>
+          )}
         </div>
         <div className="board__identity">
           <h1>{project.name}</h1>
           {project.team && <p className="board__team-context">Tím: {project.team.name}</p>}
         </div>
       </header>
+
+      {project.team && teamState.status === 'error' && (
+        <WorkspaceLoad message={teamState.message} onRetry={reloadTeam} />
+      )}
 
       {success && (
         <p className="app-page__success" role="status">
@@ -326,10 +386,6 @@ export default function BoardPage({ project, userId }: Props) {
             {loadState === 'error' ? 'Skúsiť znova' : 'Obnoviť úlohy'}
           </button>
         </div>
-      )}
-
-      {loadState === 'ready' && tasks.length === 0 && (
-        <p className="board__empty">V projekte zatiaľ nie sú žiadne úlohy.</p>
       )}
 
       {createStatus && (
@@ -426,6 +482,43 @@ export default function BoardPage({ project, userId }: Props) {
           selectedTask ? handleRemoveDependency(selectedTask.id, dependsOnId) : Promise.resolve()
         }
       />
+
+      {deleteProjectOpen && (
+        <Modal
+          labelId="delete-project-title"
+          busy={isDeletingProject}
+          onClose={() => setDeleteProjectOpen(false)}
+        >
+          <h2 id="delete-project-title" className="app-card__title">
+            Odstrániť projekt „{project.name}“?
+          </h2>
+          <form onSubmit={(event) => void handleDeleteProject(event)}>
+            <p>Spolu s projektom sa natrvalo odstránia všetky jeho úlohy a ich závislosti.</p>
+            {deleteProjectError && (
+              <p className="app-page__error" role="alert">
+                {deleteProjectError}
+              </p>
+            )}
+            <div className="app-card__actions">
+              <button
+                className="app-button app-button--secondary"
+                type="button"
+                onClick={() => setDeleteProjectOpen(false)}
+                disabled={isDeletingProject}
+              >
+                Zrušiť
+              </button>
+              <button
+                className="app-button app-button--danger"
+                type="submit"
+                disabled={isDeletingProject}
+              >
+                {isDeletingProject ? 'Odstraňujem…' : 'Odstrániť projekt'}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </>
   )
 }

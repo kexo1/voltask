@@ -1,4 +1,5 @@
 import closeIcon from '../../../assets/icons/close.svg'
+import plusIcon from '../../../assets/icons/plus.svg'
 import AppIcon from '../../../components/AppIcon'
 import { useState, type FormEvent } from 'react'
 import './TaskCreateForm.css'
@@ -117,6 +118,7 @@ export default function TaskCreateForm({ members, disabled = false, onSubmit, on
         )}
 
         <button className="app-button" type="submit" disabled={disabled || isSubmitting}>
+          {!isSubmitting && <AppIcon src={plusIcon} />}
           {isSubmitting ? 'Ukladám…' : 'Vytvoriť úlohu'}
         </button>
       </form>
