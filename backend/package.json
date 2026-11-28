@@ -41,5 +41,10 @@
     "oxlint": "^1.94.0",
     "prisma": "7.10.1",
     "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "effect": "3.22.1"
+    }
   }
 }
