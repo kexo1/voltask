@@ -34,7 +34,7 @@
     "socket.io": "^4.8.4"
   },
   "devDependencies": {
-    "@nestjs/cli": "^12.0.9",
+    "@nestjs/cli": "^12.0.15",
     "@nestjs/testing": "^12.6.3",
     "@types/cron": "^2.0.1",
     "@types/node": "^26.6.5",
@@ -46,5 +46,10 @@
     "supertest": "^7.3.2",
     "typescript": "^6.0.3",
     "vitest": "^5.1.2"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "effect": "3.22.1"
+    }
   }
 }
