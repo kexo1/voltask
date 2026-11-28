@@ -5,6 +5,7 @@ export type Team = { id: string; name: string }
 export type WorkspaceUser = { id: string; displayName: string }
 export type TeamDetail = Team & {
   members: { role: 'OWNER' | 'MEMBER'; user: WorkspaceUser }[]
+  projects: { id: string }[]
 }
 export type ProjectMember = { userId: string; user: WorkspaceUser }
 export type Project = {

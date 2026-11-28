@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import logo from '../assets/voltask-logo.png'
-import { logout } from '../pages/authApi'
 import { RealtimeStatusIndicator } from '../features/realtime/RealtimeContext'
+import { logout } from '../pages/authApi'
 
 export default function Navbar({ onLogout }: { onLogout: () => void }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -27,7 +27,6 @@ export default function Navbar({ onLogout }: { onLogout: () => void }) {
         <img src={logo} alt="" />
       </NavLink>
       <nav className="app-nav__links" aria-label="Hlavná navigácia">
-        <RealtimeStatusIndicator />
         <NavLink
           className={({ isActive }) => `app-nav__link${isActive ? ' is-active' : ''}`}
           to="/dashboard"
@@ -61,6 +60,9 @@ export default function Navbar({ onLogout }: { onLogout: () => void }) {
           {isLoggingOut ? 'Odhlasujem…' : 'Odhlásiť sa'}
         </button>
       </nav>
+      <div className="app-nav__realtime" aria-label="Stav realtime pripojenia">
+        <RealtimeStatusIndicator />
+      </div>
       {logoutError && (
         <p className="app-nav__error" role="alert">
           {logoutError}

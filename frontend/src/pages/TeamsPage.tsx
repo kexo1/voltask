@@ -1,9 +1,9 @@
-import plusIcon from '../assets/icons/plus.svg'
-import trashIcon from '../assets/icons/trash.svg'
-import AppIcon from '../components/AppIcon'
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+import plusIcon from '../assets/icons/plus.svg'
+import AppIcon from '../components/AppIcon'
 import Modal from '../components/Modal'
+import OverflowMenu from '../components/OverflowMenu'
 import WorkspaceLoad from '../components/WorkspaceLoad'
 import { useWorkspaceData } from './useWorkspaceData'
 import { getTeam, getTeams, requestWorkspace, type Team } from './workspaceApi'
@@ -86,27 +86,63 @@ export default function TeamsPage({ userId }: { userId: string }) {
       {state.status === 'ready' &&
         (state.data.length ? (
           <ul className="app-page__team-list">
-            {state.data.map((team) => (
-              <li key={team.id} className="app-page__team-item">
-                <Link
-                  className="app-page__team-link"
-                  to={`/projects?team=${encodeURIComponent(team.id)}`}
-                >
-                  {team.name}
-                </Link>
-                {team.members.some(({ role, user }) => role === 'OWNER' && user.id === userId) && (
-                  <button
-                    className="app-button app-button--icon app-button--danger"
-                    type="button"
-                    aria-label={`Odstrániť tím ${team.name}`}
-                    title={`Odstrániť tím ${team.name}`}
-                    onClick={() => open({ type: 'delete', team })}
+            {state.data.map((team) => {
+              const isOwner = team.members.some(
+                ({ role, user }) => role === 'OWNER' && user.id === userId,
+              )
+              return (
+                <li key={team.id} className="app-page__team-item">
+                  <Link
+                    className="app-page__team-link"
+                    to={`/projects?team=${encodeURIComponent(team.id)}`}
                   >
-                    <AppIcon src={trashIcon} />
-                  </button>
-                )}
-              </li>
-            ))}
+                    <span className="app-page__team-title">{team.name}</span>
+                    <span className="app-page__team-summary">
+                      <span className="app-page__team-members" aria-label={`${team.members.length} členov`}>
+                        {team.members.slice(0, 4).map(({ user }) => (
+                          <span
+                            key={user.id}
+                            className="app-page__team-avatar"
+                            aria-hidden="true"
+                            title={user.displayName}
+                          >
+                            {user.displayName
+                              .trim()
+                              .split(/\s+/)
+                              .slice(0, 2)
+                              .map((part) => part[0])
+                              .join('')
+                              .toUpperCase()}
+                          </span>
+                        ))}
+                      </span>
+                      <span>{team.members.length} členov</span>
+                      <span>{team.projects.length} projektov</span>
+                    </span>
+                  </Link>
+                  {isOwner && (
+                    <OverflowMenu label={`Možnosti tímu ${team.name}`}>
+                      <button
+                        className="app-overflow-menu__item"
+                        type="button"
+                        disabled
+                        title="Pozývanie členov bude dostupné neskôr."
+                      >
+                        Pozvať ľudí / priateľov
+                        <span>Čoskoro</span>
+                      </button>
+                      <button
+                        className="app-overflow-menu__item app-overflow-menu__item--danger"
+                        type="button"
+                        onClick={() => open({ type: 'delete', team })}
+                      >
+                        Odstrániť tím
+                      </button>
+                    </OverflowMenu>
+                  )}
+                </li>
+              )
+            })}
           </ul>
         ) : (
           <p>Zatiaľ nie ste členom žiadneho tímu.</p>
@@ -151,6 +187,7 @@ export default function TeamsPage({ userId }: { userId: string }) {
                 type="submit"
                 disabled={busy}
               >
+                {action.type === 'create' && <AppIcon src={plusIcon} />}
                 {busy ? pendingLabel : submitLabel}
               </button>
             </div>

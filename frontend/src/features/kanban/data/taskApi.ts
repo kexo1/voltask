@@ -33,6 +33,21 @@ export function getTasks(projectId: string, page = 1, limit = 100) {
   return requestWorkspace<ProjectTask[]>(`/tasks?${params.toString()}`)
 }
 
+export async function getAllAccessibleTasks() {
+  const tasks: ProjectTask[] = []
+  let page = 1
+
+  while (true) {
+    const params = new URLSearchParams({ page: String(page), limit: '100' })
+    const batch = await requestWorkspace<ProjectTask[]>(`/tasks?${params.toString()}`)
+    if (!batch.length) return tasks
+
+    tasks.push(...batch)
+    if (batch.length < 100) return tasks
+    page += 1
+  }
+}
+
 export function createTask(projectId: string, data: TaskCreateData & { status?: TaskStatus }) {
   return requestWorkspace<ProjectTask>('/tasks', {
     method: 'POST',

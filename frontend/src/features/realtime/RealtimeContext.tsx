@@ -155,7 +155,7 @@ export function RealtimeStatusIndicator() {
     <span
       className={`realtime-status realtime-status--${status}`}
       role="status"
-      aria-label={`Stav spojenia: ${statusLabels[status]}`}
+      aria-label={`Stav realtime pripojenia: ${statusLabels[status]}`}
       title={statusLabels[status]}
     >
       <span className="realtime-status__dot" aria-hidden="true" />

@@ -134,7 +134,7 @@ export default function App() {
         <Routes>
         <Route element={<RequireAuth user={user} />}>
           <Route element={<AppLayout onLogout={handleLogout} />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/dashboard" element={user && <DashboardPage userId={user.id} />} />
             <Route path="/projects" element={user && <ProjectsPage userId={user.id} />} />
             <Route
               path="/projects/:projectId/board"

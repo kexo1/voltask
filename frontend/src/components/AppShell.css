@@ -13,7 +13,7 @@ body,
 }
 
 body {
-  background: var(--color-bg);
+  background: var(--color-bg-app);
   color: var(--color-text);
 }
 
@@ -21,7 +21,7 @@ body {
    do tela dokumentu, preto jej základný vzhľad definujeme tu s vyššou
    špecificitou než v auth.css. */
 html body .auth-page {
-  background: var(--color-bg);
+  background: var(--color-bg-app);
   color: var(--color-text);
 }
 
@@ -57,6 +57,7 @@ html body .auth-page .auth-form__field input:focus {
 }
 
 #root {
+  width: 100%;
   border-inline: 0;
   background: transparent;
 }
@@ -108,6 +109,18 @@ html body .auth-page .auth-form__field input:focus {
   gap: clamp(12px, 3vw, 36px);
 }
 
+.app-nav__realtime {
+  display: flex;
+  flex: 0 0 132px;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-nav__realtime .realtime-status {
+  justify-content: center;
+  width: 100%;
+}
+
 .app-nav__link {
   padding: 10px 0;
   color: var(--color-text);
@@ -144,7 +157,7 @@ html body .auth-page .auth-form__field input:focus {
 .app-shell__main {
   width: min(100% - 40px, 1120px);
   margin: 0 auto;
-  padding: 40px 0 64px;
+  padding: 32px 0 64px;
   animation: page-enter 240ms ease-out both;
 }
 
@@ -165,14 +178,15 @@ html body .auth-page .auth-form__field input:focus {
 
 .app-page {
   display: grid;
-  gap: 20px;
+  gap: var(--space-5);
 }
 
 .app-page h1 {
   margin: 0;
   color: var(--color-text-heading);
-  font-size: clamp(30px, 5vw, 42px);
-  letter-spacing: -1px;
+  font-size: clamp(26px, 4vw, 32px);
+  line-height: 1.2;
+  letter-spacing: -0.6px;
 }
 
 .app-page__intro {
@@ -181,14 +195,14 @@ html body .auth-page .auth-form__field input:focus {
 
 .app-page__team-name {
   width: fit-content;
-  margin: 0 clamp(16px, 4vw, 48px) 0;
-  padding: 8px 14px;
+  margin: 0;
+  padding: 6px 12px;
   border: 1px solid var(--color-accent-border);
   border-radius: 999px;
   background: var(--color-accent-bg);
   color: var(--brand-blue-dark);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .app-page__heading {
@@ -203,13 +217,224 @@ html body .auth-page .auth-form__field input:focus {
 .app-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 12px;
+  gap: var(--space-4);
   margin: 0;
   padding: 0;
 }
 
 .app-project-list {
   list-style: none;
+}
+
+.app-project-list > .app-card {
+  padding: 0;
+  border-color: var(--color-border-soft);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.app-project-list > .app-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent-border);
+  box-shadow: var(--shadow-card);
+}
+
+.app-project-list__link {
+  display: grid;
+  height: 100%;
+  gap: var(--space-3);
+  padding: clamp(18px, 3vw, 24px);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.app-project-list__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.app-project-list__heading .app-card__title {
+  margin: 0;
+}
+
+.app-project-badge {
+  flex: 0 0 auto;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.app-project-badge--personal {
+  background: var(--color-code-bg);
+  color: var(--color-muted);
+}
+
+.app-project-badge--team {
+  background: var(--color-accent-bg);
+  color: var(--brand-blue-dark);
+}
+
+.app-project-progress {
+  display: grid;
+  gap: 7px;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.app-project-progress__track {
+  display: block;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-code-bg);
+}
+
+.app-project-progress__value {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-accent);
+  transition: width 180ms ease;
+}
+
+.app-summary__card {
+  display: grid;
+  min-height: 100px;
+  align-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  color: var(--color-text);
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.app-summary__card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent-border);
+  box-shadow: var(--shadow-card);
+}
+
+.app-summary__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.app-summary__label .app-icon {
+  color: var(--brand-blue);
+  font-size: 18px;
+}
+
+.app-summary__card strong {
+  color: var(--color-text-heading);
+  font-size: 1.65rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-assigned {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.dashboard-assigned h2 {
+  margin: 0;
+}
+
+.dashboard-assigned__list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard-assigned__list a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 12px 14px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text-heading);
+  text-decoration: none;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.dashboard-assigned__list a:hover {
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-bg);
+}
+
+.dashboard-assigned__project {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.projects-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.projects-search {
+  flex: 1 1 220px;
+}
+
+.projects-search input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text-heading);
+  font: inherit;
+  font-size: 14px;
+}
+
+.projects-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.projects-filter .app-button {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.projects-filter .app-button.is-active {
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-bg);
+  color: var(--brand-blue-dark);
+}
+
+.app-empty-state {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-muted);
 }
 
 .app-card,
@@ -220,17 +445,6 @@ html body .auth-page .auth-form__field input:focus {
 
 .app-project-description {
   white-space: pre-wrap;
-}
-
-.app-project-list a {
-  color: var(--brand-blue-dark);
-}
-
-.app-summary dd {
-  margin: 8px 0 0;
-  font-size: 1.5rem;
-  color: var(--color-text-heading);
-  font-weight: 700;
 }
 
 .app-dialog {
@@ -255,8 +469,8 @@ html body .auth-page .auth-form__field input:focus {
 
 .app-form {
   display: grid;
-  gap: 10px;
-  margin-top: 12px;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
 }
 
 .app-form input,
@@ -267,16 +481,23 @@ html body .auth-page .auth-form__field input:focus {
   min-height: 42px;
   padding: 8px 12px;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   color: var(--color-text-heading);
   background: var(--color-bg);
   font: inherit;
+  transition: border-color 120ms ease;
+}
+
+.app-form input:hover,
+.app-form select:hover,
+.app-form textarea:hover {
+  border-color: var(--color-accent-border);
 }
 
 .app-page__success {
   padding: 10px 14px;
   border: 1px solid var(--color-success-border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--color-success-bg);
   color: var(--color-success);
 }
@@ -291,9 +512,9 @@ html body .auth-page .auth-form__field input:focus {
 /* --- Karty ----------------------------------------------------------------- */
 
 .app-card {
-  padding: clamp(20px, 4vw, 32px);
-  border: 1px solid var(--brand-border);
-  border-radius: 16px;
+  padding: clamp(18px, 3vw, 24px);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
   background: var(--color-bg);
   box-shadow: var(--shadow-card);
 }
@@ -301,7 +522,8 @@ html body .auth-page .auth-form__field input:focus {
 .app-card__title {
   margin: 0 0 8px;
   color: var(--color-text-heading);
-  font-size: 21px;
+  font-size: 18px;
+  line-height: 1.3;
 }
 
 .app-card__text {
@@ -311,8 +533,8 @@ html body .auth-page .auth-form__field input:focus {
 .app-card__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 20px;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
 }
 
 /* --- Tlačidlá -------------------------------------------------------------- */
@@ -325,14 +547,17 @@ html body .auth-page .auth-form__field input:focus {
   min-height: 42px;
   padding: 0 16px;
   border: 1px solid var(--brand-blue);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--brand-blue);
   color: #fff;
   font: inherit;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease;
 }
 
 .app-icon {
@@ -357,6 +582,88 @@ html body .auth-page .auth-form__field input:focus {
   border-radius: 6px;
   background: transparent;
   color: var(--color-text);
+}
+
+.app-overflow-menu {
+  position: relative;
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.app-overflow-menu > summary {
+  display: grid;
+  place-items: center;
+  list-style: none;
+  cursor: pointer;
+}
+
+.app-overflow-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.app-overflow-menu__items {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  right: 0;
+  display: grid;
+  width: min(250px, calc(100vw - 32px));
+  padding: 6px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-card);
+}
+
+.app-overflow-menu:not([open]) > .app-overflow-menu__items {
+  display: none;
+}
+
+.app-overflow-menu__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-heading);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.app-overflow-menu__item:not(:disabled):hover {
+  background: var(--color-code-bg);
+}
+
+.app-overflow-menu__item:disabled {
+  color: var(--color-muted);
+  cursor: not-allowed;
+}
+
+.app-overflow-menu__item > span {
+  flex: 0 0 auto;
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.app-overflow-menu__item--danger {
+  margin-top: 4px;
+  border-top: 1px solid var(--color-border-soft);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  color: var(--color-error-text);
+}
+
+.app-overflow-menu__item--danger:not(:disabled):hover {
+  background: var(--color-error-bg-soft);
+  color: var(--color-error);
 }
 
 .app-button:disabled {
@@ -397,6 +704,14 @@ html body .auth-page .auth-form__field input:focus {
   background: var(--color-error);
 }
 
+.app-project-list .app-button--danger,
+.app-page__team-item .app-button--danger:not(.app-button--icon),
+.task-detail-panel__delete {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
 .app-button:focus-visible,
 .app-nav__link:focus-visible {
   outline: 2px solid var(--brand-blue);
@@ -427,15 +742,15 @@ html body .auth-page .auth-form__field input:focus {
   gap: 12px;
   padding: 14px 16px;
   border: 1px solid var(--color-error-border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--color-error-bg-soft);
   color: var(--color-error-text);
 }
 
 .app-page__team-list {
   display: grid;
-  gap: 12px;
-  margin: 20px 0 0;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -443,35 +758,80 @@ html body .auth-page .auth-form__field input:focus {
 .app-page__team-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-2);
+  padding: 6px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.app-page__team-item:hover {
+  transform: translateY(-1px);
+  border-color: var(--color-accent-border);
+  box-shadow: var(--shadow-card);
 }
 
 .app-page__team-link {
   flex: 1;
-  display: block;
-  padding: 16px;
-  border: 1px solid var(--brand-border);
-  border-radius: 10px;
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
   color: var(--brand-blue-dark);
-  background: var(--color-bg);
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: none;
-  transition:
-    border-color 180ms ease,
-    background 180ms ease,
-    transform 180ms ease;
 }
 
 .app-page__team-link:hover {
-  transform: translateY(-2px);
-  border-color: var(--color-accent-border);
   background: var(--color-accent-bg);
 }
 
-.app-page__delete-button {
-  flex: 0 0 auto;
-  min-height: 40px;
-  padding-inline: 13px;
+.app-page__team-title {
+  color: var(--color-text-heading);
+  font-size: 15px;
+}
+
+.app-page__team-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.app-page__team-members {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 5px;
+}
+
+.app-page__team-avatar {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  margin-left: -5px;
+  place-items: center;
+  border: 2px solid var(--color-bg);
+  border-radius: 50%;
+  background: var(--color-accent-bg);
+  color: var(--brand-blue-dark);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.app-project-list a:hover {
+  text-decoration: none;
+}
+
+.app-project-list__link:hover .app-card__title {
+  color: var(--brand-blue-dark);
 }
 
 /* --- Kanbanová nástenka (prepísaná v obale aplikácie) --------------------- */
@@ -489,10 +849,10 @@ html body .auth-page .auth-form__field input:focus {
 }
 
 .app-shell .task-card {
-  border-color: var(--brand-border);
+  border-color: var(--color-border-soft);
   background: var(--color-bg);
   color: var(--color-text);
-  box-shadow: 0 4px 12px rgb(16 42 86 / 5%);
+  box-shadow: 0 1px 2px rgb(16 42 86 / 6%);
 }
 
 .app-shell .task-card h3 {
@@ -501,10 +861,11 @@ html body .auth-page .auth-form__field input:focus {
 
 .app-shell .task-card:hover {
   border-color: var(--color-accent-border);
+  box-shadow: 0 2px 8px rgb(16 42 86 / 8%);
 }
 
 .app-shell .task-create-form {
-  border-color: var(--brand-border);
+  border-color: var(--color-border-soft);
   background: var(--color-bg);
   color: var(--color-text);
 }
@@ -523,13 +884,37 @@ html body .auth-page .auth-form__field input:focus {
 }
 
 .app-shell .task-detail-panel {
-  border-color: var(--brand-border);
+  border-color: var(--color-border-soft);
   background: var(--color-bg);
   color: var(--color-text);
 }
 
 .app-shell .task-detail-panel h2 {
   color: var(--color-text-heading);
+}
+
+.app-project-list a {
+  text-decoration: none;
+}
+
+.app-project-list a:hover {
+  text-decoration: none;
+}
+
+.app-project-list .app-card__title {
+  margin-bottom: 6px;
+}
+
+.app-project-list .app-card p {
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.app-project-list .app-card .app-project-description {
+  margin: 4px 0;
+  color: var(--color-text);
+  font-size: 15px;
 }
 
 /* Pomocná trieda: skryje obsah vizuálne, ale ponechá ho prístupný pre
@@ -573,6 +958,10 @@ html body .auth-page .auth-form__field input:focus {
     min-height: 34px;
     padding-inline: 9px;
     font-size: 12px;
+  }
+
+  .app-nav__realtime {
+    flex-basis: 32px;
   }
 
   .app-shell__main {

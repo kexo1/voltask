@@ -6,11 +6,10 @@ import Modal from '../components/Modal'
 import ProjectList from '../components/ProjectList'
 import ProjectsBackLink from '../components/ProjectsBackLink'
 import WorkspaceLoad from '../components/WorkspaceLoad'
+import { loadProjectsAndTasks } from './projectTaskData'
 import { useWorkspaceData } from './useWorkspaceData'
 import {
-  deleteProject,
   getOwnedTeams,
-  getProjects,
   getTeam,
   projectBoardPath,
   requestWorkspace,
@@ -124,6 +123,7 @@ function CreateProject({
         )}
         <div className="app-card__actions">
           <button className="app-button" type="submit" disabled={busy}>
+            {!busy && <AppIcon src={plusIcon} />}
             {busy ? 'Vytváram…' : 'Vytvoriť projekt'}
           </button>
           <button
@@ -150,63 +150,6 @@ function CreateProject({
   )
 }
 
-function DeleteProjectDialog({
-  project,
-  onClose,
-  onDeleted,
-}: {
-  project: Project
-  onClose: () => void
-  onDeleted: () => void
-}) {
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    if (busy) return
-
-    setBusy(true)
-    setError('')
-    try {
-      await deleteProject(project.id)
-      onDeleted()
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Projekt sa nepodarilo odstrániť.')
-      setBusy(false)
-    }
-  }
-
-  return (
-    <Modal labelId="delete-project-title" busy={busy} onClose={onClose}>
-      <h2 id="delete-project-title" className="app-card__title">
-        Odstrániť projekt „{project.name}“?
-      </h2>
-      <form onSubmit={submit}>
-        <p>Spolu s projektom sa natrvalo odstránia všetky jeho úlohy a ich závislosti.</p>
-        {error && (
-          <p className="app-page__error" role="alert">
-            {error}
-          </p>
-        )}
-        <div className="app-card__actions">
-          <button
-            className="app-button app-button--secondary"
-            type="button"
-            onClick={onClose}
-            disabled={busy}
-          >
-            Zrušiť
-          </button>
-          <button className="app-button app-button--danger" type="submit" disabled={busy}>
-            {busy ? 'Odstraňujem…' : 'Odstrániť projekt'}
-          </button>
-        </div>
-      </form>
-    </Modal>
-  )
-}
-
 export default function ProjectsPage({ userId }: { userId: string }) {
   const [search] = useSearchParams()
   const teamId = search.get('team') || undefined
@@ -215,17 +158,17 @@ export default function ProjectsPage({ userId }: { userId: string }) {
 
 function ProjectsView({ userId, teamId }: { userId: string; teamId?: string }) {
   const [search, setSearch] = useSearchParams()
-  const { state, setState, reload } = useWorkspaceData(getProjects)
   const loadTeams = useCallback(
     async () => (teamId ? [await getTeam(teamId)] : getOwnedTeams(userId)),
     [teamId, userId],
   )
+  const { state, setState, reload } = useWorkspaceData(loadProjectsAndTasks)
   const { state: teams, reload: reloadTeams } = useWorkspaceData(loadTeams)
   const [inlineOpen, setInlineOpen] = useState(false)
   const focusCreateTrigger = useRef(false)
   const [created, setCreated] = useState<Project | null>(null)
-  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null)
-  const [deletedProjectName, setDeletedProjectName] = useState('')
+  const [query, setQuery] = useState('')
+  const [projectFilter, setProjectFilter] = useState<'all' | 'personal' | 'team'>('all')
   const create = teamId ? null : search.get('create')
   const team = teamId && teams.status === 'ready' ? teams.data[0] : undefined
   const ownsTeam = team?.members.some(({ role, user }) => role === 'OWNER' && user.id === userId)
@@ -246,27 +189,20 @@ function ProjectsView({ userId, teamId }: { userId: string; teamId?: string }) {
     setInlineOpen(false)
   }
 
-  const projects =
+  const allProjects =
     state.status === 'ready'
-      ? state.data.filter((project) => !teamId || project.team?.id === teamId)
+      ? state.data.projects.filter((project) => !teamId || project.team?.id === teamId)
       : null
-
-  function canDelete(project: Project) {
-    if (!project.team) return project.ownerId === userId
-    if (teamId) return ownsTeam
-    return teams.status === 'ready' && teams.data.some(({ id }) => id === project.team?.id)
-  }
-
-  function handleDeleted(project: Project) {
-    setProjectToDelete(null)
-    setCreated(null)
-    setDeletedProjectName(project.name)
-    setState((current) =>
-      current.status === 'ready'
-        ? { status: 'ready', data: current.data.filter(({ id }) => id !== project.id) }
-        : current,
-    )
-  }
+  const normalizedQuery = query.trim().toLocaleLowerCase()
+  const projects = allProjects?.filter((project) => {
+    if (!teamId && projectFilter === 'personal' && project.team) return false
+    if (!teamId && projectFilter === 'team' && !project.team) return false
+    if (!normalizedQuery) return true
+    return [project.name, project.description ?? '', project.team?.name ?? '']
+      .join(' ')
+      .toLocaleLowerCase()
+      .includes(normalizedQuery)
+  })
 
   return (
     <section className="app-page">
@@ -283,7 +219,6 @@ function ProjectsView({ userId, teamId }: { userId: string; teamId?: string }) {
             type="button"
             onClick={() => {
               setCreated(null)
-              setDeletedProjectName('')
               setSearch((previous) => {
                 const next = new URLSearchParams(previous)
                 next.set('create', 'project')
@@ -291,6 +226,7 @@ function ProjectsView({ userId, teamId }: { userId: string; teamId?: string }) {
               })
             }}
           >
+            <AppIcon src={plusIcon} />
             Vytvoriť projekt
           </button>
         )}
@@ -309,7 +245,6 @@ function ProjectsView({ userId, teamId }: { userId: string; teamId?: string }) {
             }}
             onClick={() => {
               setCreated(null)
-              setDeletedProjectName('')
               setInlineOpen(true)
             }}
           >
@@ -318,11 +253,36 @@ function ProjectsView({ userId, teamId }: { userId: string; teamId?: string }) {
           </button>
         </div>
       )}
-      {deletedProjectName && (
-        <p className="app-page__success" role="status">
-          Projekt „{deletedProjectName}“ bol odstránený.
-        </p>
-      )}
+      <div className="projects-controls">
+        <label className="projects-search">
+          <span className="sr-only">Hľadať projekty</span>
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Hľadať projekty…"
+          />
+        </label>
+        {!teamId && (
+          <div className="projects-filter" role="group" aria-label="Filtrovať projekty">
+            {([
+              ['all', 'Všetky'],
+              ['personal', 'Osobné'],
+              ['team', 'Tímové'],
+            ] as const).map(([filter, label]) => (
+              <button
+                key={filter}
+                className={`app-button app-button--secondary${projectFilter === filter ? ' is-active' : ''}`}
+                type="button"
+                aria-pressed={projectFilter === filter}
+                onClick={() => setProjectFilter(filter)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       {created && (
         <div className="app-page__success app-page__success--with-action">
           <span role="status">Projekt „{created.name}“ bol vytvorený.</span>
@@ -347,7 +307,17 @@ function ProjectsView({ userId, teamId }: { userId: string; teamId?: string }) {
           onCreated={(project) => {
             setState((current) =>
               current.status === 'ready'
-                ? { status: 'ready', data: [project, ...current.data] }
+                ? {
+                    status: 'ready',
+                    data: {
+                      ...current.data,
+                      projects: [project, ...current.data.projects],
+                      taskProgress: {
+                        ...current.data.taskProgress,
+                        [project.id]: { completed: 0, total: 0 },
+                      },
+                    },
+                  }
                 : current,
             )
             setCreated(project)
@@ -357,30 +327,29 @@ function ProjectsView({ userId, teamId }: { userId: string; teamId?: string }) {
       )}
       {projects &&
         (projects.length ? (
-          <ProjectList
-            projects={projects}
-            renderActions={(project) =>
-              canDelete(project) && (
-                <button
-                  className="app-button app-button--danger"
-                  type="button"
-                  aria-label={`Odstrániť projekt ${project.name}`}
-                  onClick={() => {
-                    setDeletedProjectName('')
-                    setProjectToDelete(project)
-                  }}
-                >
-                  Odstrániť projekt
-                </button>
-              )
-            }
-          />
+          <ProjectList projects={projects} taskProgress={state.status === 'ready' ? state.data.taskProgress : undefined} />
         ) : (
-          <p>
-            {teamId
-              ? 'V tomto tíme zatiaľ nemáte dostupné projekty.'
-              : 'Zatiaľ nemáte žiadne projekty.'}
-          </p>
+          allProjects?.length ? (
+            <div className="app-empty-state">
+              <p>Žiadne projekty nezodpovedajú zadanému vyhľadávaniu alebo filtru.</p>
+              <button
+                className="app-button app-button--secondary"
+                type="button"
+                onClick={() => {
+                  setQuery('')
+                  setProjectFilter('all')
+                }}
+              >
+                Zrušiť filtre
+              </button>
+            </div>
+          ) : (
+            <p>
+              {teamId
+                ? 'V tomto tíme zatiaľ nemáte dostupné projekty.'
+                : 'Zatiaľ nemáte žiadne projekty.'}
+            </p>
+          )
         ))}
       {create && (
         <CreateProject
@@ -393,13 +362,6 @@ function ProjectsView({ userId, teamId }: { userId: string; teamId?: string }) {
             closeCreate()
             reload()
           }}
-        />
-      )}
-      {projectToDelete && (
-        <DeleteProjectDialog
-          project={projectToDelete}
-          onClose={() => setProjectToDelete(null)}
-          onDeleted={() => handleDeleted(projectToDelete)}
         />
       )}
     </section>

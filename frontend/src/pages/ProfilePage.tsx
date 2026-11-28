@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import lockIcon from '../assets/icons/lock.svg'
+import AppIcon from '../components/AppIcon'
 import type { AuthResponse } from './authApi'
 import { getProfile, updateProfile } from './profileApi'
 import './ProfilePage.css'
@@ -21,6 +23,7 @@ export default function ProfilePage({ user, onUserUpdated }: ProfilePageProps) {
   const [success, setSuccess] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const hasChanges = displayName.trim() !== profile.displayName
   const onUserUpdatedRef = useRef(onUserUpdated)
 
   useEffect(() => {
@@ -76,8 +79,19 @@ export default function ProfilePage({ user, onUserUpdated }: ProfilePageProps) {
         {isLoading ? <p className="profile-status">Načítavam profil…</p> : (
           <form className="profile-form" onSubmit={handleSubmit}>
             <label className="profile-form__field">
-              E-mail
-              <input type="email" value={profile.email} readOnly />
+              <span className="profile-form__label">
+                E-mail
+                <span className="profile-form__field-note" id="profile-email-note">
+                  <AppIcon src={lockIcon} />
+                  E-mail nie je možné meniť.
+                </span>
+              </span>
+              <input
+                type="email"
+                value={profile.email}
+                readOnly
+                aria-describedby="profile-email-note"
+              />
             </label>
             <label className="profile-form__field">
               Zobrazované meno
@@ -92,7 +106,7 @@ export default function ProfilePage({ user, onUserUpdated }: ProfilePageProps) {
             </label>
             {error && <p className="profile-form__error" role="alert">{error}</p>}
             {success && <p className="profile-form__success" role="status">{success}</p>}
-            <button className="app-button" type="submit" disabled={isSaving}>
+            <button className="app-button" type="submit" disabled={isSaving || !hasChanges}>
               {isSaving ? 'Ukladanie…' : 'Uložiť zmeny'}
             </button>
           </form>

@@ -1,4 +1,6 @@
 import { useCallback, useState, type FormEvent } from 'react'
+import plusIcon from '../assets/icons/plus.svg'
+import AppIcon from './AppIcon'
 import { getTeam, requestWorkspace, type Project, type ProjectMember } from '../pages/workspaceApi'
 import { useWorkspaceData } from '../pages/useWorkspaceData'
 import Modal from './Modal'
@@ -132,6 +134,7 @@ function ManageMembers({
               ))}
             </select>
             <button className="app-button" type="submit" disabled={busy}>
+              <AppIcon src={plusIcon} />
               Pridať člena
             </button>
           </form>
