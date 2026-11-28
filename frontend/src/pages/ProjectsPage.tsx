@@ -1,5 +1,7 @@
-import { useCallback, useState, type FormEvent } from 'react'
+import { useCallback, useRef, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import plusIcon from '../assets/icons/plus.svg'
+import AppIcon from '../components/AppIcon'
 import Modal from '../components/Modal'
 import ProjectList from '../components/ProjectList'
 import ProjectsBackLink from '../components/ProjectsBackLink'
@@ -9,6 +11,7 @@ import {
   deleteProject,
   getOwnedTeams,
   getProjects,
+  getTeam,
   projectBoardPath,
   requestWorkspace,
   type Project,
@@ -16,18 +19,20 @@ import {
 
 function CreateProject({
   userId,
-  personal,
+  personal = false,
+  contextTeamId,
   onClose,
   onCreated,
 }: {
   userId: string
-  personal: boolean
+  personal?: boolean
+  contextTeamId?: string
   onClose: () => void
   onCreated: (project: Project) => void
 }) {
   const loadTeams = useCallback(
-    () => (personal ? Promise.resolve([]) : getOwnedTeams(userId)),
-    [personal, userId],
+    () => (personal || contextTeamId ? Promise.resolve([]) : getOwnedTeams(userId)),
+    [contextTeamId, personal, userId],
   )
   const { state, reload } = useWorkspaceData(loadTeams)
   const [name, setName] = useState('')
@@ -52,7 +57,7 @@ function CreateProject({
         body: JSON.stringify({
           name: name.trim(),
           description: description.trim() || undefined,
-          teamId: teamId || undefined,
+          teamId: contextTeamId || teamId || undefined,
         }),
       })
       onCreated(project)
@@ -63,8 +68,8 @@ function CreateProject({
     }
   }
 
-  return (
-    <Modal labelId="create-project-title" busy={busy} onClose={onClose}>
+  const content = (
+    <>
       <h2 id="create-project-title" className="app-card__title">
         {personal ? 'Vytvoriť osobný projekt' : 'Vytvoriť projekt'}
       </h2>
@@ -72,6 +77,7 @@ function CreateProject({
         <label htmlFor="project-name">Názov projektu</label>
         <input
           id="project-name"
+          autoFocus={Boolean(contextTeamId)}
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -87,7 +93,7 @@ function CreateProject({
           rows={4}
           disabled={busy}
         />
-        {!personal && (
+        {!personal && !contextTeamId && (
           <>
             <label htmlFor="project-team">Tím (voliteľný)</label>
             <select
@@ -118,7 +124,7 @@ function CreateProject({
         )}
         <div className="app-card__actions">
           <button className="app-button" type="submit" disabled={busy}>
-            {busy ? 'Vytváram…' : 'Vytvoriť'}
+            {busy ? 'Vytváram…' : 'Vytvoriť projekt'}
           </button>
           <button
             className="app-button app-button--secondary"
@@ -130,6 +136,16 @@ function CreateProject({
           </button>
         </div>
       </form>
+    </>
+  )
+
+  return contextTeamId ? (
+    <section className="app-card" aria-labelledby="create-project-title">
+      {content}
+    </section>
+  ) : (
+    <Modal labelId="create-project-title" busy={busy} onClose={onClose}>
+      {content}
     </Modal>
   )
 }
@@ -192,15 +208,27 @@ function DeleteProjectDialog({
 }
 
 export default function ProjectsPage({ userId }: { userId: string }) {
+  const [search] = useSearchParams()
+  const teamId = search.get('team') || undefined
+  return <ProjectsView key={teamId ?? ''} userId={userId} teamId={teamId} />
+}
+
+function ProjectsView({ userId, teamId }: { userId: string; teamId?: string }) {
   const [search, setSearch] = useSearchParams()
   const { state, setState, reload } = useWorkspaceData(getProjects)
-  const loadOwnedTeams = useCallback(() => getOwnedTeams(userId), [userId])
-  const { state: ownedTeams, reload: reloadOwnedTeams } = useWorkspaceData(loadOwnedTeams)
+  const loadTeams = useCallback(
+    async () => (teamId ? [await getTeam(teamId)] : getOwnedTeams(userId)),
+    [teamId, userId],
+  )
+  const { state: teams, reload: reloadTeams } = useWorkspaceData(loadTeams)
+  const [inlineOpen, setInlineOpen] = useState(false)
+  const focusCreateTrigger = useRef(false)
   const [created, setCreated] = useState<Project | null>(null)
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null)
   const [deletedProjectName, setDeletedProjectName] = useState('')
-  const teamId = search.get('team')
-  const create = search.get('create')
+  const create = teamId ? null : search.get('create')
+  const team = teamId && teams.status === 'ready' ? teams.data[0] : undefined
+  const ownsTeam = team?.members.some(({ role, user }) => role === 'OWNER' && user.id === userId)
 
   function closeCreate() {
     setSearch(
@@ -213,6 +241,11 @@ export default function ProjectsPage({ userId }: { userId: string }) {
     )
   }
 
+  function closeInlineCreate() {
+    focusCreateTrigger.current = true
+    setInlineOpen(false)
+  }
+
   const projects =
     state.status === 'ready'
       ? state.data.filter((project) => !teamId || project.team?.id === teamId)
@@ -220,9 +253,8 @@ export default function ProjectsPage({ userId }: { userId: string }) {
 
   function canDelete(project: Project) {
     if (!project.team) return project.ownerId === userId
-    return (
-      ownedTeams.status === 'ready' && ownedTeams.data.some((team) => team.id === project.team?.id)
-    )
+    if (teamId) return ownsTeam
+    return teams.status === 'ready' && teams.data.some(({ id }) => id === project.team?.id)
   }
 
   function handleDeleted(project: Project) {
@@ -244,19 +276,48 @@ export default function ProjectsPage({ userId }: { userId: string }) {
         </div>
       )}
       <div className="app-page__heading">
-        <h1>{teamId ? 'Tímové projekty' : 'Projekty'}</h1>
-        <button
-          className="app-button"
-          type="button"
-          onClick={() => {
-            setCreated(null)
-            setDeletedProjectName('')
-            setSearch({ create: 'project' })
-          }}
-        >
-          Vytvoriť projekt
-        </button>
+        <h1>{team?.name ?? (teamId ? 'Tímové projekty' : 'Projekty')}</h1>
+        {!teamId && (
+          <button
+            className="app-button"
+            type="button"
+            onClick={() => {
+              setCreated(null)
+              setDeletedProjectName('')
+              setSearch((previous) => {
+                const next = new URLSearchParams(previous)
+                next.set('create', 'project')
+                return next
+              })
+            }}
+          >
+            Vytvoriť projekt
+          </button>
+        )}
       </div>
+      {teamId && ownsTeam && !inlineOpen && (
+        <div>
+          <button
+            className="app-button"
+            type="button"
+            disabled={state.status !== 'ready'}
+            ref={(button) => {
+              if (button && focusCreateTrigger.current) {
+                button.focus()
+                focusCreateTrigger.current = false
+              }
+            }}
+            onClick={() => {
+              setCreated(null)
+              setDeletedProjectName('')
+              setInlineOpen(true)
+            }}
+          >
+            <AppIcon src={plusIcon} />
+            Nový projekt
+          </button>
+        </div>
+      )}
       {deletedProjectName && (
         <p className="app-page__success" role="status">
           Projekt „{deletedProjectName}“ bol odstránený.
@@ -265,17 +326,33 @@ export default function ProjectsPage({ userId }: { userId: string }) {
       {created && (
         <div className="app-page__success app-page__success--with-action">
           <span role="status">Projekt „{created.name}“ bol vytvorený.</span>
-          <Link className="app-button app-button--success" to={projectBoardPath(created.id)}>
+          <Link className="app-button app-button--secondary" to={projectBoardPath(created.id)}>
             Otvoriť nástenku
           </Link>
         </div>
       )}
       {state.status === 'loading' && <WorkspaceLoad onRetry={reload} />}
       {state.status === 'error' && <WorkspaceLoad message={state.message} onRetry={reload} />}
-      {ownedTeams.status !== 'ready' && projects?.some((project) => project.team) && (
+      {teams.status !== 'ready' && (teamId || projects?.some((project) => project.team)) && (
         <WorkspaceLoad
-          message={ownedTeams.status === 'error' ? ownedTeams.message : undefined}
-          onRetry={reloadOwnedTeams}
+          message={teams.status === 'error' ? teams.message : undefined}
+          onRetry={reloadTeams}
+        />
+      )}
+      {teamId && inlineOpen && (
+        <CreateProject
+          userId={userId}
+          contextTeamId={teamId}
+          onClose={closeInlineCreate}
+          onCreated={(project) => {
+            setState((current) =>
+              current.status === 'ready'
+                ? { status: 'ready', data: [project, ...current.data] }
+                : current,
+            )
+            setCreated(project)
+            closeInlineCreate()
+          }}
         />
       )}
       {projects &&

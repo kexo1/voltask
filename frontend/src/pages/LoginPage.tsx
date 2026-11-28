@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import eyeIcon from '../assets/icons/eye.svg'
 import eyeOffIcon from '../assets/icons/eye-off.svg'
+import AppIcon from '../components/AppIcon'
 import { submitAuthRequest, type AuthResponse } from './authApi'
 import './auth.css'
 
@@ -69,18 +70,14 @@ export default function LoginPage({ onRegister, onSuccess }: LoginPageProps) {
                 required
               />
               <button
-                className="auth-form__password-toggle"
+                className="app-button app-button--icon auth-form__password-toggle"
                 type="button"
                 aria-label={isPasswordVisible ? 'Skryť heslo' : 'Zobraziť heslo'}
+                title={isPasswordVisible ? 'Skryť heslo' : 'Zobraziť heslo'}
                 aria-pressed={isPasswordVisible}
                 onClick={() => setIsPasswordVisible((visible) => !visible)}
               >
-                <img
-                  src={isPasswordVisible ? eyeOffIcon : eyeIcon}
-                  alt=""
-                  aria-hidden="true"
-                  className="auth-form__password-icon"
-                />
+                <AppIcon src={isPasswordVisible ? eyeOffIcon : eyeIcon} />
               </button>
             </span>
           </label>
@@ -100,14 +97,14 @@ export default function LoginPage({ onRegister, onSuccess }: LoginPageProps) {
             </p>
           )}
 
-          <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
+          <button className="app-button" type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Prihlasovanie…' : 'Prihlásiť sa'}
           </button>
         </form>
 
         <p className="auth-card__switch">
           Nemáte účet?{' '}
-          <button type="button" onClick={onRegister}>
+          <button className="app-button app-button--secondary" type="button" onClick={onRegister}>
             Zaregistrujte sa
           </button>
         </p>

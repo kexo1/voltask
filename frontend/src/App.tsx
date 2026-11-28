@@ -110,6 +110,7 @@ export default function App() {
       <main className="app-state">
         <p role="alert">{authState.message}</p>
         <button
+          className="app-button"
           type="button"
           onClick={() => {
             setAuthState({ status: 'loading' })

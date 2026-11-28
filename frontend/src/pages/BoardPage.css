@@ -45,15 +45,6 @@
   font-size: 14px;
 }
 
-.board__add-button {
-  gap: 8px;
-}
-
-.board__add-button span {
-  font-size: 1.35em;
-  line-height: 1;
-}
-
 /* Stĺpce kanbanovej nástenky. */
 .board__columns {
   display: grid;
@@ -98,6 +89,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 12px;
 }
 
 /* Karta úlohy. */
@@ -172,16 +164,6 @@
   border-radius: 8px;
 }
 
-.board__error button {
-  padding: 6px 10px;
-  color: inherit;
-  background: transparent;
-  border: 1px solid currentColor;
-  border-radius: 6px;
-  cursor: pointer;
-  font: inherit;
-}
-
 /* Panel detailu úlohy v pravom dolnom rohu. */
 .task-detail-panel {
   position: fixed;
@@ -212,14 +194,6 @@
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
-}
-
-.task-detail-panel__header button {
-  color: var(--color-text);
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  font-size: 24px;
 }
 
 .task-detail-panel h2 {
@@ -287,29 +261,8 @@
   font-size: 13px;
 }
 
-.task-detail-panel__dependency-list button {
-  background: transparent;
-  border: 0;
-  color: var(--color-text);
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1;
-}
-
 .task-detail-panel__delete {
   width: 100%;
-  min-height: 40px;
-  padding: 0 14px;
-  border: 1px solid var(--color-error-border);
-  border-radius: 8px;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.task-detail-panel__delete:disabled {
-  cursor: wait;
-  opacity: 0.65;
 }
 
 @media (max-width: 760px) {

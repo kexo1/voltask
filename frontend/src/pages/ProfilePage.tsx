@@ -92,7 +92,7 @@ export default function ProfilePage({ user, onUserUpdated }: ProfilePageProps) {
             </label>
             {error && <p className="profile-form__error" role="alert">{error}</p>}
             {success && <p className="profile-form__success" role="status">{success}</p>}
-            <button className="profile-form__submit" type="submit" disabled={isSaving}>
+            <button className="app-button" type="submit" disabled={isSaving}>
               {isSaving ? 'Ukladanie…' : 'Uložiť zmeny'}
             </button>
           </form>

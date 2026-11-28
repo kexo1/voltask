@@ -132,7 +132,7 @@ function ManageMembers({
               ))}
             </select>
             <button className="app-button" type="submit" disabled={busy}>
-              Pridať
+              Pridať člena
             </button>
           </form>
         ) : (
